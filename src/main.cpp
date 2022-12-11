@@ -22,16 +22,26 @@ String get_localtime(const char *format)
   return time_buffer;
 }
 
-void display_clock()
+void display_update()
 {
   static lv_obj_t* label_date;
   if (label_date == nullptr)
   {
     label_date = lv_label_create(lv_scr_act());
     lv_obj_set_style_text_font(label_date, &lv_font_montserrat_22, LV_STATE_DEFAULT);
-    lv_obj_align(label_date, LV_ALIGN_BOTTOM_MID, 0, 0);
+    lv_obj_align(label_date, LV_ALIGN_BOTTOM_MID, 0, -50);
   }
   lv_label_set_text(label_date, get_localtime("%c").c_str());
+
+  static lv_obj_t* label_ipaddress;
+  if (label_ipaddress == nullptr)
+  {
+    label_ipaddress = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_font(label_ipaddress, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_align(label_ipaddress, LV_ALIGN_BOTTOM_MID, 0, -80);
+  }
+  lv_label_set_text(label_ipaddress, WiFi.localIP().toString().c_str());
+
 }
 
 void btn_event_cb(lv_event_t *e)
@@ -114,7 +124,7 @@ void loop()
 
   lv_timer_handler();
 
-  display_clock();
+  display_update();
 
   yield();
 }
