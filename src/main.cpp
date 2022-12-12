@@ -3,6 +3,8 @@
 
 #include <lvgl_drv_tft.h>
 
+#include ".secrets.h"
+
 bool time_valid()
 {
   // Value of time_t for 2000-01-01 00:00:00, used to detect invalid SNTP responses.
@@ -24,7 +26,7 @@ String get_localtime(const char *format)
 
 void display_update()
 {
-  static lv_obj_t* label_date;
+  static lv_obj_t *label_date;
   if (label_date == nullptr)
   {
     label_date = lv_label_create(lv_scr_act());
@@ -33,7 +35,7 @@ void display_update()
   }
   lv_label_set_text(label_date, get_localtime("%c").c_str());
 
-  static lv_obj_t* label_ipaddress;
+  static lv_obj_t *label_ipaddress;
   if (label_ipaddress == nullptr)
   {
     label_ipaddress = lv_label_create(lv_scr_act());
@@ -41,7 +43,6 @@ void display_update()
     lv_obj_align(label_ipaddress, LV_ALIGN_BOTTOM_MID, 0, -80);
   }
   lv_label_set_text(label_ipaddress, WiFi.localIP().toString().c_str());
-
 }
 
 void btn_event_cb(lv_event_t *e)
@@ -70,13 +71,6 @@ void mainscreen()
   lv_obj_center(label);
 }
 
-#if LV_USE_LOG
-static void lvgl_log(const char *buf)
-{
-  log_printf("%s", buf);
-}
-#endif
-
 void setup()
 {
   // put your setup code here, to run once:
@@ -85,32 +79,22 @@ void setup()
   log_i("CPU Freq = %d Mhz", getCpuFrequencyMhz());
   log_i("Free heap: %d bytes", ESP.getFreeHeap());
 
-  WiFi.begin("***REMOVED***", "***REMOVED***");
+  lvgl_init();
+
+  // Set LED. High is off
+  pinMode(PIN_LED_R, OUTPUT);
+  digitalWrite(PIN_LED_R, true);
+  pinMode(PIN_LED_G, OUTPUT);
+  digitalWrite(PIN_LED_G, true);
+  pinMode(PIN_LED_B, OUTPUT);
+  digitalWrite(PIN_LED_B, true);
+
+  WiFi.begin(WIFI_SSDID, WIFI_PASSWORD);
   ArduinoOTA.begin();
   // Set the time servers
   configTime(0, 0, "nl.pool.ntp.org");
   setenv("TZ", "Europe/Amsterdam", 1);
   tzset();
-
-  lvgl_tft_init();
-#if LV_USE_LOG
-  lv_log_register_print_cb(lvgl_log);
-#endif
-
-  lv_init();
-
-  static lv_disp_draw_buf_t draw_buf;
-  static lv_color_t buf[TFT_WIDTH * 10];
-  lv_disp_draw_buf_init(&draw_buf, buf, NULL, TFT_WIDTH * 10);
-
-  // Initialize the display
-  static lv_disp_drv_t disp_drv;
-  lv_disp_drv_init(&disp_drv);
-  disp_drv.hor_res = TFT_WIDTH;
-  disp_drv.ver_res = TFT_HEIGHT;
-  disp_drv.flush_cb = lvgl_tft_flush;
-  disp_drv.draw_buf = &draw_buf;
-  lv_disp_drv_register(&disp_drv);
 
   // Clear screen
   // lv_obj_clean(lv_scr_act());
@@ -119,6 +103,11 @@ void setup()
 
 void loop()
 {
+  // Red if no wifi, otherwise green
+  bool connected = WiFi.isConnected();
+  analogWrite(PIN_LED_R, connected ? 255 : 200);
+  analogWrite(PIN_LED_G, connected ? 200 : 255);
+
   // put your main code here, to run repeatedly:
   ArduinoOTA.handle();
 
