@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 
-#include <lvgl_drv_tft.h>
+#include <lvgl_drv.h>
 
 #include ".secrets.h"
 

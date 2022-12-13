@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-#include <lvgl_drv_tft.h>
+#include <lvgl_drv.h>
 #include <lvgl_drv_tft_st7796.h>
 
 const SPISettings spi_settings(TFT_SPI_FREQ, MSBFIRST, SPI_MODE0);
@@ -125,13 +125,13 @@ void lvgl_tft_set_backlight(uint8_t value)
     analogWrite(TFT_PIN_BL, value);
 }
 
-void vgl_tft_sleep()
+void lvgl_tft_sleep()
 {
     static const uint8_t slpin[] = {0x08};
     lvgl_tft_st7796_send_command(CMD_SLPIN, slpin, sizeof(slpin));
 }
 
-void vgl_tft_wake()
+void lvgl_tft_wake()
 {
     static const uint8_t splout[] = {0x08};
     lvgl_tft_st7796_send_command(CMD_SLPOUT, splout, sizeof(splout));
