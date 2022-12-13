@@ -137,10 +137,29 @@ bool lvgl_touch_gt911_read_touches(GTPoint *points, uint8_t numPoints = GT911_MA
     }
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE
+    uint16_t swap;
+    for (uint8_t i = 0; i < numPoints; ++i)
+    {
+        swap = points[i].x;
+        points[i].x = points[i].y;
+        points[i].y = TFT_WIDTH - swap;
+    }
 #else
 #ifdef TFT_ORIENTATION_PORTRAIT_INV
+    for (uint8_t i = 0; i < numPoints; ++i)
+    {
+        points[i].x = points[i].x;
+        points[i].y = points[i].y;
+    }
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE_INV
+    uint16_t swap;
+    for (uint8_t i = 0; i < numPoints; ++i)
+    {
+        swap = points[i].x;
+        points[i].x = TFT_HEIGHT - points[i].y;
+        points[i].y = swap;
+    }
 #else
 #error TFT_ORIENTATION not defined!
 #endif
