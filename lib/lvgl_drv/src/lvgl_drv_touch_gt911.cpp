@@ -9,7 +9,7 @@
 TwoWire gt911_i2c = TwoWire(1); // Bus number 1
 GTConfig gt911_config;
 
-bool lvgl_touch_gt911_write_register(uint16_t reg, const uint8_t *buf, int len)
+bool lvgl_touch_gt911_write_register(uint16_t reg, const uint8_t buf[], int len)
 {
     gt911_i2c.beginTransmission(GT911_I2C_SLAVE_ADDR);
     if (!gt911_i2c.write(reg >> 8) || !gt911_i2c.write(reg & 0xFF))
@@ -20,7 +20,7 @@ bool lvgl_touch_gt911_write_register(uint16_t reg, const uint8_t *buf, int len)
     return sent == len;
 }
 
-bool lvgl_touch_gt911_read_register(uint16_t reg, uint8_t *buf, int len)
+bool lvgl_touch_gt911_read_register(uint16_t reg, uint8_t buf[], int len)
 {
     gt911_i2c.beginTransmission(GT911_I2C_SLAVE_ADDR);
     if (!gt911_i2c.write(reg >> 8) || !gt911_i2c.write(reg & 0xFF))
@@ -166,7 +166,6 @@ bool lvgl_touch_gt911_read_touches(GTPoint *points, uint8_t numPoints = GT911_MA
 #endif
 #endif
 #endif
-
     return true;
 }
 
@@ -186,8 +185,7 @@ void lvgl_touch_init()
 
 void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
-    static int16_t last_x = 0;
-    static int16_t last_y = 0;
+    static int16_t last_x = 0,last_y = 0;
     // Ignore multi-touch
     auto points_available = lvgl_touch_gt911_num_points_available();
     if (points_available == 1)

@@ -1,41 +1,59 @@
 #ifdef LVGL_TFT_ST7796
 
-#include <Arduino.h>
-#include <SPI.h>
-
 #include <lvgl_drv.h>
-#include <lvgl_drv_tft_st7796.h>
 
-const SPISettings spi_settings(TFT_SPI_FREQ, MSBFIRST, SPI_MODE0);
+#define CMD_SWRESET 0x01   // Software Reset
+#define CMD_SLPIN 0x10     // Sleep in
+#define CMD_SLPOUT 0x11    // Sleep out
+#define CMD_NORON 0x13     // Normal Display Mode On
+#define CMD_INVOFF 0x20    // Display Inversion Off
+#define CMD_DISPON 0x29    // Display On
+#define CMD_CASET 0x2A     // Column Address Set
+#define CMD_RASET 0x2B     // Row Address Set
+#define CMD_RAMWR 0x2C     // Memory Write
+#define CMD_MADCTL 0x36    // Memory Data Access Control
+#define CMD_COLMOD 0x3A    // Interface Pixel Format
+#define CMD_PGC 0E0        // Positive Gamma Control
+#define CMD_NGC 0xE1       // Negative Gamma Control
+#define CMD_CSCON 0xF0     // Command Set Control
+
+#define MADCTL_MY 0x80  // Row Address Order - 0=Increment (Top to Bottom), 1=Decrement (Bottom to Top)
+#define MADCTL_MX 0x40  // Column Address Order - 0=Increment (Left to Right), 1=Decrement (Right to Left)
+#define MADCTL_MV 0x20  // Row/Column exchange - 0=Normal, 1=Row/Column exchanged
+#define MADCTL_RGB 0x00 // RGB/BGR Order - RGB
+
+#define COLMOD_RGB_16BIT 0x50
+#define COLMOD_CTRL_16BIT 0x05
+#define COLMOD_RGB656 (COLMOD_RGB_16BIT | COLMOD_CTRL_16BIT)
 
 void lvgl_tft_st7796_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
 {
-    digitalWrite(TFT_PIN_DC, false); // Command mode => command
-    SPI.beginTransaction(spi_settings);
-    digitalWrite(TFT_PIN_CS, false); // Chip select => enable
-    SPI.write(command);
+    digitalWrite(TFT_PIN_DC, LOW); // Command mode => command
+    lvgl_bus_spi.beginTransaction(SPISettings(LVGL_TFT_SPI_FREQ, MSBFIRST, SPI_MODE0));
+    digitalWrite(TFT_PIN_CS, LOW); // Chip select => enable
+    lvgl_bus_spi.write(command);
     if (length > 0)
     {
-        digitalWrite(TFT_PIN_DC, true); // Command mode => data
-        SPI.writeBytes(data, length);
+        digitalWrite(TFT_PIN_DC, HIGH); // Command mode => data
+        lvgl_bus_spi.writeBytes(data, length);
     }
-    digitalWrite(TFT_PIN_CS, true); // Chip select => disable
-    SPI.endTransaction();
+    digitalWrite(TFT_PIN_CS, HIGH); // Chip select => disable
+    lvgl_bus_spi.endTransaction();
 }
 
 void lvgl_tft_st7796_send_pixels(const uint8_t command, const lv_color_t data[], const ushort length)
 {
-    digitalWrite(TFT_PIN_DC, false); // Command mode => command
-    SPI.beginTransaction(spi_settings);
-    digitalWrite(TFT_PIN_CS, false); // Chip select => enable
-    SPI.write(command);
+    digitalWrite(TFT_PIN_DC, LOW); // Command mode => command
+    lvgl_bus_spi.beginTransaction(SPISettings(LVGL_TFT_SPI_FREQ, MSBFIRST, SPI_MODE0));
+    digitalWrite(TFT_PIN_CS, LOW); // Chip select => enable
+    lvgl_bus_spi.write(command);
     if (length > 0)
     {
-        digitalWrite(TFT_PIN_DC, true); // Command mode => data
-        SPI.writePixels(data, sizeof(lv_color_t) * length);
+        digitalWrite(TFT_PIN_DC, HIGH); // Command mode => data
+        lvgl_bus_spi.writePixels(data, sizeof(lv_color_t) * length);
     }
-    digitalWrite(TFT_PIN_CS, true); // Chip select => disable
-    SPI.endTransaction();
+    digitalWrite(TFT_PIN_CS, HIGH); // Chip select => disable
+    lvgl_bus_spi.endTransaction();
 }
 
 void lvgl_tft_st7796_send_init_commands()
@@ -84,18 +102,17 @@ void lvgl_tft_st7796_send_init_commands()
     lvgl_tft_st7796_send_command(CMD_NORON);  // Normal display on
     lvgl_tft_st7796_send_command(CMD_SLPOUT); // Out of sleep mode
     lvgl_tft_st7796_send_command(CMD_DISPON); // Main screen turn on
-    delay(500);
+    delay(250);
 };
 
 void lvgl_tft_init()
 {
-    SPI.begin(TFT_PIN_SCLK, TFT_PIN_MISO, TFT_PIN_MOSI);
-    SPI.setFrequency(TFT_SPI_FREQ);
     pinMode(TFT_PIN_DC, OUTPUT); // Data or Command
     pinMode(TFT_PIN_CS, OUTPUT); // Chip Select
+    digitalWrite(TFT_PIN_CS, HIGH);
     pinMode(TFT_PIN_BL, OUTPUT); // Backlight
     lvgl_tft_st7796_send_init_commands();
-    digitalWrite(TFT_PIN_BL, true);
+    digitalWrite(TFT_PIN_BL, HIGH); // Backlight on
 }
 
 void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)

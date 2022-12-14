@@ -2,12 +2,21 @@
 #include <lvgl_drv.h>
 
 // Functions to be defined in the tft driver
-static void lvgl_tft_init();
-static void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map);
+extern void lvgl_tft_init();
+extern void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map);
 
 // Functions to be defined in the touch driver
-static void lvgl_touch_init();
-static void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
+extern void lvgl_touch_init();
+extern void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
+
+// Bus
+#if defined(LVGL_TFT_ST7796) || defined(LVGL_TFT_IL9341) || defined(LVGL_TOUCH_XPT2046)
+SPIClass lvgl_bus_spi;
+#endif
+
+#if defined(LVGL_TOUCH_GT911)
+TwoWire lvgl_bus_i2c = TwoWire(1); // Bus number 1
+#endif
 
 #if LV_USE_LOG
 void lvgl_log(const char *buf)
@@ -18,19 +27,29 @@ void lvgl_log(const char *buf)
 
 void lvgl_init()
 {
-    lvgl_tft_init();
-    lvgl_touch_init();
 #if LV_USE_LOG
     lv_log_register_print_cb(lvgl_log);
 #endif
-
     lv_init();
+
+    // Initialize buses
+    // SPI
+#if defined(LVGL_TFT_ST7796) || defined(LVGL_TFT_IL9341) || defined(LVGL_TOUCH_XPT2046)
+    lvgl_bus_spi.begin(LVGL_SPI_SCLK, LVGL_SPI_MISO, LVGL_SPI_MOSI);
+#endif
+// I2C
+#if defined(LVGL_TOUCH_GT911)
+    lvgl_bus_i2c.begin(TOUCH_IIC_SDA, TOUCH_IIC_SCL);
+#endif
+
+#if defined(LVGL_TFT_ST7796) || defined(LVGL_TFT_IL9341)
+    lvgl_tft_init();
 
     static lv_disp_draw_buf_t draw_buf;
     static lv_color_t buf[TFT_WIDTH * 10];
     lv_disp_draw_buf_init(&draw_buf, buf, NULL, TFT_WIDTH * 10);
 
-    // Initialize the display
+    // Setup TFT display
     static lv_disp_drv_t disp_drv;
     lv_disp_drv_init(&disp_drv);
 #if defined(TFT_ORIENTATION_PORTRAIT) || defined(TFT_ORIENTATION_PORTRAIT_INV)
@@ -47,11 +66,16 @@ void lvgl_init()
     disp_drv.flush_cb = lvgl_tft_flush;
     disp_drv.draw_buf = &draw_buf;
     lv_disp_drv_register(&disp_drv);
+#endif
 
-     // Initialize touch
+#if defined(LVGL_TOUCH_GT911) || defined(LVGL_TOUCH_XPT2046)
+    lvgl_touch_init();
+
+    // Setup touch
     static lv_indev_drv_t indev_drv;
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_POINTER;
     indev_drv.read_cb = lvgl_touch_read;
     lv_indev_drv_register(&indev_drv);
+#endif
 }
