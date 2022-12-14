@@ -28,31 +28,31 @@
 
 void lvgl_tft_st7796_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
 {
-    digitalWrite(TFT_PIN_DC, LOW); // Command mode => command
-    lvgl_bus_spi.beginTransaction(SPISettings(LVGL_TFT_SPI_FREQ, MSBFIRST, SPI_MODE0));
-    digitalWrite(TFT_PIN_CS, LOW); // Chip select => enable
+    digitalWrite(ST7796_PIN_DC, LOW); // Command mode => command
+    lvgl_bus_spi.beginTransaction(SPISettings(ST7796_SPI_FREQ, MSBFIRST, SPI_MODE0));
+    digitalWrite(ST7796_PIN_CS, LOW); // Chip select => enable
     lvgl_bus_spi.write(command);
     if (length > 0)
     {
-        digitalWrite(TFT_PIN_DC, HIGH); // Command mode => data
+        digitalWrite(ST7796_PIN_DC, HIGH); // Command mode => data
         lvgl_bus_spi.writeBytes(data, length);
     }
-    digitalWrite(TFT_PIN_CS, HIGH); // Chip select => disable
+    digitalWrite(ST7796_PIN_CS, HIGH); // Chip select => disable
     lvgl_bus_spi.endTransaction();
 }
 
 void lvgl_tft_st7796_send_pixels(const uint8_t command, const lv_color_t data[], const ushort length)
 {
-    digitalWrite(TFT_PIN_DC, LOW); // Command mode => command
-    lvgl_bus_spi.beginTransaction(SPISettings(LVGL_TFT_SPI_FREQ, MSBFIRST, SPI_MODE0));
-    digitalWrite(TFT_PIN_CS, LOW); // Chip select => enable
+    digitalWrite(ST7796_PIN_DC, LOW); // Command mode => command
+    lvgl_bus_spi.beginTransaction(SPISettings(ST7796_SPI_FREQ, MSBFIRST, SPI_MODE0));
+    digitalWrite(ST7796_PIN_CS, LOW); // Chip select => enable
     lvgl_bus_spi.write(command);
     if (length > 0)
     {
-        digitalWrite(TFT_PIN_DC, HIGH); // Command mode => data
+        digitalWrite(ST7796_PIN_DC, HIGH); // Command mode => data
         lvgl_bus_spi.writePixels(data, sizeof(lv_color_t) * length);
     }
-    digitalWrite(TFT_PIN_CS, HIGH); // Chip select => disable
+    digitalWrite(ST7796_PIN_CS, HIGH); // Chip select => disable
     lvgl_bus_spi.endTransaction();
 }
 
@@ -107,9 +107,9 @@ void lvgl_tft_st7796_send_init_commands()
 
 void lvgl_tft_init()
 {
-    pinMode(TFT_PIN_DC, OUTPUT); // Data or Command
-    pinMode(TFT_PIN_CS, OUTPUT); // Chip Select
-    digitalWrite(TFT_PIN_CS, HIGH);
+    pinMode(ST7796_PIN_DC, OUTPUT); // Data or Command
+    pinMode(ST7796_PIN_CS, OUTPUT); // Chip Select
+    digitalWrite(ST7796_PIN_CS, HIGH);
     pinMode(TFT_PIN_BL, OUTPUT); // Backlight
     lvgl_tft_st7796_send_init_commands();
     digitalWrite(TFT_PIN_BL, HIGH); // Backlight on

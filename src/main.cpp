@@ -82,12 +82,12 @@ void setup()
   lvgl_init();
 
   // Set LED. High is off
-  pinMode(PIN_LED_R, OUTPUT);
-  digitalWrite(PIN_LED_R, true);
-  pinMode(PIN_LED_G, OUTPUT);
-  digitalWrite(PIN_LED_G, true);
-  pinMode(PIN_LED_B, OUTPUT);
-  digitalWrite(PIN_LED_B, true);
+  pinMode(LED_PIN_R, OUTPUT);
+  digitalWrite(LED_PIN_R, true);
+  pinMode(LED_PIN_G, OUTPUT);
+  digitalWrite(LED_PIN_G, true);
+  pinMode(LED_PIN_B, OUTPUT);
+  digitalWrite(LED_PIN_B, true);
 
   WiFi.begin(WIFI_SSDID, WIFI_PASSWORD);
   ArduinoOTA.begin();
@@ -105,8 +105,8 @@ void loop()
 {
   // Red if no wifi, otherwise green
   bool connected = WiFi.isConnected();
-  analogWrite(PIN_LED_R, connected ? 255 : 200);
-  analogWrite(PIN_LED_G, connected ? 200 : 255);
+  analogWrite(LED_PIN_R, connected ? 255 : 200);
+  analogWrite(LED_PIN_G, connected ? 200 : 255);
 
   // put your main code here, to run repeatedly:
   ArduinoOTA.handle();

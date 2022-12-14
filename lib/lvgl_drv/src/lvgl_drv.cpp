@@ -70,7 +70,7 @@ void lvgl_init()
 
 #if defined(LVGL_TOUCH_GT911) || defined(LVGL_TOUCH_XPT2046)
     lvgl_touch_init();
-
+    
     // Setup touch
     static lv_indev_drv_t indev_drv;
     lv_indev_drv_init(&indev_drv);

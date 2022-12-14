@@ -28,8 +28,8 @@
 // TFT backlight
 #define PIN_TFT_BL 27
 // XPT2046 Resistive touch
-#define PIN_XPT2046_INT 36
-#define PIN_XPT2046_CS 33
+#define XPT2046_PIN_INT 36
+#define XPT2046_PIN_CS 33
 // GT911 Capacitive touch
 #define GT911_ADDRESS 0x5d
 #define PIN_GT911_INT 21
