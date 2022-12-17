@@ -1,4 +1,5 @@
-# esp32-smartdisplay
+# ESP32-SmartDisplay
+
 LVGL Drivers for Chinese Smart display boards ESP32-2432S035R, ESP32-3248S035R, ESP32-3248S035C
 
 These boards are available on AliExpress for decent prices.

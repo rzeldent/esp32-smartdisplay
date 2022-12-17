@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 
-#include <lvgl_drv.h>
+#include <esp32_smartdisplay.h>
 
 #include ".secrets.h"
 

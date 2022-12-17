@@ -1,8 +1,8 @@
 {
-    "name": "lvgl_drv",
+    "name": "esp32_smartdisplay",
     "version": "1.0.0",
-    "description": "LVGL driver",
-    "keywords": "LVGL",
+    "description": "LVGL drivers for 2432S035 and 3248S035 boards",
+    "keywords": "LVGL ESP32-2343S035 ESP32-3248S035 Smartdisplay",
     "authors": [
         {
             "name": "Rene Zeldenthuis",

@@ -1,4 +1,4 @@
-#include <lvgl_drv.h>
+#include <esp32_smartdisplay.h>
 
 #ifdef XPT2046
 

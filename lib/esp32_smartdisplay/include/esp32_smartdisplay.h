@@ -3,9 +3,9 @@
 #include <Arduino.h>
 #include <lvgl.h>
 
- //#define ESP32_2432S028R // 2.8" 240x320 resistive ILI9341
+#define ESP32_2432S028R // 2.8" 240x320 resistive ILI9341
 // #define ESP32_3248S028R // 3.5" 320x480 resistive ST7796
-#define ESP32_3248S028C // 3.5" 320x480 capacitive ST7796
+// #define ESP32_3248S028C // 3.5" 320x480 capacitive ST7796
 
 #define TFT_ORIENTATION_LANDSCAPE
 
@@ -13,7 +13,6 @@
 #ifdef ESP32_3248S028C
 #include <Wire.h>
 #endif
-
 
 extern void lvgl_init();
 extern void setLedColor(uint8_t r, uint8_t g, uint8_t b);

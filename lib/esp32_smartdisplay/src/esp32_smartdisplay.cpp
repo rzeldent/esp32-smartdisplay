@@ -1,5 +1,4 @@
-#include <Arduino.h>
-#include <lvgl_drv.h>
+#include <esp32_smartdisplay.h>
 
 // Functions to be defined in the tft driver
 extern void lvgl_tft_init();
