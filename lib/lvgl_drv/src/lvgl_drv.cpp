@@ -128,6 +128,6 @@ void beep(unsigned int frequency, unsigned long duration)
     // Only set low impedance when used. Creates a hissing sound
     pinMode(AUDIO_PIN, OUTPUT);
     tone(AUDIO_PIN, frequency, duration);
-    diditalWrite(AUDIO_PIN, LOW);
+    digitalWrite(AUDIO_PIN, LOW);
     pinMode(AUDIO_PIN, INPUT);
-}   
+}

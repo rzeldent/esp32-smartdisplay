@@ -2,9 +2,24 @@
 
 #ifdef GT911
 
-#include <lvgl_drv_touch_gt911.h>
+#define GT911_I2C_SLAVE_ADDR 0x5D
+#define GT911_MAX_CONTACTS 5
 
-GTConfig gt911_config;
+#define GT911_PRODUCT_ID1 0x8140
+#define GT911_REG_COORD_ADDR 0x814E
+#define GT911_TRACK_ID1 0x814F
+
+#define GT911_PRODUCT_ID_LEN 4
+
+struct __attribute__((packed)) GTPoint
+{
+    // 0x814F-0x8156, ... 0x8176 (5 points)
+    uint8_t trackId;
+    uint16_t x;
+    uint16_t y;
+    uint16_t area;
+    uint8_t reserved;
+};
 
 bool gt911_write_register(uint16_t reg, const uint8_t buf[], int len)
 {
@@ -34,66 +49,6 @@ bool gt911_read_register(uint16_t reg, uint8_t buf[], int len)
     return len == 0;
 }
 
-bool gt911_read_info(const GTInfo *info)
-{
-    uint8_t *info_ptr = (uint8_t *)info;
-    if (!gt911_read_register(GT911_REG_DATA, info_ptr, sizeof(GTInfo)))
-    {
-        log_e("Unable to read the GTInfo");
-        return false;
-    }
-
-    return true;
-}
-
-bool gt911_read_config(GTConfig *config)
-{
-    uint8_t *config_ptr = (uint8_t *)config;
-    if (!gt911_read_register(GT911_REG_CFG, config_ptr, sizeof(GTConfig)))
-    {
-        log_e("Unable to read GTConfig");
-        return false;
-    }
-
-    uint8_t checksum;
-    if (!gt911_read_register(GT911_REG_CHECKSUM, &checksum, sizeof(checksum)))
-    {
-        log_e("Unable to read the GTConfig checksum");
-        return false;
-    }
-
-    // Validate the checksum
-    for (auto i = 0; i < sizeof(GTConfig); ++i)
-        checksum += *config_ptr++;
-
-    return !checksum;
-}
-
-bool gt911_write_config(const GTConfig *config)
-{
-    uint8_t *config_ptr = (uint8_t *)config;
-    uint8_t checksum = 0;
-    for (auto i = 0; i < sizeof(GTConfig); ++i)
-        checksum += *config_ptr++;
-
-    // Two's complement (is minus)
-    checksum = ~checksum + 1;
-    if (!gt911_write_register(GT911_REG_CFG, config_ptr, sizeof(GTConfig)))
-    {
-        log_e("Unable to write the GTConfig");
-        return false;
-    }
-
-    uint8_t checksum_buffer[2] = {checksum, 1};
-    if (!gt911_write_register(GT911_REG_CHECKSUM, (uint8_t *)&checksum_buffer, sizeof(checksum_buffer)))
-    {
-        log_e("Unable to write the GTConfig checksum");
-        return false;
-    }
-
-    return true;
-}
-
 int8_t gt911_num_points_available()
 {
     uint8_t coord_addr;
@@ -120,7 +75,7 @@ int8_t gt911_num_points_available()
 
 bool gt911_read_touches(GTPoint *points, uint8_t numPoints = GT911_MAX_CONTACTS)
 {
-    if (!gt911_read_register(GT911_REG_COORD_ADDR + 1, (uint8_t *)points, sizeof(GTPoint) * numPoints))
+    if (!gt911_read_register(GT911_TRACK_ID1, (uint8_t *)points, sizeof(GTPoint) * numPoints))
     {
         log_e("Unable to read GTPoints");
         return false;
@@ -168,14 +123,14 @@ bool gt911_read_touches(GTPoint *points, uint8_t numPoints = GT911_MAX_CONTACTS)
 
 void lvgl_touch_init()
 {
-    uint8_t productId[4];
-    if (!gt911_read_register(GT911_PRODUCT_ID1, productId, sizeof(productId)))
+    uint8_t productId[GT911_PRODUCT_ID_LEN];
+    if (!gt911_read_register(GT911_PRODUCT_ID1, productId, GT911_PRODUCT_ID_LEN))
     {
         log_e("No GT911 touch device found");
         return;
     }
 
-    log_i("DeviceId: %c%c%c%c", productId[0], productId[1], productId[2], productId[3]);
+    log_i("DeviceId: %s", productId);
 }
 
 void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data)
@@ -185,7 +140,7 @@ void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data)
     auto points_available = gt911_num_points_available();
     if (points_available == 1)
     {
-        log_d("Touches present: %d", points_available);
+        log_d("Touches detected: %d", points_available);
         GTPoint point;
         if (gt911_read_touches(&point, 1))
         {
