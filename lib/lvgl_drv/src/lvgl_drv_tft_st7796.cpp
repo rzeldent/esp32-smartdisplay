@@ -1,6 +1,6 @@
-#ifdef LVGL_TFT_ST7796
-
 #include <lvgl_drv.h>
+
+#ifdef ST7796
 
 #define CMD_SWRESET 0x01   // Software Reset
 #define CMD_SLPIN 0x10     // Sleep in
@@ -20,54 +20,57 @@
 #define MADCTL_MY 0x80  // Row Address Order - 0=Increment (Top to Bottom), 1=Decrement (Bottom to Top)
 #define MADCTL_MX 0x40  // Column Address Order - 0=Increment (Left to Right), 1=Decrement (Right to Left)
 #define MADCTL_MV 0x20  // Row/Column exchange - 0=Normal, 1=Row/Column exchanged
+#define MADCTL_ML 0x10  // Vertical Refresh Order
+#define MADCTL_BGR 0x08 // RGB/BGR Order - BGR
+#define MADCTL_MH 0x10  // Horizontal Refresh Order
 #define MADCTL_RGB 0x00 // RGB/BGR Order - RGB
 
 #define COLMOD_RGB_16BIT 0x50
 #define COLMOD_CTRL_16BIT 0x05
 #define COLMOD_RGB656 (COLMOD_RGB_16BIT | COLMOD_CTRL_16BIT)
 
-void lvgl_tft_st7796_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
+void st7796_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
 {
     digitalWrite(ST7796_PIN_DC, LOW); // Command mode => command
-    lvgl_bus_spi.beginTransaction(SPISettings(ST7796_SPI_FREQ, MSBFIRST, SPI_MODE0));
+    spi_st7796.beginTransaction(SPISettings(ST7796_SPI_FREQ, MSBFIRST, SPI_MODE0));
     digitalWrite(ST7796_PIN_CS, LOW); // Chip select => enable
-    lvgl_bus_spi.write(command);
+    spi_st7796.write(command);
     if (length > 0)
     {
         digitalWrite(ST7796_PIN_DC, HIGH); // Command mode => data
-        lvgl_bus_spi.writeBytes(data, length);
+        spi_st7796.writeBytes(data, length);
     }
     digitalWrite(ST7796_PIN_CS, HIGH); // Chip select => disable
-    lvgl_bus_spi.endTransaction();
+    spi_st7796.endTransaction();
 }
 
-void lvgl_tft_st7796_send_pixels(const uint8_t command, const lv_color_t data[], const ushort length)
+void st7796_send_pixels(const uint8_t command, const lv_color_t data[], const ushort length)
 {
     digitalWrite(ST7796_PIN_DC, LOW); // Command mode => command
-    lvgl_bus_spi.beginTransaction(SPISettings(ST7796_SPI_FREQ, MSBFIRST, SPI_MODE0));
+    spi_st7796.beginTransaction(SPISettings(ST7796_SPI_FREQ, MSBFIRST, SPI_MODE0));
     digitalWrite(ST7796_PIN_CS, LOW); // Chip select => enable
-    lvgl_bus_spi.write(command);
+    spi_st7796.write(command);
     if (length > 0)
     {
         digitalWrite(ST7796_PIN_DC, HIGH); // Command mode => data
-        lvgl_bus_spi.writePixels(data, sizeof(lv_color_t) * length);
+        spi_st7796.writePixels(data, sizeof(lv_color_t) * length);
     }
     digitalWrite(ST7796_PIN_CS, HIGH); // Chip select => disable
-    lvgl_bus_spi.endTransaction();
+    spi_st7796.endTransaction();
 }
 
-void lvgl_tft_st7796_send_init_commands()
+void st7796_send_init_commands()
 {
-    lvgl_tft_st7796_send_command(CMD_SWRESET); // Software reset
+    st7796_send_command(CMD_SWRESET); // Software reset
     delay(100);
 
     static const uint8_t cscon1[] = {0xC3}; // Enable extension command 2 part I
-    lvgl_tft_st7796_send_command(CMD_CSCON, cscon1, sizeof(cscon1));
+    st7796_send_command(CMD_CSCON, cscon1, sizeof(cscon1));
     static const uint8_t cscon2[] = {0x96}; // Enable extension command 2 part II
-    lvgl_tft_st7796_send_command(CMD_CSCON, cscon2, sizeof(cscon2));
+    st7796_send_command(CMD_CSCON, cscon2, sizeof(cscon2));
 
     static const uint8_t colmod[] = {COLMOD_RGB656};                  // 16 bits R5G6B5
-    lvgl_tft_st7796_send_command(CMD_COLMOD, colmod, sizeof(colmod)); // Set color mode
+    st7796_send_command(CMD_COLMOD, colmod, sizeof(colmod)); // Set color mode
 
 #ifdef TFT_ORIENTATION_PORTRAIT
     static const uint8_t madctl[] = {MADCTL_MY | MADCTL_RGB}; // Portrait 0 Degrees
@@ -86,22 +89,22 @@ void lvgl_tft_st7796_send_init_commands()
 #endif
 #endif
 #endif
-    lvgl_tft_st7796_send_command(CMD_MADCTL, madctl, sizeof(madctl));
+    st7796_send_command(CMD_MADCTL, madctl, sizeof(madctl));
 
     static const uint8_t pgc[] = {0xF0, 0x09, 0x0B, 0x06, 0x04, 0x15, 0x2F, 0x54, 0x42, 0x3C, 0x17, 0x14, 0x18, 0x1B};
-    lvgl_tft_st7796_send_command(CMD_PGC, pgc, sizeof(pgc));
+    st7796_send_command(CMD_PGC, pgc, sizeof(pgc));
     static const uint8_t ngc[] = {0xE0, 0x09, 0x0B, 0x06, 0x04, 0x03, 0x2B, 0x43, 0x42, 0x3B, 0x16, 0x14, 0x17, 0x1B};
-    lvgl_tft_st7796_send_command(CMD_NGC, ngc, sizeof(ngc));
+    st7796_send_command(CMD_NGC, ngc, sizeof(ngc));
 
     static const uint8_t cscon3[] = {0x3C}; // Disable extension command 2 part I
-    lvgl_tft_st7796_send_command(CMD_CSCON, cscon3, sizeof(cscon3));
+    st7796_send_command(CMD_CSCON, cscon3, sizeof(cscon3));
     static const uint8_t cscon4[] = {0x69}; // Disable extension command 2 part II
-    lvgl_tft_st7796_send_command(CMD_CSCON, cscon4, sizeof(cscon4));
+    st7796_send_command(CMD_CSCON, cscon4, sizeof(cscon4));
 
-    lvgl_tft_st7796_send_command(CMD_INVOFF); // Inversion off
-    lvgl_tft_st7796_send_command(CMD_NORON);  // Normal display on
-    lvgl_tft_st7796_send_command(CMD_SLPOUT); // Out of sleep mode
-    lvgl_tft_st7796_send_command(CMD_DISPON); // Main screen turn on
+    st7796_send_command(CMD_INVOFF); // Inversion off
+    st7796_send_command(CMD_NORON);  // Normal display on
+    st7796_send_command(CMD_SLPOUT); // Out of sleep mode
+    st7796_send_command(CMD_DISPON); // Main screen turn on
     delay(250);
 };
 
@@ -110,9 +113,9 @@ void lvgl_tft_init()
     pinMode(ST7796_PIN_DC, OUTPUT); // Data or Command
     pinMode(ST7796_PIN_CS, OUTPUT); // Chip Select
     digitalWrite(ST7796_PIN_CS, HIGH);
-    pinMode(TFT_PIN_BL, OUTPUT); // Backlight
-    lvgl_tft_st7796_send_init_commands();
-    digitalWrite(TFT_PIN_BL, HIGH); // Backlight on
+    pinMode(ST7796_PIN_BL, OUTPUT); // Backlight
+    st7796_send_init_commands();
+    digitalWrite(ST7796_PIN_BL, HIGH); // Backlight on
 }
 
 void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
@@ -123,35 +126,35 @@ void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color
         static_cast<uint8_t>(area->x1),
         static_cast<uint8_t>(area->x2 >> 8),
         static_cast<uint8_t>(area->x2)};
-    lvgl_tft_st7796_send_command(CMD_CASET, caset, sizeof(caset));
+    st7796_send_command(CMD_CASET, caset, sizeof(caset));
     // Page addresses
     const uint8_t raset[] = {
         static_cast<uint8_t>(area->y1 >> 8),
         static_cast<uint8_t>(area->y1),
         static_cast<uint8_t>(area->y2 >> 8),
         static_cast<uint8_t>(area->y2)};
-    lvgl_tft_st7796_send_command(CMD_RASET, raset, sizeof(raset));
+    st7796_send_command(CMD_RASET, raset, sizeof(raset));
     // Memory write
     const auto size = lv_area_get_width(area) * lv_area_get_height(area);
-    lvgl_tft_st7796_send_pixels(CMD_RAMWR, color_map, size);
+    st7796_send_pixels(CMD_RAMWR, color_map, size);
     lv_disp_flush_ready(drv);
 }
 
 void lvgl_tft_set_backlight(uint8_t value)
 {
-    analogWrite(TFT_PIN_BL, value);
+    analogWrite(ST7796_PIN_BL, value);
 }
 
 void lvgl_tft_sleep()
 {
     static const uint8_t slpin[] = {0x08};
-    lvgl_tft_st7796_send_command(CMD_SLPIN, slpin, sizeof(slpin));
+    st7796_send_command(CMD_SLPIN, slpin, sizeof(slpin));
 }
 
 void lvgl_tft_wake()
 {
     static const uint8_t splout[] = {0x08};
-    lvgl_tft_st7796_send_command(CMD_SLPOUT, splout, sizeof(splout));
+    st7796_send_command(CMD_SLPOUT, splout, sizeof(splout));
 }
 
 #endif

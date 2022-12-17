@@ -43,6 +43,15 @@ void display_update()
     lv_obj_align(label_ipaddress, LV_ALIGN_BOTTOM_MID, 0, -80);
   }
   lv_label_set_text(label_ipaddress, WiFi.localIP().toString().c_str());
+
+  static lv_obj_t *label_cds;
+  if (label_cds == nullptr)
+  {
+    label_cds = lv_label_create(lv_scr_act());
+    lv_obj_set_style_text_font(label_cds, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_align(label_cds, LV_ALIGN_TOP_RIGHT, 0, -80);
+  }
+  lv_label_set_text(label_cds, String(getLightIntensity()).c_str());
 }
 
 void btn_event_cb(lv_event_t *e)
@@ -53,6 +62,8 @@ void btn_event_cb(lv_event_t *e)
   {
     static uint8_t cnt = 0;
     cnt++;
+
+    beep(1000, 50);
 
     lv_obj_t *label = lv_obj_get_child(btn, 0);
     lv_label_set_text_fmt(label, "Button: %d", cnt);
@@ -81,14 +92,6 @@ void setup()
 
   lvgl_init();
 
-  // Set LED. High is off
-  pinMode(LED_PIN_R, OUTPUT);
-  digitalWrite(LED_PIN_R, true);
-  pinMode(LED_PIN_G, OUTPUT);
-  digitalWrite(LED_PIN_G, true);
-  pinMode(LED_PIN_B, OUTPUT);
-  digitalWrite(LED_PIN_B, true);
-
   WiFi.begin(WIFI_SSDID, WIFI_PASSWORD);
   ArduinoOTA.begin();
   // Set the time servers
@@ -105,8 +108,7 @@ void loop()
 {
   // Red if no wifi, otherwise green
   bool connected = WiFi.isConnected();
-  analogWrite(LED_PIN_R, connected ? 255 : 200);
-  analogWrite(LED_PIN_G, connected ? 200 : 255);
+  setLedColor(connected ? 50 : 0, connected ? 0 : 50, 0);
 
   // put your main code here, to run repeatedly:
   ArduinoOTA.handle();

@@ -1,7 +1,6 @@
-#ifdef LVGL_TOUCH_XPT2046
-
-#include <Arduino.h>
 #include <lvgl_drv.h>
+
+#ifdef XPT2046
 
 #define CMD_START_Z1_CONVERSION 0xB1
 #define CMD_START_Z2_CONVERSION 0xC1
@@ -9,17 +8,17 @@
 #define CMD_START_Y_CONVERSION 0x91
 #define Z_THRESHOLD 600
 
-bool lvgl_touch_xpt2046_read_xy(int16_t *x, int16_t *y)
+bool xpt2046_read_xy(int16_t *x, int16_t *y)
 {
-    lvgl_bus_spi.beginTransaction(SPISettings(XPT2046_SPI_FREQ, MSBFIRST, SPI_MODE0));
+    spi_xpt2046.beginTransaction(SPISettings(XPT2046_SPI_FREQ, MSBFIRST, SPI_MODE0));
     digitalWrite(XPT2046_PIN_CS, LOW);
-    lvgl_bus_spi.transfer16(CMD_START_Z1_CONVERSION);
-    auto z1 = lvgl_bus_spi.transfer16(CMD_START_Z2_CONVERSION) >> 3;
-    auto z2 = lvgl_bus_spi.transfer16(CMD_START_X_CONVERSION) >> 3;
-    auto raw_x = lvgl_bus_spi.transfer16(CMD_START_Y_CONVERSION) >> 3; // Normalize to 12 bits
-    auto raw_y = lvgl_bus_spi.transfer16(0) >> 3;                      // Normalize to 12 bits
+    spi_xpt2046.transfer16(CMD_START_Z1_CONVERSION);
+    auto z1 = spi_xpt2046.transfer16(CMD_START_Z2_CONVERSION) >> 3;
+    auto z2 = spi_xpt2046.transfer16(CMD_START_X_CONVERSION) >> 3;
+    auto raw_x = spi_xpt2046.transfer16(CMD_START_Y_CONVERSION) >> 3; // Normalize to 12 bits
+    auto raw_y = spi_xpt2046.transfer16(0) >> 3;                      // Normalize to 12 bits
     digitalWrite(XPT2046_PIN_CS, HIGH);
-    lvgl_bus_spi.endTransaction();
+    spi_xpt2046.endTransaction();
     int16_t z = z1 + 4095 - z2;
     if (z < Z_THRESHOLD)
         return false;
@@ -58,7 +57,7 @@ bool lvgl_touch_xpt2046_read_xy(int16_t *x, int16_t *y)
 #endif
 #endif
 #endif
-    log_i("x=%d,y=%d,raw_z=%d", *x, *y, z);
+    //log_i("x=%d,y=%d,raw_z=%d", *x, *y, z);
     return true;
 }
 
@@ -72,7 +71,7 @@ void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
     static int16_t last_x = 0, last_y = 0;
     // log_d("Touch: (%d,%d)", last_x, last_y);
-    data->state = lvgl_touch_xpt2046_read_xy(&last_x, &last_y) ? LV_INDEV_STATE_PR : LV_INDEV_STATE_RELEASED;
+    data->state = xpt2046_read_xy(&last_x, &last_y) ? LV_INDEV_STATE_PR : LV_INDEV_STATE_RELEASED;
     data->point.x = last_x;
     data->point.y = last_y;
     // log_d("Touch: (%d,%d)", last_x, last_y);
