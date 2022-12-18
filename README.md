@@ -1,21 +1,27 @@
 # ESP32-SmartDisplay
 
-LVGL drivers and peripheral interface for Chinese Smart display boards ESP32-2432S028R, ESP32-3248S035R, ESP32-3248S035C
+## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards ESP32-2432S028R, ESP32-3248S035R and ESP32-3248S035C.
 
-These boards are available on AliExpress for decent prices but offer a lot.
+This library supports these boards without any effort.
+
+## Why this library
+
 With the boards, there is a link supplied and there are a lot of examples present and this looks fine.
-These examples for LVGL depend on external libraries ([TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)).
+These examples for [LVGL](https://lvgl.io/) depend on external libraries ([TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)).
 However, when implementing the capacitive version, I found out that these libraries had their flaws using these boards.
 Additionally, There was a log of unnecessary code included in these libraries.
-There is also a library for LVGL present [LVGL_ESP32_drivers](https://github.com/lvgl/lvgl_esp32_drivers) but this is not aimed at the Arduino framework but ESP-IDF framework.
+There is also a library for [LVGL](https://lvgl.io/) present [LVGL_ESP32_drivers](https://github.com/lvgl/lvgl_esp32_drivers) but this is not aimed at the Arduino framework but ESP-IDF framework.
 
-So the aim is to create a library to support these boards without any effort.
+## Where and why buying these boards
 
-These can be bought in the [Sunton Store](https://www.aliexpress.com/store/1100192306) on AliExpress.
+These boards are available on AliExpress for decent prices and offer a lot.
+They can be bought in the [Sunton Store](https://www.aliexpress.com/store/1100192306) on AliExpress but saw them also from other sellers.
 
 - [ESP32-2432S028R - 2.8" 240x320 TFT Resistive touch](https://www.aliexpress.com/item/1005004502250619.html)
 - [ESP32-3248S035R/C 3.5" 320x480 TFT Resistive/Capacitive touch](https://www.aliexpress.com/item/1005004632953455.html)
 
+![ESP32-3248S035R front](lib/esp32_smartdisplay/assets/images/esp32-3248S035-front.png)
+![ESP32-3248S035R back](lib/esp32_smartdisplay/assets/images/esp32-3248S035-back.png)
 These boards offer:
 
 - ESP32-WROOM
@@ -26,6 +32,8 @@ These boards offer:
 - RGB led (3.5" front, 2.8" back)
 - Extension connectors
 - USB Serial interface
+- Expansion connectors
+- Power connector
 - 4 Holes so can easily be attached
 
 ## How to use

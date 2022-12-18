@@ -4,21 +4,6 @@
 #include <esp32_smartdisplay.h>
 
 #include ".secrets.h"
-#include "radio_stations.h"
-
-#include <AudioOutputI2S.h>
-#include <AudioFileSource.h>
-#include <AudioGeneratorMP3.h>
-#include <AudioOutputI2SNoDAC.h>
-#include <AudioFileSourceBuffer.h>
-#include <AudioFileSourceICYStream.h>
-
-int volume = 4;
-const int bufferSize = 16 * 1024;
-AudioOutputI2S *out;
-AudioGeneratorMP3 *mp3;
-AudioFileSourceBuffer *buff;
-AudioFileSourceICYStream *file;
 
 bool time_valid()
 {
@@ -45,65 +30,6 @@ static lv_obj_t *label_date;
 static lv_obj_t *label_status;
 static lv_obj_t *label_ipaddress;
 
-void callback_metadata(void *cbData, const char *type, bool /*isUnicode*/, const char *string)
-{
-  const char *ptr = reinterpret_cast<const char *>(cbData);
-  char s1[32], s2[64];
-  strncpy_P(s1, type, sizeof(s1));
-  s1[sizeof(s1) - 1] = 0;
-  strncpy_P(s2, string, sizeof(s2));
-  s2[sizeof(s2) - 1] = 0;
-  log_i("METADATA(%s) '%s' = '%s'\n", ptr, s1, s2);
-}
-
-void callback_status(void *cbData, int code, const char *string)
-{
-  const char *ptr = reinterpret_cast<const char *>(cbData);
-  char s1[64];
-  strncpy_P(s1, string, sizeof(s1));
-  s1[sizeof(s1) - 1] = 0;
-  lv_label_set_text(label_status, s1);
-  log_i("STATUS(%s) '%d' = '%s'\n", ptr, code, s1);
-}
-
-void StartPlaying(const char *url)
-{
-  file = new AudioFileSourceICYStream(url);
-  //  file->RegisterMetadataCB(callback_metadata, (void *)"ICY");
-  buff = new AudioFileSourceBuffer(file, bufferSize);
-  //  buff->RegisterStatusCB(callback_status, (void *)"buffer");
-  out = new AudioOutputI2S(0,1);
-  out->SetOutputModeMono(true);
-  out->SetGain(volume * 0.05); // <4.0
-  mp3 = new AudioGeneratorMP3();
-  //  mp3->RegisterStatusCB(callback_status, (void *)"mp3");
-  mp3->begin(buff, out);
-}
-
-void StopPlaying()
-{
-  if (mp3 != nullptr)
-  {
-    mp3->stop();
-    delete mp3;
-    mp3 = nullptr;
-  }
-
-  if (buff != nullptr)
-  {
-    buff->close();
-    delete buff;
-    buff = nullptr;
-  }
-
-  if (file != nullptr)
-  {
-    file->close();
-    delete file;
-    file = nullptr;
-  }
-}
-
 void display_update()
 {
   lv_label_set_text(label_date, get_localtime("%c").c_str());
@@ -121,9 +47,6 @@ void btn_event_cb(lv_event_t *e)
     cnt++;
 
     smartdisplay_beep(1000, 50);
-
-    const char *url = "https://icecast.omroep.nl/radio1-bb-mp3";
-    StartPlaying(url);
 
     auto label = lv_obj_get_child(btn, 0);
     lv_label_set_text_fmt(label, "Button: %d", cnt);
@@ -195,17 +118,4 @@ void loop()
   display_update();
 
   yield();
-
-  if (mp3 != nullptr)
-  {
-    if (mp3->isRunning())
-    {
-      if (!mp3->loop())
-        mp3->stop();
-    }
-    else
-    {
-      Serial.printf("MP3 done\n");
-    }
-  }
 }

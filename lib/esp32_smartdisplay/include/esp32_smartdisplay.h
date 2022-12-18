@@ -94,7 +94,7 @@ extern SPIClass spi_st7796;
 extern TwoWire i2c_gt911;
 #endif
 
-// Build in LED
+// Build in RGB LED
 #define LED_PIN_R 4
 #define LED_PIN_G 16
 #define LED_PIN_B 17
