@@ -1,5 +1,7 @@
 # ESP32-SmartDisplay
 
+[![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
+
 ## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards ESP32-2432S028R, ESP32-3248S035R and ESP32-3248S035C.
 
 This library supports these boards without any effort.
