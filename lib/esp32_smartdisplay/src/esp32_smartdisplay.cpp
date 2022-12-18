@@ -36,18 +36,18 @@ void smartdisplay_init()
     // Use channel 0=R, 1=G, 2=B, 5kHz,  8 bit resolution
     pinMode(LED_PIN_R, OUTPUT);
     digitalWrite(LED_PIN_R, true);
-    ledcSetup(0, 5000, 8);
-    ledcAttachPin(LED_PIN_R, 0);
+    ledcSetup(LED_PWM_CHANNEL_R, LED_PWM_FREQ, LED_PWM_BITS);
+    ledcAttachPin(LED_PIN_R, LED_PWM_CHANNEL_R);
 
     pinMode(LED_PIN_G, OUTPUT);
     digitalWrite(LED_PIN_G, true);
-    ledcSetup(1, 5000, 8);
-    ledcAttachPin(LED_PIN_G, 1);
+    ledcSetup(LED_PWM_CHANNEL_G, LED_PWM_FREQ, LED_PWM_BITS);
+    ledcAttachPin(LED_PIN_G, LED_PWM_CHANNEL_G);
 
     pinMode(LED_PIN_B, OUTPUT);
     digitalWrite(LED_PIN_B, true);
-    ledcSetup(2, 5000, 8);
-    ledcAttachPin(LED_PIN_B, 2);
+    ledcSetup(LED_PWM_CHANNEL_B, LED_PWM_FREQ, LED_PWM_BITS);
+    ledcAttachPin(LED_PIN_B, LED_PWM_CHANNEL_B);
 
     // Setup CDS Light sensor
     analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
@@ -110,23 +110,20 @@ void smartdisplay_init()
     lv_indev_drv_register(&indev_drv);
 }
 
-void smartdisplay_setLedColor(uint8_t r, uint8_t g, uint8_t b)
+void smartdisplay_set_led_color(uint16_t r, uint16_t g, uint16_t b)
 {
-    ledcWrite(0, 0xFF - r);
-    ledcWrite(1, 0xFF - g);
-    ledcWrite(2, 0xFF - b);
+    ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - r);
+    ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - g);
+    ledcWrite(LED_PWM_CHANNEL_B, LED_PWM_MAX - b);
 }
 
-int smartdisplay_getLightIntensity()
+int smartdisplay_get_light_intensity()
 {
     return analogRead(CDS_PIN);
 }
 
 void smartdisplay_beep(unsigned int frequency, unsigned long duration)
 {
-    // Only set low impedance when used. Creates a hissing sound
-    pinMode(AUDIO_PIN, OUTPUT);
+    // Uses PWM Channel 0
     tone(AUDIO_PIN, frequency, duration);
-    digitalWrite(AUDIO_PIN, LOW);
-    pinMode(AUDIO_PIN, INPUT);
 }

@@ -137,9 +137,14 @@ void lvgl_tft_init()
     pinMode(ILI9341_PIN_DC, OUTPUT); // Data or Command
     pinMode(ILI9341_PIN_CS, OUTPUT); // Chip Select
     digitalWrite(ILI9341_PIN_CS, HIGH);
+
     pinMode(ILI9341_PIN_BL, OUTPUT); // Backlight
+    ledcSetup(ILI9341_PWM_CHANNEL_BL, ILI9341_PWM_FREQ_BL, ILI9341_PWM_BITS_BL);
+    ledcAttachPin(ILI9341_PIN_BL, ILI9341_PWM_CHANNEL_BL);
+    
     ili9341_send_init_commands();
-    digitalWrite(ILI9341_PIN_BL, HIGH); // Backlight on
+    
+    smartdisplay_tft_set_backlight(ILI9341_PWM_MAX_BL); // Backlight on
 }
 
 void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
@@ -164,9 +169,9 @@ void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color
     lv_disp_flush_ready(drv);
 }
 
-void smartdisplay_tft_set_backlight(uint8_t value)
+void smartdisplay_tft_set_backlight(uint16_t duty)
 {
-    analogWrite(ILI9341_PIN_BL, value);
+    ledcWrite(ILI9341_PWM_CHANNEL_BL, duty);
 }
 
 void smartdisplay_tft_sleep()

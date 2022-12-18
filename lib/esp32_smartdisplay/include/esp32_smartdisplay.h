@@ -9,10 +9,10 @@
 #endif
 
 extern void smartdisplay_init();
-extern void smartdisplay_setLedColor(uint8_t r, uint8_t g, uint8_t b);
-extern int smartdisplay_getLightIntensity();
+extern void smartdisplay_set_led_color(uint16_t r, uint16_t g, uint16_t b);
+extern int smartdisplay_get_light_intensity();
 extern void smartdisplay_beep(unsigned int frequency, unsigned long duration);
-extern void smartdisplay_tft_set_backlight(uint8_t value); // 0-255
+extern void smartdisplay_tft_set_backlight(uint16_t duty); // 0-1023 (12 bits)
 extern void smartdisplay_tft_sleep();
 extern void smartdisplay_tft_wake();
 
@@ -28,6 +28,10 @@ extern void smartdisplay_tft_wake();
 #define ILI9341_PIN_DC 2
 #define ILI9341_SPI_FREQ 80000000
 #define ILI9341_PIN_BL 21
+#define ILI9341_PWM_CHANNEL_BL 12
+#define ILI9341_PWM_FREQ_BL 5000
+#define ILI9341_PWM_BITS_BL 8
+#define ILI9341_PWM_MAX_BL ((1 << ILI9341_PWM_BITS_BL) - 1)
 #define XPT2046
 #define XPT2046_SPI_SCLK 25
 #define XPT2046_SPI_MOSI 32
@@ -57,6 +61,10 @@ extern SPIClass spi_xpt2046;
 #define ST7796_PIN_DC 2
 #define ST7796_SPI_FREQ 80000000
 #define ST7796_PIN_BL 27
+#define ST7796_PWM_CHANNEL_BL 12
+#define ST7796_PWM_FREQ_BL 5000
+#define ST7796_PWM_BITS_BL 8
+#define ST7796_PWM_MAX_BL ((1 << ST7796_PWM_BITS_BL) - 1)
 #define XPT2046
 #define XPT2046_SPI_SCLK 14
 #define XPT2046_SPI_MOSI 13
@@ -85,6 +93,10 @@ extern SPIClass spi_st7796;
 #define ST7796_PIN_DC 2
 #define ST7796_SPI_FREQ 80000000
 #define ST7796_PIN_BL 27
+#define ST7796_PWM_CHANNEL_BL 12
+#define ST7796_PWM_FREQ_BL 5000
+#define ST7796_PWM_BITS_BL 8
+#define ST7796_PWM_MAX_BL ((1 << ST7796_PWM_BITS_BL) - 1)
 #define GT911
 #define GT911_IIC_SDA 33
 #define GT911_IIC_SCL 32
@@ -98,6 +110,13 @@ extern TwoWire i2c_gt911;
 #define LED_PIN_R 4
 #define LED_PIN_G 16
 #define LED_PIN_B 17
+// PWM channels for RGB
+#define LED_PWM_FREQ 5000
+#define LED_PWM_CHANNEL_R 13
+#define LED_PWM_CHANNEL_G 14
+#define LED_PWM_CHANNEL_B 15
+#define LED_PWM_BITS 8
+#define LED_PWM_MAX ((1 << LED_PWM_BITS) - 1)
 
 // Photo resistor
 #define CDS_PIN 34 // ANALOG_PIN_0

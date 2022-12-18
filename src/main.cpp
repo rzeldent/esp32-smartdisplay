@@ -3,8 +3,6 @@
 
 #include <esp32_smartdisplay.h>
 
-#include ".secrets.h"
-
 bool time_valid()
 {
   // Value of time_t for 2000-01-01 00:00:00, used to detect invalid SNTP responses.
@@ -27,14 +25,13 @@ String get_localtime(const char *format)
 // LVGL Objects
 static lv_obj_t *label_cds;
 static lv_obj_t *label_date;
-static lv_obj_t *label_status;
 static lv_obj_t *label_ipaddress;
 
 void display_update()
 {
   lv_label_set_text(label_date, get_localtime("%c").c_str());
   lv_label_set_text(label_ipaddress, WiFi.localIP().toString().c_str());
-  lv_label_set_text(label_cds, String(smartdisplay_getLightIntensity()).c_str());
+  lv_label_set_text(label_cds, String(smartdisplay_get_light_intensity()).c_str());
 }
 
 void btn_event_cb(lv_event_t *e)
@@ -78,10 +75,6 @@ void mainscreen()
   label_cds = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_font(label_cds, &lv_font_montserrat_22, LV_STATE_DEFAULT);
   lv_obj_align(label_cds, LV_ALIGN_TOP_RIGHT, 0, 0);
-
-  label_status = lv_label_create(lv_scr_act());
-  lv_obj_set_style_text_font(label_status, &lv_font_montserrat_22, LV_STATE_DEFAULT);
-  lv_obj_align(label_status, LV_ALIGN_TOP_MID, 0, 40);
 }
 
 void setup()
@@ -94,7 +87,7 @@ void setup()
 
   smartdisplay_init();
 
-  WiFi.begin(WIFI_SSDID, WIFI_PASSWORD);
+  WiFi.begin();
   ArduinoOTA.begin();
   // Set the time servers
   configTime(0, 0, "nl.pool.ntp.org");
@@ -108,14 +101,11 @@ void loop()
 {
   // Red if no wifi, otherwise green
   bool connected = WiFi.isConnected();
-  smartdisplay_setLedColor(connected ? 0 : 25, connected ? 25 : 0, 0);
+  smartdisplay_set_led_color(connected ? 0 : LED_PWM_MAX, connected ? LED_PWM_MAX : 0, 0);
 
   // put your main code here, to run repeatedly:
   ArduinoOTA.handle();
 
-  lv_timer_handler();
-
   display_update();
-
-  yield();
+  lv_timer_handler();
 }

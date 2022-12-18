@@ -24,17 +24,18 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 ![ESP32-3248S035R back](lib/esp32_smartdisplay/assets/images/esp32-3248S035-back.png)
 These boards offer:
 
-- ESP32-WROOM
-- 4MB Additional Flash
-- Display with touch (IL9341/ST7796 and XPT2046/GT911)
-- Light sensor (CDS)
-- Audio amplifier
-- RGB led (3.5" front, 2.8" back)
-- Extension connectors
-- USB Serial interface
-- Expansion connectors
-- Power connector
-- 4 Holes so can easily be attached
+- ESP32-WROOM,
+- 4MB Additional Flash,
+- Display with touch (IL9341/ST7796 and XPT2046/GT911),
+- Light sensor (CDS),
+- Audio amplifier,
+- RGB led (3.5" front, 2.8" back),
+- Extension connectors,
+- USB Serial interface,
+- Expansion connectors,
+- Power connector,
+- 4 Holes so can easily be attached,
+- ...
 
 ## How to use
 

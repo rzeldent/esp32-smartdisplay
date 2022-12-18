@@ -2,20 +2,20 @@
 
 #ifdef ST7796
 
-#define CMD_SWRESET 0x01   // Software Reset
-#define CMD_SLPIN 0x10     // Sleep in
-#define CMD_SLPOUT 0x11    // Sleep out
-#define CMD_NORON 0x13     // Normal Display Mode On
-#define CMD_INVOFF 0x20    // Display Inversion Off
-#define CMD_DISPON 0x29    // Display On
-#define CMD_CASET 0x2A     // Column Address Set
-#define CMD_RASET 0x2B     // Row Address Set
-#define CMD_RAMWR 0x2C     // Memory Write
-#define CMD_MADCTL 0x36    // Memory Data Access Control
-#define CMD_COLMOD 0x3A    // Interface Pixel Format
-#define CMD_PGC 0E0        // Positive Gamma Control
-#define CMD_NGC 0xE1       // Negative Gamma Control
-#define CMD_CSCON 0xF0     // Command Set Control
+#define CMD_SWRESET 0x01 // Software Reset
+#define CMD_SLPIN 0x10   // Sleep in
+#define CMD_SLPOUT 0x11  // Sleep out
+#define CMD_NORON 0x13   // Normal Display Mode On
+#define CMD_INVOFF 0x20  // Display Inversion Off
+#define CMD_DISPON 0x29  // Display On
+#define CMD_CASET 0x2A   // Column Address Set
+#define CMD_RASET 0x2B   // Row Address Set
+#define CMD_RAMWR 0x2C   // Memory Write
+#define CMD_MADCTL 0x36  // Memory Data Access Control
+#define CMD_COLMOD 0x3A  // Interface Pixel Format
+#define CMD_PGC 0E0      // Positive Gamma Control
+#define CMD_NGC 0xE1     // Negative Gamma Control
+#define CMD_CSCON 0xF0   // Command Set Control
 
 #define MADCTL_MY 0x80  // Row Address Order - 0=Increment (Top to Bottom), 1=Decrement (Bottom to Top)
 #define MADCTL_MX 0x40  // Column Address Order - 0=Increment (Left to Right), 1=Decrement (Right to Left)
@@ -69,7 +69,7 @@ void st7796_send_init_commands()
     static const uint8_t cscon2[] = {0x96}; // Enable extension command 2 part II
     st7796_send_command(CMD_CSCON, cscon2, sizeof(cscon2));
 
-    static const uint8_t colmod[] = {COLMOD_RGB656};                  // 16 bits R5G6B5
+    static const uint8_t colmod[] = {COLMOD_RGB656};         // 16 bits R5G6B5
     st7796_send_command(CMD_COLMOD, colmod, sizeof(colmod)); // Set color mode
 
 #ifdef TFT_ORIENTATION_PORTRAIT
@@ -113,9 +113,14 @@ void lvgl_tft_init()
     pinMode(ST7796_PIN_DC, OUTPUT); // Data or Command
     pinMode(ST7796_PIN_CS, OUTPUT); // Chip Select
     digitalWrite(ST7796_PIN_CS, HIGH);
+
     pinMode(ST7796_PIN_BL, OUTPUT); // Backlight
+    ledcSetup(ST7796_PWM_CHANNEL_BL, ST7796_PWM_FREQ_BL, ST7796_PWM_BITS_BL);
+    ledcAttachPin(ST7796_PIN_BL, ST7796_PWM_CHANNEL_BL);
+
     st7796_send_init_commands();
-    digitalWrite(ST7796_PIN_BL, HIGH); // Backlight on
+
+    smartdisplay_tft_set_backlight(ST7796_PWM_MAX_BL); // Backlight on
 }
 
 void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
@@ -140,9 +145,9 @@ void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color
     lv_disp_flush_ready(drv);
 }
 
-void smartdisplay_tft_set_backlight(uint8_t value)
+void smartdisplay_tft_set_backlight(uint16_t duty)
 {
-    analogWrite(ST7796_PIN_BL, value);
+    ledcWrite(ST7796_PWM_CHANNEL_BL, duty);
 }
 
 void smartdisplay_tft_sleep()
