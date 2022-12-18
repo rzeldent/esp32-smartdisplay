@@ -4,6 +4,21 @@
 #include <esp32_smartdisplay.h>
 
 #include ".secrets.h"
+#include "radio_stations.h"
+
+#include <AudioOutputI2S.h>
+#include <AudioFileSource.h>
+#include <AudioGeneratorMP3.h>
+#include <AudioOutputI2SNoDAC.h>
+#include <AudioFileSourceBuffer.h>
+#include <AudioFileSourceICYStream.h>
+
+int volume = 4;
+const int bufferSize = 16 * 1024;
+AudioOutputI2S *out;
+AudioGeneratorMP3 *mp3;
+AudioFileSourceBuffer *buff;
+AudioFileSourceICYStream *file;
 
 bool time_valid()
 {
@@ -24,62 +39,126 @@ String get_localtime(const char *format)
   return time_buffer;
 }
 
+// LVGL Objects
+static lv_obj_t *label_cds;
+static lv_obj_t *label_date;
+static lv_obj_t *label_status;
+static lv_obj_t *label_ipaddress;
+
+void callback_metadata(void *cbData, const char *type, bool /*isUnicode*/, const char *string)
+{
+  const char *ptr = reinterpret_cast<const char *>(cbData);
+  char s1[32], s2[64];
+  strncpy_P(s1, type, sizeof(s1));
+  s1[sizeof(s1) - 1] = 0;
+  strncpy_P(s2, string, sizeof(s2));
+  s2[sizeof(s2) - 1] = 0;
+  log_i("METADATA(%s) '%s' = '%s'\n", ptr, s1, s2);
+}
+
+void callback_status(void *cbData, int code, const char *string)
+{
+  const char *ptr = reinterpret_cast<const char *>(cbData);
+  char s1[64];
+  strncpy_P(s1, string, sizeof(s1));
+  s1[sizeof(s1) - 1] = 0;
+  lv_label_set_text(label_status, s1);
+  log_i("STATUS(%s) '%d' = '%s'\n", ptr, code, s1);
+}
+
+void StartPlaying(const char *url)
+{
+  file = new AudioFileSourceICYStream(url);
+  //  file->RegisterMetadataCB(callback_metadata, (void *)"ICY");
+  buff = new AudioFileSourceBuffer(file, bufferSize);
+  //  buff->RegisterStatusCB(callback_status, (void *)"buffer");
+  out = new AudioOutputI2S(0,1);
+  out->SetOutputModeMono(true);
+  out->SetGain(volume * 0.05); // <4.0
+  mp3 = new AudioGeneratorMP3();
+  //  mp3->RegisterStatusCB(callback_status, (void *)"mp3");
+  mp3->begin(buff, out);
+}
+
+void StopPlaying()
+{
+  if (mp3 != nullptr)
+  {
+    mp3->stop();
+    delete mp3;
+    mp3 = nullptr;
+  }
+
+  if (buff != nullptr)
+  {
+    buff->close();
+    delete buff;
+    buff = nullptr;
+  }
+
+  if (file != nullptr)
+  {
+    file->close();
+    delete file;
+    file = nullptr;
+  }
+}
+
 void display_update()
 {
-  static lv_obj_t *label_date;
-  if (label_date == nullptr)
-  {
-    label_date = lv_label_create(lv_scr_act());
-    lv_obj_set_style_text_font(label_date, &lv_font_montserrat_22, LV_STATE_DEFAULT);
-    lv_obj_align(label_date, LV_ALIGN_BOTTOM_MID, 0, -50);
-  }
   lv_label_set_text(label_date, get_localtime("%c").c_str());
-
-  static lv_obj_t *label_ipaddress;
-  if (label_ipaddress == nullptr)
-  {
-    label_ipaddress = lv_label_create(lv_scr_act());
-    lv_obj_set_style_text_font(label_ipaddress, &lv_font_montserrat_22, LV_STATE_DEFAULT);
-    lv_obj_align(label_ipaddress, LV_ALIGN_BOTTOM_MID, 0, -80);
-  }
   lv_label_set_text(label_ipaddress, WiFi.localIP().toString().c_str());
-
-  static lv_obj_t *label_cds;
-  if (label_cds == nullptr)
-  {
-    label_cds = lv_label_create(lv_scr_act());
-    lv_obj_set_style_text_font(label_cds, &lv_font_montserrat_22, LV_STATE_DEFAULT);
-    lv_obj_align(label_cds, LV_ALIGN_TOP_RIGHT, 0, 0);
-  }
-  lv_label_set_text(label_cds, String(getLightIntensity()).c_str());
+  lv_label_set_text(label_cds, String(smartdisplay_getLightIntensity()).c_str());
 }
 
 void btn_event_cb(lv_event_t *e)
 {
-  lv_event_code_t code = lv_event_get_code(e);
-  lv_obj_t *btn = lv_event_get_target(e);
+  auto code = lv_event_get_code(e);
+  auto btn = lv_event_get_target(e);
   if (code == LV_EVENT_CLICKED)
   {
     static uint8_t cnt = 0;
     cnt++;
 
-    beep(1000, 50);
+    smartdisplay_beep(1000, 50);
 
-    lv_obj_t *label = lv_obj_get_child(btn, 0);
+    const char *url = "https://icecast.omroep.nl/radio1-bb-mp3";
+    StartPlaying(url);
+
+    auto label = lv_obj_get_child(btn, 0);
     lv_label_set_text_fmt(label, "Button: %d", cnt);
   }
 }
 
 void mainscreen()
 {
-  lv_obj_t *btn = lv_btn_create(lv_scr_act());
+  // Clear screen
+  lv_obj_clean(lv_scr_act());
+
+  auto btn = lv_btn_create(lv_scr_act());
   lv_obj_set_pos(btn, 10, 10);
   lv_obj_set_size(btn, 120, 50);
   lv_obj_add_event_cb(btn, btn_event_cb, LV_EVENT_ALL, NULL);
 
-  lv_obj_t *label = lv_label_create(btn);
+  auto label = lv_label_create(btn);
   lv_label_set_text(label, "Button");
   lv_obj_center(label);
+
+  label_date = lv_label_create(lv_scr_act());
+  lv_obj_set_style_text_font(label_date, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+  lv_obj_align(label_date, LV_ALIGN_BOTTOM_MID, 0, -50);
+
+  label_ipaddress = lv_label_create(lv_scr_act());
+  lv_obj_set_style_text_font(label_ipaddress, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+  lv_obj_align(label_ipaddress, LV_ALIGN_BOTTOM_MID, 0, -80);
+
+  label_cds = lv_label_create(lv_scr_act());
+  lv_obj_set_style_text_font(label_cds, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+  lv_obj_align(label_cds, LV_ALIGN_TOP_RIGHT, 0, 0);
+
+  label_status = lv_label_create(lv_scr_act());
+  lv_obj_set_style_text_font(label_status, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+  lv_obj_align(label_status, LV_ALIGN_TOP_MID, 0, 40);
 }
 
 void setup()
@@ -90,7 +169,7 @@ void setup()
   log_i("CPU Freq = %d Mhz", getCpuFrequencyMhz());
   log_i("Free heap: %d bytes", ESP.getFreeHeap());
 
-  lvgl_init();
+  smartdisplay_init();
 
   WiFi.begin(WIFI_SSDID, WIFI_PASSWORD);
   ArduinoOTA.begin();
@@ -99,8 +178,6 @@ void setup()
   setenv("TZ", "Europe/Amsterdam", 1);
   tzset();
 
-  // Clear screen
-  // lv_obj_clean(lv_scr_act());
   mainscreen();
 }
 
@@ -108,7 +185,7 @@ void loop()
 {
   // Red if no wifi, otherwise green
   bool connected = WiFi.isConnected();
-  setLedColor(connected ? 50 : 0, connected ? 0 : 50, 0);
+  smartdisplay_setLedColor(connected ? 0 : 25, connected ? 25 : 0, 0);
 
   // put your main code here, to run repeatedly:
   ArduinoOTA.handle();
@@ -118,4 +195,17 @@ void loop()
   display_update();
 
   yield();
+
+  if (mp3 != nullptr)
+  {
+    if (mp3->isRunning())
+    {
+      if (!mp3->loop())
+        mp3->stop();
+    }
+    else
+    {
+      Serial.printf("MP3 done\n");
+    }
+  }
 }

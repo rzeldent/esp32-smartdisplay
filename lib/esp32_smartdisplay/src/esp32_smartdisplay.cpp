@@ -14,11 +14,11 @@ SPIClass spi_ili9431;
 SPIClass spi_xpt2046;
 #endif
 
-#ifdef ESP32_3248S028R
+#ifdef ESP32_3248S035R
 SPIClass spi_st7796;
 #endif
 
-#ifdef ESP32_3248S028C
+#ifdef ESP32_3248S035C
 SPIClass spi_st7796;
 TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
 #endif
@@ -30,24 +30,24 @@ void lvgl_log(const char *buf)
 }
 #endif
 
-void lvgl_init()
+void smartdisplay_init()
 {
     // Setup RGB LED.  High is off
     // Use channel 0=R, 1=G, 2=B, 5kHz,  8 bit resolution
     pinMode(LED_PIN_R, OUTPUT);
+    digitalWrite(LED_PIN_R, true);
     ledcSetup(0, 5000, 8);
     ledcAttachPin(LED_PIN_R, 0);
-    digitalWrite(LED_PIN_R, true);
 
     pinMode(LED_PIN_G, OUTPUT);
-    ledcSetup(1, 5000, 8);
-    ledcAttachPin(LED_PIN_R, 1);
     digitalWrite(LED_PIN_G, true);
+    ledcSetup(1, 5000, 8);
+    ledcAttachPin(LED_PIN_G, 1);
 
     pinMode(LED_PIN_B, OUTPUT);
-    ledcSetup(2, 5000, 8);
-    ledcAttachPin(LED_PIN_R, 2);
     digitalWrite(LED_PIN_B, true);
+    ledcSetup(2, 5000, 8);
+    ledcAttachPin(LED_PIN_B, 2);
 
     // Setup CDS Light sensor
     analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
@@ -67,12 +67,12 @@ void lvgl_init()
     spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
 #endif
 
-#ifdef ESP32_3248S028R
+#ifdef ESP32_3248S035R
     spi_st7796.begin(ST7796_SPI_SCLK, ST7796_SPI_MISO, ST7796_SPI_MOSI);
     // xpy2046 uses same SPI bus
 #endif
 
-#ifdef ESP32_3248S028C
+#ifdef ESP32_3248S035C
     spi_st7796.begin(ST7796_SPI_SCLK, ST7796_SPI_MISO, ST7796_SPI_MOSI);
     i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
 #endif
@@ -110,19 +110,19 @@ void lvgl_init()
     lv_indev_drv_register(&indev_drv);
 }
 
-void setLedColor(uint8_t r, uint8_t g, uint8_t b)
+void smartdisplay_setLedColor(uint8_t r, uint8_t g, uint8_t b)
 {
-    ledcWrite(0, r - 0xFF);
-    ledcWrite(1, g - 0xFF);
-    ledcWrite(2, b - 0xFF);
+    ledcWrite(0, 0xFF - r);
+    ledcWrite(1, 0xFF - g);
+    ledcWrite(2, 0xFF - b);
 }
 
-int getLightIntensity()
+int smartdisplay_getLightIntensity()
 {
     return analogRead(CDS_PIN);
 }
 
-void beep(unsigned int frequency, unsigned long duration)
+void smartdisplay_beep(unsigned int frequency, unsigned long duration)
 {
     // Only set low impedance when used. Creates a hissing sound
     pinMode(AUDIO_PIN, OUTPUT);

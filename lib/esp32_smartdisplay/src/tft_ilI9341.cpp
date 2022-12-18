@@ -92,8 +92,6 @@ void ili9341_send_init_commands()
     ili9341_send_command(CMD_VCOMVTRL1, vcomctr1, sizeof(vcomctr1));         // VCOM Control 1
     static const uint8_t vcomctr2[] = {0xBE};                                //
     ili9341_send_command(CMD_VCOMVTRL2, vcomctr2, sizeof(vcomctr2));         // VCOM Control 2
-// static const uint8_t madctl[] = {0x28};
-// ili9341_send_command(CMD_MADCTL, madctl, sizeof(madctl));
 #ifdef TFT_ORIENTATION_PORTRAIT
     static const uint8_t madctl[] = {MADCTL_MY | MADCTL_RGB}; // Portrait 0 Degrees
 #else
@@ -166,18 +164,18 @@ void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color
     lv_disp_flush_ready(drv);
 }
 
-void lvgl_tft_set_backlight(uint8_t value)
+void smartdisplay_tft_set_backlight(uint8_t value)
 {
     analogWrite(ILI9341_PIN_BL, value);
 }
 
-void lvgl_tft_sleep()
+void smartdisplay_tft_sleep()
 {
     static const uint8_t slpin[] = {0x08};
     ili9341_send_command(CMD_SLPIN, slpin, sizeof(slpin));
 }
 
-void lvgl_tft_wake()
+void smartdisplay_tft_wake()
 {
     static const uint8_t splout[] = {0x08};
     ili9341_send_command(CMD_SLPOUT, splout, sizeof(splout));
