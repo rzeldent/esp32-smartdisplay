@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         pio-env: ["esp12e", "esp32dev"]
-        smartboard: [ESP32_2432S028R, "ESP32_3248S035R", "ESP32_3248S035C"]
+        smartboard: ["ESP32_2432S028R", "ESP32_3248S035R", "ESP32_3248S035C"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up python
@@ -20,4 +20,4 @@ jobs:
       - name: Build firmware
         run: pio ci --lib="." --board ${{matrix.pio-env}} "examples/src/main.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -D LV_LVGL_H_INCLUDE_SIMPLE -I examples/include -D TFT_ORIENTATION_LANDSCAPE -D ${{matrix.smartboard}}
+          PLATFORMIO_BUILD_FLAGS: -D LV_LVGL_H_INCLUDE_SIMPLE -I "examples/include" -D TFT_ORIENTATION_LANDSCAPE -D ${{matrix.smartboard}}
