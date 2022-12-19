@@ -4,6 +4,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pio-env: ["esp12e", "esp32dev"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up python
@@ -14,9 +17,4 @@ jobs:
       - name: Install PlatformIO
         run: python -m pip install platformio
       - name: Build firmware
-        run: platformio run
-      - name: Archive
-        uses: actions/upload-artifact@v2
-        with:
-          name: firmware.bin
-          path: .pio/build/*/firmware.bin
+        run: pio ci --lib="." --board ${{matrix.pio-env}} "examples/basic.ino"

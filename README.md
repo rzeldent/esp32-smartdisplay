@@ -22,8 +22,8 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 - [ESP32-2432S028R - 2.8" 240x320 TFT Resistive touch](https://www.aliexpress.com/item/1005004502250619.html)
 - [ESP32-3248S035R/C 3.5" 320x480 TFT Resistive/Capacitive touch](https://www.aliexpress.com/item/1005004632953455.html)
 
-![ESP32-3248S035R front](lib/esp32_smartdisplay/assets/images/esp32-3248S035-front.png)
-![ESP32-3248S035R back](lib/esp32_smartdisplay/assets/images/esp32-3248S035-back.png)
+![ESP32-3248S035R front](assets/images/esp32-3248S035-front.png)
+![ESP32-3248S035R back](assets/images/esp32-3248S035-back.png)
 These boards offer:
 
 - ESP32-WROOM,
@@ -41,7 +41,7 @@ These boards offer:
 
 ## How to use
 
-Basically there are **two** defines that need to be present:
+Basically there are only **TWO** defines that need to be defined:
 
 - Type of board
     - ESP32_2432S028R

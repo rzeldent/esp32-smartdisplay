@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "spi.h": "c",
-        "*.tcc": "cpp"
-    }
-}
