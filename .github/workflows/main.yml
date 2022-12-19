@@ -17,4 +17,6 @@ jobs:
       - name: Install PlatformIO
         run: python -m pip install platformio
       - name: Build firmware
-        run: pio ci --lib="." --board ${{matrix.pio-env}} -O "build_flags=-D LV_LVGL_H_INCLUDE_SIMPLE" -O "build_flags=-I ./include" -O "build_flags=--D TFT_ORIENTATION_LANDSCAPE" -O "build_flags=-D -D ESP32_3248S035R" "./examples/src/main.cpp"
+        run: pio ci --lib="." --board ${{matrix.pio-env}} "./examples/src/main.cpp"
+        env:
+          PLATFORMIO_BUILD_FLAGS: D LV_LVGL_H_INCLUDE_SIMPLE -I ./include -D TFT_ORIENTATION_LANDSCAPE -D ESP32_3248S035R
