@@ -17,4 +17,4 @@ jobs:
       - name: Install PlatformIO
         run: python -m pip install platformio
       - name: Build firmware
-        run: pio ci --lib="." --board ${{matrix.pio-env}} "examples/src/main.cpp"
+        run: pio ci --lib="." --board ${{matrix.pio-env}} -c "./examples/"
