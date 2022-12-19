@@ -61,9 +61,9 @@ build_flags =
     ...
     # LVGL settings
     -D LV_LVGL_H_INCLUDE_SIMPLE
-    # For lv_conf.h   
+    # For lv_conf.h
     -I ./include
-    # Smartdisplay settings 
+    # Smartdisplay settings
     -D TFT_ORIENTATION_PORTRAIT
     #-D TFT_ORIENTATION_LANDSCAPE
     #-D TFT_ORIENTATION_PORTRAIT_INV

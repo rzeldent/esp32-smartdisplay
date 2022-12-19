@@ -140,9 +140,9 @@ void lvgl_tft_init()
     pinMode(ILI9341_PIN_BL, OUTPUT); // Backlight
     ledcSetup(ILI9341_PWM_CHANNEL_BL, ILI9341_PWM_FREQ_BL, ILI9341_PWM_BITS_BL);
     ledcAttachPin(ILI9341_PIN_BL, ILI9341_PWM_CHANNEL_BL);
-    
+
     ili9341_send_init_commands();
-    
+
     smartdisplay_tft_set_backlight(ILI9341_PWM_MAX_BL); // Backlight on
 }
 
