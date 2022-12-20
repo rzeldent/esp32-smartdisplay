@@ -20,4 +20,4 @@ jobs:
       - name: Build firmware
         run: pio ci --lib="." --board ${{matrix.pio-env}} "examples/src/main.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -Ofast -D LV_CONF_PATH="include/lv_conf.h" -D TFT_ORIENTATION_LANDSCAPE -D ${{matrix.smartboard}}
+          PLATFORMIO_BUILD_FLAGS: -Ofast -D LV_CONF_PATH="./include/lv_conf.h" -D TFT_ORIENTATION_LANDSCAPE -D ${{matrix.smartboard}}
