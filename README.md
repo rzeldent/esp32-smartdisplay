@@ -81,7 +81,7 @@ These can be defined in the ```platformio.ini``` file defining the settings:
 build_flags =
     ...
     # LVGL settings
-    -D LV_CONF_PATH=${platformio.src_dir}/lv_conf.h
+    -D LV_CONF_PATH=${platformio.include_dir}/lv_conf.h
     # Smartdisplay settings
     -D TFT_ORIENTATION_PORTRAIT
     #-D TFT_ORIENTATION_LANDSCAPE
@@ -95,5 +95,5 @@ lib_deps =
     rzeldent/esp32_smartdisplay@^1.0.2
 ```
 
-The path for the lv_conf.h above is ```${platformio.src_dir}``` instead of ```${platformio.include_dir}``` because for the example both
-files are in the same (src) directory.
+The path for the lv_conf.h above is ```${platformio.include_dir}```.
+This needs to be specified because the LVGL library included this header file.
