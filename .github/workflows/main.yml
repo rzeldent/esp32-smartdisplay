@@ -19,4 +19,4 @@ jobs:
       - name: Build firmware
         run: pio ci --lib="." --board esp32dev "examples/lvgl_pushbutton/main.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -Ofast -D LV_CONF_PATH=${platformio.src_dir}/lv_conf.h -D TFT_ORIENTATION_LANDSCAPE -D ${{matrix.smartboard}}
+          PLATFORMIO_BUILD_FLAGS: -Ofast -D LV_CONF_PATH="${{github.workspace}}/examples/lvgl_pushbutton/lv_conf.h" -D TFT_ORIENTATION_LANDSCAPE -D ${{matrix.smartboard}}
