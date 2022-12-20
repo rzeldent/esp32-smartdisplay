@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        smartboard: ["ESP32_2432S028R"] #, "ESP32_3248S035R", "ESP32_3248S035C"]
+        smartboard: ["ESP32_2432S028R", "ESP32_3248S035R", "ESP32_3248S035C"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up python
