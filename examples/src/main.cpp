@@ -84,11 +84,12 @@ void setup()
 
 void loop()
 {
+  // put your main code here, to run repeatedly:
+
   // Red if no wifi, otherwise green
   bool connected = WiFi.isConnected();
   smartdisplay_set_led_color(connected ? 0 : LED_PWM_MAX, connected ? LED_PWM_MAX : 0, 0);
 
-  // put your main code here, to run repeatedly:
   ArduinoOTA.handle();
 
   display_update();
