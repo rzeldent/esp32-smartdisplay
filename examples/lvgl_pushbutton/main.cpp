@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
-
 #include <esp32_smartdisplay.h>
 
 // LVGL Objects
@@ -8,8 +7,7 @@ static lv_obj_t *label_cds;
 static lv_obj_t *label_date;
 static lv_obj_t *label_ipaddress;
 
-void display_update()
-{
+void display_update() {
   char time_buffer[32];
   struct tm timeinfo;
   getLocalTime(&timeinfo);
@@ -17,15 +15,14 @@ void display_update()
 
   lv_label_set_text(label_date, time_buffer);
   lv_label_set_text(label_ipaddress, WiFi.localIP().toString().c_str());
-  lv_label_set_text(label_cds, String(smartdisplay_get_light_intensity()).c_str());
+  lv_label_set_text(label_cds,
+                    String(smartdisplay_get_light_intensity()).c_str());
 }
 
-void btn_event_cb(lv_event_t *e)
-{
+void btn_event_cb(lv_event_t *e) {
   auto code = lv_event_get_code(e);
   auto btn = lv_event_get_target(e);
-  if (code == LV_EVENT_CLICKED)
-  {
+  if (code == LV_EVENT_CLICKED) {
     static uint8_t cnt = 0;
     cnt++;
 
@@ -36,8 +33,7 @@ void btn_event_cb(lv_event_t *e)
   }
 }
 
-void mainscreen()
-{
+void mainscreen() {
   // Clear screen
   lv_obj_clean(lv_scr_act());
 
@@ -53,22 +49,24 @@ void mainscreen()
 
   // Create a label for the date
   label_date = lv_label_create(lv_scr_act());
-  lv_obj_set_style_text_font(label_date, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+  lv_obj_set_style_text_font(label_date, &lv_font_montserrat_22,
+                             LV_STATE_DEFAULT);
   lv_obj_align(label_date, LV_ALIGN_BOTTOM_MID, 0, -50);
 
   // Create a label for the IP Address
   label_ipaddress = lv_label_create(lv_scr_act());
-  lv_obj_set_style_text_font(label_ipaddress, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+  lv_obj_set_style_text_font(label_ipaddress, &lv_font_montserrat_22,
+                             LV_STATE_DEFAULT);
   lv_obj_align(label_ipaddress, LV_ALIGN_BOTTOM_MID, 0, -80);
 
   // Create a label for the CDS Sensor
   label_cds = lv_label_create(lv_scr_act());
-  lv_obj_set_style_text_font(label_cds, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+  lv_obj_set_style_text_font(label_cds, &lv_font_montserrat_22,
+                             LV_STATE_DEFAULT);
   lv_obj_align(label_cds, LV_ALIGN_TOP_RIGHT, 0, 0);
 }
 
-void setup()
-{
+void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
 
@@ -82,13 +80,12 @@ void setup()
   mainscreen();
 }
 
-void loop()
-{
+void loop() {
   // put your main code here, to run repeatedly:
 
   // Red if no wifi, otherwise green
   bool connected = WiFi.isConnected();
-  smartdisplay_set_led_color(connected ? lv_color32_t({ .ch.green-0xFF }) : lv_color32_t({ .ch.red=0xFF }));
+  smartdisplay_set_led_color(connected ? {.ch = {.green = 0xFF}} : {.ch = {.red = 0xFF}});
 
   ArduinoOTA.handle();
 
