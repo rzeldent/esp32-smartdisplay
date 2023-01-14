@@ -113,7 +113,7 @@ void smartdisplay_init()
     lv_indev_drv_register(&indev_drv);
 }
 
-void smartdisplay_set_led_color(lv_color8_t rgb)
+void smartdisplay_set_led_color(lv_color32_t rgb)
 {
     ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - rgb.ch.red);
     ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - rgb.ch.green);
