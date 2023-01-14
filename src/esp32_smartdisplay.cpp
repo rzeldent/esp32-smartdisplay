@@ -101,6 +101,9 @@ void smartdisplay_init()
     disp_drv.draw_buf = &draw_buf;
     lv_disp_drv_register(&disp_drv);
 
+    // Clear screen
+    lv_obj_clean(lv_scr_act());
+
     // Setup touch
     lvgl_touch_init();
     static lv_indev_drv_t indev_drv;
@@ -110,11 +113,11 @@ void smartdisplay_init()
     lv_indev_drv_register(&indev_drv);
 }
 
-void smartdisplay_set_led_color(uint16_t r, uint16_t g, uint16_t b)
+void smartdisplay_set_led_color(lv_color8_t rgb)
 {
-    ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - r);
-    ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - g);
-    ledcWrite(LED_PWM_CHANNEL_B, LED_PWM_MAX - b);
+    ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - rgb.ch.red);
+    ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - rgb.ch.green);
+    ledcWrite(LED_PWM_CHANNEL_B, LED_PWM_MAX - rgb.ch.blue);
 }
 
 int smartdisplay_get_light_intensity()

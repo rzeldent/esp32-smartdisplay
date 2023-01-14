@@ -9,7 +9,7 @@
 #endif
 
 extern void smartdisplay_init();
-extern void smartdisplay_set_led_color(uint16_t r, uint16_t g, uint16_t b);
+extern void smartdisplay_set_led_color(lv_color8_t rgb);
 extern int smartdisplay_get_light_intensity();
 extern void smartdisplay_beep(unsigned int frequency, unsigned long duration);
 extern void smartdisplay_tft_set_backlight(uint16_t duty); // 0-1023 (12 bits)
