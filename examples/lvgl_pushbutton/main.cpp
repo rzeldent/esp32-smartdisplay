@@ -15,8 +15,7 @@ void display_update() {
 
   lv_label_set_text(label_date, time_buffer);
   lv_label_set_text(label_ipaddress, WiFi.localIP().toString().c_str());
-  lv_label_set_text(label_cds,
-                    String(smartdisplay_get_light_intensity()).c_str());
+  lv_label_set_text(label_cds, String(smartdisplay_get_light_intensity()).c_str());
 }
 
 void btn_event_cb(lv_event_t *e) {

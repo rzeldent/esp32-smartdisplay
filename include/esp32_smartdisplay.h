@@ -1,9 +1,8 @@
 #pragma once
 
 #include <Arduino.h>
-#include <lvgl.h>
-
 #include <SPI.h>
+#include <lvgl.h>
 #ifdef ESP32_3248S035C
 #include <Wire.h>
 #endif
@@ -12,7 +11,7 @@ extern void smartdisplay_init();
 extern void smartdisplay_set_led_color(lv_color32_t rgb);
 extern int smartdisplay_get_light_intensity();
 extern void smartdisplay_beep(unsigned int frequency, unsigned long duration);
-extern void smartdisplay_tft_set_backlight(uint16_t duty); // 0-1023 (12 bits)
+extern void smartdisplay_tft_set_backlight(uint16_t duty);  // 0-1023 (12 bits)
 extern void smartdisplay_tft_sleep();
 extern void smartdisplay_tft_wake();
 
@@ -119,7 +118,7 @@ extern TwoWire i2c_gt911;
 #define LED_PWM_MAX ((1 << LED_PWM_BITS) - 1)
 
 // Photo resistor
-#define CDS_PIN 34 // ANALOG_PIN_0
+#define CDS_PIN 34  // ANALOG_PIN_0
 
 // Audio out
 #define AUDIO_PIN 26
