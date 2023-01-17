@@ -129,7 +129,7 @@ void ili9341_send_init_commands()
     ili9341_send_command(CMD_DISFNCTR, disfnctr, sizeof(disfnctr));
     ili9341_send_command(CMD_SLPOUT); // Out of sleep mode
     ili9341_send_command(CMD_DISPON); // Main screen turn on
-};
+}
 
 void lvgl_tft_init()
 {

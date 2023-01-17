@@ -105,7 +105,7 @@ void st7796_send_init_commands()
     st7796_send_command(CMD_NORON);  // Normal display on
     st7796_send_command(CMD_SLPOUT); // Out of sleep mode
     st7796_send_command(CMD_DISPON); // Main screen turn on
-};
+}
 
 void lvgl_tft_init()
 {
