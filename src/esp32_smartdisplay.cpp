@@ -35,7 +35,7 @@ void lvgl_log(const char *buf)
 void smartdisplay_init()
 {
   // Lock access to LVGL
-  const std::lock_guard<std::mutex> lock(lvgl_mutex);
+  const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
   // Setup RGB LED.  High is off
   // Use channel 0=R, 1=G, 2=B, 5kHz,  8 bit resolution
   pinMode(LED_PIN_R, OUTPUT);
