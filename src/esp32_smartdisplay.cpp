@@ -1,6 +1,6 @@
 #include <esp32_smartdisplay.h>
 
-std::mutex lvgl_mutex;
+std::recursive_mutex lvgl_mutex;
 
 // Functions to be defined in the tft driver
 extern void lvgl_tft_init();

@@ -21,6 +21,8 @@ void display_update()
 
 void btn_event_cb(lv_event_t *e)
 {
+  const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
+
   auto code = lv_event_get_code(e);
   auto btn = lv_event_get_target(e);
   if (code == LV_EVENT_CLICKED)
@@ -37,6 +39,8 @@ void btn_event_cb(lv_event_t *e)
 
 void mainscreen()
 {
+  const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
+  
   // Clear screen
   lv_obj_clean(lv_scr_act());
 

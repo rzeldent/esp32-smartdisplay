@@ -100,14 +100,14 @@ This needs to be specified because the LVGL library included this header file.
 
 ## Functions
 
-###  mutex_t lvgl_mutex
+###  std::recursive_mutex lvgl_mutex
 
 This mutex is defined to limit the access to lvgl functions to one thread.
 When used in multiple threads, this corrupts the display and/or state of LVGL
 
 Use like this:
 ```
-const std::lock_guard<std::mutex> lock(screen::_mutex);
+const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
 ```
 
 During the scope of this variable, the mutex is locked. This will allow only one thread or section to use lvgl.
