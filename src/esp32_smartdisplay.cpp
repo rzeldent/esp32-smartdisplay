@@ -1,5 +1,7 @@
 #include <esp32_smartdisplay.h>
 
+std::mutex lvgl_mutex;
+
 // Functions to be defined in the tft driver
 extern void lvgl_tft_init();
 extern void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map);

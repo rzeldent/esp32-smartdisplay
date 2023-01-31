@@ -10,7 +10,7 @@
 #include <mutex>
 
 // Mutex to access lvgl if multi-threaded
-extern static mutex_t lvgl_mutex;
+extern mutex_t lvgl_mutex;
 // Initialize the display and touch
 extern void smartdisplay_init();
 // Set the color of the led
