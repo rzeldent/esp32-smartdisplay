@@ -7,7 +7,8 @@ static lv_obj_t *label_cds;
 static lv_obj_t *label_date;
 static lv_obj_t *label_ipaddress;
 
-void display_update() {
+void display_update()
+{
   char time_buffer[32];
   struct tm timeinfo;
   getLocalTime(&timeinfo);
@@ -18,10 +19,12 @@ void display_update() {
   lv_label_set_text(label_cds, String(smartdisplay_get_light_intensity()).c_str());
 }
 
-void btn_event_cb(lv_event_t *e) {
+void btn_event_cb(lv_event_t *e)
+{
   auto code = lv_event_get_code(e);
   auto btn = lv_event_get_target(e);
-  if (code == LV_EVENT_CLICKED) {
+  if (code == LV_EVENT_CLICKED)
+  {
     static uint8_t cnt = 0;
     cnt++;
 
@@ -32,7 +35,8 @@ void btn_event_cb(lv_event_t *e) {
   }
 }
 
-void mainscreen() {
+void mainscreen()
+{
   // Clear screen
   lv_obj_clean(lv_scr_act());
 
@@ -65,7 +69,8 @@ void mainscreen() {
   lv_obj_align(label_cds, LV_ALIGN_TOP_RIGHT, 0, 0);
 }
 
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
   Serial.begin(115200);
 
@@ -79,7 +84,8 @@ void setup() {
   mainscreen();
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
 
   // Red if no wifi, otherwise green

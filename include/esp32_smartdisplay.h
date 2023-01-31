@@ -7,12 +7,23 @@
 #include <Wire.h>
 #endif
 
+#include <mutex>
+
+// Mutex to access lvgl if multi-threaded
+extern static mutex_t lvgl_mutex;
+// Initialize the display and touch
 extern void smartdisplay_init();
+// Set the color of the led
 extern void smartdisplay_set_led_color(lv_color32_t rgb);
+// Get the value of the CDS sensor
 extern int smartdisplay_get_light_intensity();
+// Beep with the specified frequency and duration
 extern void smartdisplay_beep(unsigned int frequency, unsigned long duration);
-extern void smartdisplay_tft_set_backlight(uint16_t duty);  // 0-1023 (12 bits)
+// Set the brightness of the backlight display
+extern void smartdisplay_tft_set_backlight(uint16_t duty); // 0-1023 (12 bits)
+// Put the display to sleep
 extern void smartdisplay_tft_sleep();
+// Wake the display 
 extern void smartdisplay_tft_wake();
 
 // ESP32_2432S028R
@@ -118,7 +129,7 @@ extern TwoWire i2c_gt911;
 #define LED_PWM_MAX ((1 << LED_PWM_BITS) - 1)
 
 // Photo resistor
-#define CDS_PIN 34  // ANALOG_PIN_0
+#define CDS_PIN 34 // ANALOG_PIN_0
 
 // Audio out
 #define AUDIO_PIN 26

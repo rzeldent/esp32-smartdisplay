@@ -20,14 +20,20 @@ SPIClass spi_st7796;
 
 #ifdef ESP32_3248S035C
 SPIClass spi_st7796;
-TwoWire i2c_gt911 = TwoWire(1);  // Bus number 1
+TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
 #endif
 
 #if LV_USE_LOG
-void lvgl_log(const char *buf) { log_printf("%s", buf); }
+void lvgl_log(const char *buf)
+{
+  log_printf("%s", buf);
+}
 #endif
 
-void smartdisplay_init() {
+void smartdisplay_init()
+{
+  // Lock access to LVGL
+  const std::lock_guard<std::mutex> lock(screen::_mutex);
   // Setup RGB LED.  High is off
   // Use channel 0=R, 1=G, 2=B, 5kHz,  8 bit resolution
   pinMode(LED_PIN_R, OUTPUT);
@@ -46,11 +52,11 @@ void smartdisplay_init() {
   ledcAttachPin(LED_PIN_B, LED_PWM_CHANNEL_B);
 
   // Setup CDS Light sensor
-  analogSetAttenuation(ADC_0db);  // 0dB(1.0x) 0~800mV
+  analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
   pinMode(CDS_PIN, INPUT);
 
   // Audio
-  pinMode(AUDIO_PIN, INPUT);  // Set high impedance
+  pinMode(AUDIO_PIN, INPUT); // Set high impedance
 
 #if LV_USE_LOG
   lv_log_register_print_cb(lvgl_log);
@@ -109,15 +115,20 @@ void smartdisplay_init() {
   lv_indev_drv_register(&indev_drv);
 }
 
-void smartdisplay_set_led_color(lv_color32_t rgb) {
+void smartdisplay_set_led_color(lv_color32_t rgb)
+{
   ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - rgb.ch.red);
   ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - rgb.ch.green);
   ledcWrite(LED_PWM_CHANNEL_B, LED_PWM_MAX - rgb.ch.blue);
 }
 
-int smartdisplay_get_light_intensity() { return analogRead(CDS_PIN); }
+int smartdisplay_get_light_intensity()
+{
+  return analogRead(CDS_PIN);
+}
 
-void smartdisplay_beep(unsigned int frequency, unsigned long duration) {
+void smartdisplay_beep(unsigned int frequency, unsigned long duration)
+{
   // Uses PWM Channel 0
   tone(AUDIO_PIN, frequency, duration);
 }

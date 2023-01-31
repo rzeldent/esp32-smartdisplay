@@ -97,3 +97,55 @@ lib_deps =
 
 The path for the lv_conf.h above is ```${platformio.include_dir}```.
 This needs to be specified because the LVGL library included this header file.
+
+## Functions
+
+###  mutex_t lvgl_mutex
+
+This mutex is defined to limit the access to lvgl functions to one thread.
+When used in multiple threads, this corrupts the display and/or state of LVGL
+
+Use like this:
+```
+const std::lock_guard<std::mutex> lock(screen::_mutex);
+```
+
+During the scope of this variable, the mutex is locked. This will allow only one thread or section to use lvgl.
+
+### void smartdisplay_init();
+
+Initialize the display and touch.
+This is the first function that needs to be called.
+It initializes the display controller and touch controller.
+
+### void smartdisplay_set_led_color(lv_color32_t rgb);
+
+Set the color of the led. The led has 3 channels: R(ed), G(reen) and B(lue).
+Each channel has a 8 bit resolution so from 0-255.
+
+The lv_colo32_t can be set in the following manner:
+
+```
+lv_color32_t({.ch = {.green = 0xFF}}) : lv_color32_t({.ch = {.red = 0xFF}}))
+```
+
+### int smartdisplay_get_light_intensity();
+
+Get the value of the CDS sensor.
+The sensor measures the (ambient) light level and can be used to adjust the brightness of the display.
+
+### void smartdisplay_beep(unsigned int frequency, unsigned long duration);
+
+Beep with the specified frequency and duration. To hear the sound a 8 ohms speaker must be connected.
+
+### void smartdisplay_tft_set_backlight(uint16_t duty);
+
+Set the brightness of the backlight display. The resolution is 12 bit so 0-1023.
+
+### void smartdisplay_tft_sleep();
+
+Put the display to sleep.
+
+### void smartdisplay_tft_wake();
+
+Wake the display.
