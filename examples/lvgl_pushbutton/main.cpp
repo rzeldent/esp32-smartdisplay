@@ -40,7 +40,7 @@ void btn_event_cb(lv_event_t *e)
 void mainscreen()
 {
   const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
-  
+
   // Clear screen
   lv_obj_clean(lv_scr_act());
 
@@ -56,20 +56,17 @@ void mainscreen()
 
   // Create a label for the date
   label_date = lv_label_create(lv_scr_act());
-  lv_obj_set_style_text_font(label_date, &lv_font_montserrat_22,
-                             LV_STATE_DEFAULT);
+  lv_obj_set_style_text_font(label_date, &lv_font_montserrat_22, LV_STATE_DEFAULT);
   lv_obj_align(label_date, LV_ALIGN_BOTTOM_MID, 0, -50);
 
   // Create a label for the IP Address
   label_ipaddress = lv_label_create(lv_scr_act());
-  lv_obj_set_style_text_font(label_ipaddress, &lv_font_montserrat_22,
-                             LV_STATE_DEFAULT);
+  lv_obj_set_style_text_font(label_ipaddress, &lv_font_montserrat_22, LV_STATE_DEFAULT);
   lv_obj_align(label_ipaddress, LV_ALIGN_BOTTOM_MID, 0, -80);
 
   // Create a label for the CDS Sensor
   label_cds = lv_label_create(lv_scr_act());
-  lv_obj_set_style_text_font(label_cds, &lv_font_montserrat_22,
-                             LV_STATE_DEFAULT);
+  lv_obj_set_style_text_font(label_cds, &lv_font_montserrat_22, LV_STATE_DEFAULT);
   lv_obj_align(label_cds, LV_ALIGN_TOP_RIGHT, 0, 0);
 }
 
