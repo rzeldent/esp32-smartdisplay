@@ -149,3 +149,18 @@ Put the display to sleep.
 ### void smartdisplay_tft_wake();
 
 Wake the display.
+
+## Change history
+
+- Jul 2022
+  - Initial work started
+- Dec 2022
+  - Initial version 1.0.2.
+  - Drivers for ESP32_2432S028R, ESP32_3248S035R and ESP32_3248S035C displays working.
+  - Sound ouput
+  - RGB Led ouput
+  - CDS light sensor input 
+- Feb 2023
+  - Version 1.0.3
+  - Added mutex for access to lvgl, required for multithreading
+  - Changed RGB led input to lv_color32_t
