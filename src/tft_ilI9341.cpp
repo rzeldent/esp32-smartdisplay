@@ -40,6 +40,16 @@
 #define COLMOD_CTRL_16BIT 0x05
 #define COLMOD_RGB656 (COLMOD_RGB_16BIT | COLMOD_CTRL_16BIT)
 
+#if !defined(TFT_ORIENTATION_LANDSCAPE) || !defined(TFT_ORIENTATION_PORTRAIT_INV) || !defined(TFT_ORIENTATION_LANDSCAPE_INV)
+  #define TFT_ORIENTATION_PORTRAIT
+#endif
+
+#ifdef TFT_PANEL_ORDER_BGR
+  #define MADCTL_PANEL_ORDER MADCTL_BGR
+#else
+  #define MADCTL_PANEL_ORDER MADCTL_RGB
+#endif
+
 void ili9341_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
 {
   digitalWrite(ILI9341_PIN_DC, LOW); // Command mode => command
@@ -93,16 +103,16 @@ void ili9341_send_init_commands()
   static const uint8_t vcomctr2[] = {0xBE};                                //
   ili9341_send_command(CMD_VCOMVTRL2, vcomctr2, sizeof(vcomctr2));         // VCOM Control 2
 #ifdef TFT_ORIENTATION_PORTRAIT
-  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_RGB}; // Portrait 0 Degrees
+  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_PANEL_ORDER}; // Portrait 0 Degrees
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE
-  static const uint8_t madctl[] = {MADCTL_MV | MADCTL_RGB}; // Landscape 90 Degrees
+  static const uint8_t madctl[] = {MADCTL_MV | MADCTL_PANEL_ORDER}; // Landscape 90 Degrees
 #else
 #ifdef TFT_ORIENTATION_PORTRAIT_INV
-  static const uint8_t madctl[] = {MADCTL_MX | MADCTL_RGB}; // Portrait inverted 180 Degrees
+  static const uint8_t madctl[] = {MADCTL_MX | MADCTL_PANEL_ORDER}; // Portrait inverted 180 Degrees
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE_INV
-  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MX | MADCTL_MV | MADCTL_RGB}; // Landscape inverted 270 Degrees
+  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MX | MADCTL_MV | MADCTL_PANEL_ORDER}; // Landscape inverted 270 Degrees
 #else
 #error TFT_ORIENTATION not defined!
 #endif
