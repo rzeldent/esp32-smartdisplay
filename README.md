@@ -62,7 +62,7 @@ The template for the ```lv_conf.h``` file can be found in the LVGL library at ``
 
 ## How to use
 
-Basically there are only **TWO** defines that need to be defined:
+Basically there is only **ONE** define that need to be defined: The type of board assuming everything is default.
 
 - Type of board
   - ESP32_2432S028R
@@ -70,10 +70,14 @@ Basically there are only **TWO** defines that need to be defined:
   - ESP32_3248S035C
 
 - Orientation of the board
-  - TFT_ORIENTATION_PORTRAIT
+  - TFT_ORIENTATION_PORTRAIT (default)
   - TFT_ORIENTATION_LANDSCAPE
   - TFT_ORIENTATION_PORTRAIT_INV
   - TFT_ORIENTATION_LANDSCAPE_INV
+
+- LCD Panel RGB order (if red and blue are swapped on the display)
+  - TFT_PANEL_ORDER_RGB (default)
+  - TFT_PANEL_ORDER_BGR
 
 These can be defined in the ```platformio.ini``` file defining the settings:
 
@@ -152,15 +156,16 @@ Wake the display.
 
 ## Change history
 
-- Jul 2022
-  - Initial work started
+- Feb 2023
+  - Version 1.0.3
+  - Added mutex for access to lvgl, required for multithreading
+  - Changed RGB led input to lv_color32_t
+  - Added variable for the palel RGB/BGR order
 - Dec 2022
   - Initial version 1.0.2.
   - Drivers for ESP32_2432S028R, ESP32_3248S035R and ESP32_3248S035C displays working.
   - Sound ouput
   - RGB Led ouput
   - CDS light sensor input 
-- Feb 2023
-  - Version 1.0.3
-  - Added mutex for access to lvgl, required for multithreading
-  - Changed RGB led input to lv_color32_t
+- Jul 2022
+  - Initial work started
