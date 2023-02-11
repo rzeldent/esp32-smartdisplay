@@ -158,9 +158,11 @@ Wake the display.
 
 - Feb 2023
   - Version 1.0.3
+  - Added variable for the LCD panel RGB/BGR order
+- Feb 2023
+  - Version 1.0.3
   - Added mutex for access to lvgl, required for multithreading
   - Changed RGB led input to lv_color32_t
-  - Added variable for the palel RGB/BGR order
 - Dec 2022
   - Initial version 1.0.2.
   - Drivers for ESP32_2432S028R, ESP32_3248S035R and ESP32_3248S035C displays working.
