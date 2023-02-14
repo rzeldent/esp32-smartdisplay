@@ -9,12 +9,9 @@ static lv_obj_t *label_ipaddress;
 
 void display_update()
 {
-  char time_buffer[32];
-  struct tm timeinfo;
-  getLocalTime(&timeinfo);
-  strftime(time_buffer, sizeof(time_buffer), "%c", &timeinfo);
-
-  lv_label_set_text(label_date, time_buffer);
+  char buffer[32];
+  itoa(millis(), buffer, 10);
+  lv_label_set_text(label_date, buffer);
   lv_label_set_text(label_ipaddress, WiFi.localIP().toString().c_str());
   lv_label_set_text(label_cds, String(smartdisplay_get_light_intensity()).c_str());
 }
