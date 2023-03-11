@@ -8,6 +8,10 @@
 #define CMD_START_Y_CONVERSION 0x91
 #define Z_THRESHOLD 600
 
+#if !defined(TFT_ORIENTATION_LANDSCAPE) || !defined(TFT_ORIENTATION_PORTRAIT_INV) || !defined(TFT_ORIENTATION_LANDSCAPE_INV)
+#define TFT_ORIENTATION_PORTRAIT
+#endif
+
 bool xpt2046_read_xy(int16_t *x, int16_t *y)
 {
   spi_xpt2046.beginTransaction(SPISettings(XPT2046_SPI_FREQ, MSBFIRST, SPI_MODE0));

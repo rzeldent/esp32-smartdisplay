@@ -30,13 +30,13 @@
 #define COLMOD_RGB656 (COLMOD_RGB_16BIT | COLMOD_CTRL_16BIT)
 
 #if !defined(TFT_ORIENTATION_LANDSCAPE) || !defined(TFT_ORIENTATION_PORTRAIT_INV) || !defined(TFT_ORIENTATION_LANDSCAPE_INV)
-  #define TFT_ORIENTATION_PORTRAIT
+#define TFT_ORIENTATION_PORTRAIT
 #endif
 
 #ifdef TFT_PANEL_ORDER_BGR
-  #define MADCTL_PANEL_ORDER MADCTL_BGR
+#define MADCTL_PANEL_ORDER MADCTL_BGR
 #else
-  #define MADCTL_PANEL_ORDER MADCTL_RGB
+#define MADCTL_PANEL_ORDER MADCTL_RGB
 #endif
 
 void st7796_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)

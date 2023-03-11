@@ -21,6 +21,10 @@ struct __attribute__((packed)) GTPoint
   uint8_t reserved;
 };
 
+#if !defined(TFT_ORIENTATION_LANDSCAPE) || !defined(TFT_ORIENTATION_PORTRAIT_INV) || !defined(TFT_ORIENTATION_LANDSCAPE_INV)
+#define TFT_ORIENTATION_PORTRAIT
+#endif
+
 bool gt911_write_register(uint16_t reg, const uint8_t buf[], int len)
 {
   i2c_gt911.beginTransmission(GT911_I2C_SLAVE_ADDR);
