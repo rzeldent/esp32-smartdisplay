@@ -42,9 +42,9 @@
 #else
 #ifdef TFT_PANEL_ORDER_BGR
 #define MADCTL_PANEL_ORDER MADCTL_BGR
-#endif
 #else
 #error TFT_PANEL_ORDER not defined!
+#endif
 #endif
 
 void st7796_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
