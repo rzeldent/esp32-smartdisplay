@@ -83,11 +83,11 @@ These can be defined in the ```platformio.ini``` file defining the settings:
 
 ```ini
 build_flags =
-    ...
     # LVGL settings
-    -D LV_CONF_PATH=${platformio.include_dir}/lv_conf.h
-    # Smartdisplay settings
+    -D LV_CONF_PATH="${platformio.include_dir}/lv_conf.h"
+    # Smart display settings
     -D TFT_PANEL_ORDER_RGB
+    #-D TFT_PANEL_ORDER_BGR
     -D TFT_ORIENTATION_PORTRAIT
     #-D TFT_ORIENTATION_LANDSCAPE
     #-D TFT_ORIENTATION_PORTRAIT_INV

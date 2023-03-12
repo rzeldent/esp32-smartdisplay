@@ -65,6 +65,10 @@ void smartdisplay_init()
 #endif
   lv_init();
 
+#if !defined(ESP32_2432S028R) || !defined(ESP32_3248S035R) || !defined(ESP32_3248S035C)
+#error Please define type: ESP32_2432S028R, ESP32_3248S035R or ESP32_3248S035C
+#endif
+
 // Setup interfaces
 #ifdef ESP32_2432S028R
   spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
