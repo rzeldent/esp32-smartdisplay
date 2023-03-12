@@ -70,13 +70,13 @@ Basically there is only **ONE** define that need to be defined: The type of boar
   - ESP32_3248S035C
 
 - Orientation of the board
-  - TFT_ORIENTATION_PORTRAIT (default)
+  - TFT_ORIENTATION_PORTRAIT
   - TFT_ORIENTATION_LANDSCAPE
   - TFT_ORIENTATION_PORTRAIT_INV
   - TFT_ORIENTATION_LANDSCAPE_INV
 
 - LCD Panel RGB order (if red and blue are swapped on the display)
-  - TFT_PANEL_ORDER_RGB (default)
+  - TFT_PANEL_ORDER_RGB
   - TFT_PANEL_ORDER_BGR
 
 These can be defined in the ```platformio.ini``` file defining the settings:
@@ -102,6 +102,10 @@ lib_deps =
 
 The path for the lv_conf.h above is ```${platformio.include_dir}```.
 This needs to be specified because the LVGL library included this header file.
+
+## Demo application
+
+An bare minimum application to demonstrate the library can be found at [esp32-smartdisplay-demo](https://github.com/rzeldent/esp32-smartdisplay-demo).
 
 ## Functions
 
