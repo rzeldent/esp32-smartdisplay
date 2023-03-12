@@ -10,6 +10,10 @@ extern void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t
 extern void lvgl_touch_init();
 extern void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 
+#if !defined(ESP32_2432S028R) && !defined(ESP32_3248S035R) && !defined(ESP32_3248S035C)
+#error Please define type: ESP32_2432S028R, ESP32_3248S035R or ESP32_3248S035C
+#endif
+
 // Hardware interfaces
 #ifdef ESP32_2432S028R
 SPIClass spi_ili9431;

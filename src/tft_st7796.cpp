@@ -29,14 +29,22 @@
 #define COLMOD_CTRL_16BIT 0x05
 #define COLMOD_RGB656 (COLMOD_RGB_16BIT | COLMOD_CTRL_16BIT)
 
-#if !defined(TFT_ORIENTATION_LANDSCAPE) || !defined(TFT_ORIENTATION_PORTRAIT_INV) || !defined(TFT_ORIENTATION_LANDSCAPE_INV)
-  #define TFT_ORIENTATION_PORTRAIT
+#if !defined(TFT_ORIENTATION_PORTRAIT) && !defined(TFT_ORIENTATION_LANDSCAPE) && !defined(TFT_ORIENTATION_PORTRAIT_INV) && !defined(TFT_ORIENTATION_LANDSCAPE_INV)
+#error Please define orientation: TFT_ORIENTATION_PORTRAIT, TFT_ORIENTATION_LANDSCAPE, TFT_ORIENTATION_PORTRAIT_INV or TFT_ORIENTATION_LANDSCAPE_INV
 #endif
 
-#ifdef TFT_PANEL_ORDER_BGR
-  #define MADCTL_PANEL_ORDER MADCTL_BGR
+#if !defined(TFT_PANEL_ORDER_RGB) && !defined(TFT_PANEL_ORDER_BGR)
+#error Please define RGB order: TFT_PANEL_ORDER_BGR or
+#endif
+
+#ifdef TFT_PANEL_ORDER_RGB
+#define MADCTL_PANEL_ORDER MADCTL_RGB
 #else
-  #define MADCTL_PANEL_ORDER MADCTL_RGB
+#ifdef TFT_PANEL_ORDER_BGR
+#define MADCTL_PANEL_ORDER MADCTL_BGR
+#else
+#error TFT_PANEL_ORDER not defined!
+#endif
 #endif
 
 void st7796_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
