@@ -21,7 +21,7 @@ struct __attribute__((packed)) GTPoint
   uint8_t reserved;
 };
 
-#if !defined(TFT_ORIENTATION_LANDSCAPE) || !defined(TFT_ORIENTATION_PORTRAIT_INV) || !defined(TFT_ORIENTATION_LANDSCAPE_INV)
+#if !defined(TFT_ORIENTATION_LANDSCAPE) && !defined(TFT_ORIENTATION_PORTRAIT_INV) && !defined(TFT_ORIENTATION_LANDSCAPE_INV)
 #define TFT_ORIENTATION_PORTRAIT
 #endif
 
