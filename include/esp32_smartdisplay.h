@@ -36,7 +36,7 @@ extern void smartdisplay_tft_wake();
 #define ILI9431_SPI_MISO 12
 #define ILI9341_PIN_CS 15
 #define ILI9341_PIN_DC 2
-#define ILI9341_SPI_FREQ 80000000
+#define ILI9341_SPI_FREQ 50000000
 #define ILI9341_PIN_BL 21
 #define ILI9341_PWM_CHANNEL_BL 12
 #define ILI9341_PWM_FREQ_BL 5000
