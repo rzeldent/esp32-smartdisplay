@@ -13,7 +13,7 @@
 #define CMD_RAMWR 0x2C   // Memory Write
 #define CMD_MADCTL 0x36  // Memory Data Access Control
 #define CMD_COLMOD 0x3A  // Interface Pixel Format
-#define CMD_PGC 0E0      // Positive Gamma Control
+#define CMD_PGC 0xE0     // Positive Gamma Control
 #define CMD_NGC 0xE1     // Negative Gamma Control
 #define CMD_CSCON 0xF0   // Command Set Control
 
