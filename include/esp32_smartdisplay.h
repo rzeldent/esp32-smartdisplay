@@ -1,5 +1,7 @@
 #pragma once
 
+#define ESP32_3248S035C
+
 #include <Arduino.h>
 #include <SPI.h>
 #include <lvgl.h>
@@ -23,7 +25,7 @@ extern void smartdisplay_beep(unsigned int frequency, unsigned long duration);
 extern void smartdisplay_tft_set_backlight(uint16_t duty); // 0-1023 (12 bits)
 // Put the display to sleep
 extern void smartdisplay_tft_sleep();
-// Wake the display 
+// Wake the display
 extern void smartdisplay_tft_wake();
 
 // ESP32_2432S028R
@@ -136,6 +138,6 @@ extern TwoWire i2c_gt911;
 
 // TF Card
 #define TF_PIN_CS 5
-#define TS_PIN_MOSI 23
+#define TF_PIN_MOSI 23
 #define TF_PIN_SCLK 18
 #define TF_PIN_MISC 19
