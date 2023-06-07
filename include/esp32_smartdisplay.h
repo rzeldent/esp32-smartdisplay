@@ -1,5 +1,7 @@
 #pragma once
 
+#define ESP32_3248S035C
+
 #include <Arduino.h>
 #include <SPI.h>
 #include <lvgl.h>
