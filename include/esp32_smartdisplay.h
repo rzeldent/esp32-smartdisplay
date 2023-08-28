@@ -26,6 +26,9 @@ extern void smartdisplay_tft_sleep();
 // Wake the display
 extern void smartdisplay_tft_wake();
 
+// Buffer size for drawing
+#define DRAW_BUFFER_SIZE (TFT_WIDTH * 10)
+
 // ESP32_2432S028R
 #ifdef ESP32_2432S028R
 #define TFT_WIDTH 240
