@@ -56,9 +56,11 @@ To use the LVGL library, a ```lv_conf.h``` file is required to define the settin
 This file needs to be provided by the application.
 As this file is referenced from the build of LVGL, the path must be known.
 Normally this file is included in the include directory of your project so the define must be
-```
+
+``` ini
   -D LV_CONF_PATH=${platformio.src_include}/lv_conf.h
 ```
+
 The template for the ```lv_conf.h``` file can be found in the LVGL library at ```.pio/libdeps/esp32dev/lvgl/lv_conf_template.h```.
 
 ## How to use
@@ -72,19 +74,19 @@ Basically there is only **ONE** define that need to be defined: The type of boar
   - ESP32_8048S070N
   - ESP32_8048S070C
 
-- Orientation of the board
-  - TFT_ORIENTATION_PORTRAIT
+- Orientation of the board (optional)
+  - TFT_ORIENTATION_PORTRAIT (default)
   - TFT_ORIENTATION_LANDSCAPE
   - TFT_ORIENTATION_PORTRAIT_INV
   - TFT_ORIENTATION_LANDSCAPE_INV
 
-- LCD Panel RGB order (if red and blue are swapped on the display)
-  - TFT_PANEL_ORDER_RGB
+- LCD Panel RGB order (if red and blue are swapped on the display, optional)
+  - TFT_PANEL_ORDER_RGB (default)
   - TFT_PANEL_ORDER_BGR
 
 These can be defined in the ```platformio.ini``` file defining the settings:
 
-```ini
+``` ini
 build_flags =
     # LVGL settings
     -D LV_CONF_PATH="${platformio.include_dir}/lv_conf.h"
@@ -114,58 +116,62 @@ An bare minimum application to demonstrate the library can be found at [esp32-sm
 
 ## Functions
 
-###  std::recursive_mutex lvgl_mutex
+### std::recursive_mutex lvgl_mutex
 
 This mutex is defined to limit the access to lvgl functions to one thread.
 When used in multiple threads, this corrupts the display and/or state of LVGL
 
 Use like this:
-```
+
+``` c++
 const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
 ```
 
 During the scope of this variable, the mutex is locked. This will allow only one thread or section to use lvgl.
 
-### void smartdisplay_init();
+### void smartdisplay_init()
 
 Initialize the display and touch.
 This is the first function that needs to be called.
 It initializes the display controller and touch controller.
 
-### void smartdisplay_set_led_color(lv_color32_t rgb);
+### void smartdisplay_set_led_color(lv_color32_t rgb)
 
 Set the color of the led. The led has 3 channels: R(ed), G(reen) and B(lue).
 Each channel has a 8 bit resolution so from 0-255.
 
 The lv_colo32_t can be set in the following manner:
 
-```
-lv_color32_t({.ch = {.green = 0xFF}}) : lv_color32_t({.ch = {.red = 0xFF}}))
+``` c++
+lv_color32_t({.ch = {.green = 0xFF}}) : lv_color32_t({.ch = {.red = 0xFF}})
 ```
 
-### int smartdisplay_get_light_intensity();
+### int smartdisplay_get_light_intensity()
 
 Get the value of the CDS sensor.
 The sensor measures the (ambient) light level and can be used to adjust the brightness of the display.
 
-### void smartdisplay_beep(unsigned int frequency, unsigned long duration);
+### void smartdisplay_beep(unsigned int frequency, unsigned long duration)
 
 Beep with the specified frequency and duration. To hear the sound a 8 ohms speaker must be connected.
 
-### void smartdisplay_tft_set_backlight(uint16_t duty);
+### void smartdisplay_tft_set_backlight(uint16_t duty)
 
 Set the brightness of the backlight display. The resolution is 12 bit so 0-1023.
 
-### void smartdisplay_tft_sleep();
+### void smartdisplay_tft_sleep()
 
 Put the display to sleep.
 
-### void smartdisplay_tft_wake();
+### void smartdisplay_tft_wake()
 
 Wake the display.
 
 ## Change history
 
+- August 2023
+  - Added support for esp32_8048S070N/S
+  - Display buffer size configurable
 - Feb 2023
   - Version 1.0.3
   - Added variable for the LCD panel RGB/BGR order
@@ -176,8 +182,8 @@ Wake the display.
 - Dec 2022
   - Initial version 1.0.2.
   - Drivers for ESP32_2432S028R, ESP32_3248S035R and ESP32_3248S035C displays working.
-  - Sound ouput
-  - RGB Led ouput
-  - CDS light sensor input 
+  - Sound output
+  - RGB Led output
+  - CDS light sensor input
 - Jul 2022
   - Initial work started

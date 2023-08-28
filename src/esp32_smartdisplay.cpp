@@ -14,6 +14,16 @@ extern void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 #error Please define type: ESP32_2432S028R, ESP32_3248S035R, ESP32_3248S035C, ESP32_8048S070N or ESP32_8048S070C
 #endif
 
+// Default orientation
+#if !defined(TFT_ORIENTATION_PORTRAIT) && !defined(TFT_ORIENTATION_LANDSCAPE) && !defined(TFT_ORIENTATION_PORTRAIT_INV) && !defined(TFT_ORIENTATION_LANDSCAPE_INV)
+#define TFT_ORIENTATION_PORTRAIT
+#endif
+
+// Default RGB order
+#if !defined(TFT_PANEL_ORDER_RGB) && !defined(TFT_PANEL_ORDER_BGR)
+#define TFT_PANEL_ORDER_RGB
+#endif
+
 // Hardware interfaces
 #ifdef ESP32_2432S028R
 SPIClass spi_ili9431;
