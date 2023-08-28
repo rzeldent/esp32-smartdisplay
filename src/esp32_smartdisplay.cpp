@@ -35,7 +35,7 @@ SPIClass spi_ili9431;
 
 #ifdef ESP32_8048S070C
 SPIClass spi_ili9431;
-SPIClass spi_xpt2046;
+TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
 #endif
 
 #if LV_USE_LOG
