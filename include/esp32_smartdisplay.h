@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <lvgl.h>
-#ifdef ESP32_3248S035C
+#ifdef ESP32_3248S035C || defined(ESP32_8048S070C)
 #include <Wire.h>
 #endif
 
