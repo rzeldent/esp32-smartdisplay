@@ -130,6 +130,7 @@ void smartdisplay_init()
   // Clear screen
   lv_obj_clean(lv_scr_act());
 
+#if !defined(ESP32_8048S070N)
   // Setup touch
   lvgl_touch_init();
   static lv_indev_drv_t indev_drv;
@@ -137,6 +138,7 @@ void smartdisplay_init()
   indev_drv.type = LV_INDEV_TYPE_POINTER;
   indev_drv.read_cb = lvgl_touch_read;
   lv_indev_drv_register(&indev_drv);
+#endif  
 }
 
 void smartdisplay_set_led_color(lv_color32_t rgb)
