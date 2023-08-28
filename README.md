@@ -68,6 +68,7 @@ Basically there is only **ONE** define that need to be defined: The type of boar
   - ESP32_2432S028R
   - ESP32_3248S035R
   - ESP32_3248S035C
+  - ESP32_8048S070
 
 - Orientation of the board
   - TFT_ORIENTATION_PORTRAIT
@@ -95,6 +96,7 @@ build_flags =
     -D ESP32_2432S028R
     #-D ESP32_3248S035R
     #-D ESP32_3248S035C
+    #-D ESP32_8048S070
 
 lib_deps =
     rzeldent/esp32_smartdisplay@^1.0.2
