@@ -10,8 +10,8 @@ extern void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t
 extern void lvgl_touch_init();
 extern void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 
-#if !defined(ESP32_2432S028R) && !defined(ESP32_3248S035R) && !defined(ESP32_3248S035C) && !defined(ESP32_8048S070C)
-#error Please define type: ESP32_2432S028R, ESP32_3248S035R, ESP32_3248S035C or ESP32_8048S070C
+#if !defined(ESP32_2432S028R) && !defined(ESP32_3248S035R) && !defined(ESP32_3248S035C) && !defined(ESP32_8048S070N) && !defined(ESP32_8048S070C)
+#error Please define type: ESP32_2432S028R, ESP32_3248S035R, ESP32_3248S035C, ESP32_8048S070N or ESP32_8048S070C
 #endif
 
 // Hardware interfaces
@@ -27,6 +27,10 @@ SPIClass spi_st7796;
 #ifdef ESP32_3248S035C
 SPIClass spi_st7796;
 TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
+#endif
+
+#ifdef ESP32_8048S070N
+SPIClass spi_ili9431;
 #endif
 
 #ifdef ESP32_8048S070C
@@ -87,6 +91,15 @@ void smartdisplay_init()
 
 #ifdef ESP32_3248S035C
   spi_st7796.begin(ST7796_SPI_SCLK, ST7796_SPI_MISO, ST7796_SPI_MOSI);
+  i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
+#endif
+
+#ifdef ESP32_8048S070N
+  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
+#endif
+
+#ifdef ESP32_8048S070C
+  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
   i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
 #endif
 
