@@ -119,7 +119,7 @@ extern SPIClass spi_st7796;
 extern TwoWire i2c_gt911;
 #endif
 
-#ifdef ESP32_8048S070
+#ifdef ESP32_8048S070C
 #define TFT_WIDTH 800
 #define TFT_HEIGHT 480
 #define ILI9431

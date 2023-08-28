@@ -21,6 +21,7 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 
 - [ESP32-2432S028R - 2.8" 240x320 TFT Resistive touch](https://www.aliexpress.com/item/1005004502250619.html)
 - [ESP32-3248S035R/C 3.5" 320x480 TFT Resistive/Capacitive touch](https://www.aliexpress.com/item/1005004632953455.html)
+- [ESP32-8048S070C - 7.0" 800x480 TFT Capacitive touch](https://www.aliexpress.us/item/1005004952726089.html)
 
 ![ESP32-3248S035R front](assets/images/esp32-3248S035-front.png)
 ![ESP32-3248S035R back](assets/images/esp32-3248S035-back.png)
@@ -68,7 +69,7 @@ Basically there is only **ONE** define that need to be defined: The type of boar
   - ESP32_2432S028R
   - ESP32_3248S035R
   - ESP32_3248S035C
-  - ESP32_8048S070
+  - ESP32_8048S070C
 
 - Orientation of the board
   - TFT_ORIENTATION_PORTRAIT
@@ -96,7 +97,7 @@ build_flags =
     -D ESP32_2432S028R
     #-D ESP32_3248S035R
     #-D ESP32_3248S035C
-    #-D ESP32_8048S070
+    #-D ESP32_8048S070C
 
 lib_deps =
     rzeldent/esp32_smartdisplay@^1.0.2
