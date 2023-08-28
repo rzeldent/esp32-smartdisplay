@@ -88,8 +88,8 @@ void smartdisplay_init()
   // Setup TFT display
   lvgl_tft_init();
   static lv_disp_draw_buf_t draw_buf;
-  static lv_color_t buf[TFT_WIDTH * 10];
-  lv_disp_draw_buf_init(&draw_buf, buf, NULL, TFT_WIDTH * 10);
+  static lv_color_t buf[DRAW_BUFFER_SIZE];
+  lv_disp_draw_buf_init(&draw_buf, buf, NULL, DRAW_BUFFER_SIZE);
 
   // Setup TFT display
   static lv_disp_drv_t disp_drv;
