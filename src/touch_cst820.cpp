@@ -72,12 +72,10 @@ bool cst820_read_touch(uint16_t *x, uint16_t *y, uint8_t *gesture)
   *y = TFT_WIDTH - swap;
 #else
 #ifdef TFT_ORIENTATION_PORTRAIT_INV
-  *x = points->x;
-  *y = points->y;
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE_INV
   uint16_t swap;
-  swap = points[i].x;
+  swap = *x;
   *x = TFT_HEIGHT - *y;
   *y = swap;
 #else
