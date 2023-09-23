@@ -10,8 +10,18 @@ extern void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t
 extern void lvgl_touch_init();
 extern void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 
-#if !defined(ESP32_2432S028R) && !defined(ESP32_3248S035R) && !defined(ESP32_3248S035C)
-#error Please define type: ESP32_2432S028R, ESP32_3248S035R or ESP32_3248S035C
+#if !defined(ESP32_2432S028R) && !defined(ESP32_3248S035R) && !defined(ESP32_3248S035C) && !defined(ESP32_8048S070N) && !defined(ESP32_8048S070C)
+#error Please define type: ESP32_2432S028R, ESP32_3248S035R, ESP32_3248S035C, ESP32_8048S070N or ESP32_8048S070C
+#endif
+
+// Default orientation
+#if !defined(TFT_ORIENTATION_PORTRAIT) && !defined(TFT_ORIENTATION_LANDSCAPE) && !defined(TFT_ORIENTATION_PORTRAIT_INV) && !defined(TFT_ORIENTATION_LANDSCAPE_INV)
+#define TFT_ORIENTATION_PORTRAIT
+#endif
+
+// Default RGB order
+#if !defined(TFT_PANEL_ORDER_RGB) && !defined(TFT_PANEL_ORDER_BGR)
+#define TFT_PANEL_ORDER_RGB
 #endif
 
 // Hardware interfaces
@@ -26,6 +36,15 @@ SPIClass spi_st7796;
 
 #ifdef ESP32_3248S035C
 SPIClass spi_st7796;
+TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
+#endif
+
+#ifdef ESP32_8048S070N
+SPIClass spi_ili9431;
+#endif
+
+#ifdef ESP32_8048S070C
+SPIClass spi_ili9431;
 TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
 #endif
 
@@ -85,6 +104,15 @@ void smartdisplay_init()
   i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
 #endif
 
+#ifdef ESP32_8048S070N
+  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
+#endif
+
+#ifdef ESP32_8048S070C
+  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
+  i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
+#endif
+
   // Setup TFT display
   lvgl_tft_init();
   static lv_disp_draw_buf_t draw_buf;
@@ -112,6 +140,7 @@ void smartdisplay_init()
   // Clear screen
   lv_obj_clean(lv_scr_act());
 
+#if !defined(ESP32_8048S070N)
   // Setup touch
   lvgl_touch_init();
   static lv_indev_drv_t indev_drv;
@@ -119,6 +148,7 @@ void smartdisplay_init()
   indev_drv.type = LV_INDEV_TYPE_POINTER;
   indev_drv.read_cb = lvgl_touch_read;
   lv_indev_drv_register(&indev_drv);
+#endif  
 }
 
 void smartdisplay_set_led_color(lv_color32_t rgb)
