@@ -58,26 +58,21 @@ bool cst820_read_touch(uint16_t *x, uint16_t *y, uint8_t *gesture)
   if (!cst820_read_register(0x03, data, 4))
     return false;
 
-  *x = ((data[0] & 0x0f) << 8) | data[1];
-  *y = ((data[2] & 0x0f) << 8) | data[3];
-
 #ifdef TFT_ORIENTATION_PORTRAIT
-  *x = TFT_WIDTH - *x;
-  *y = TFT_HEIGHT - *y;
+  *x = TFT_WIDTH - (((data[0] & 0x0f) << 8) | data[1]);
+  *y = TFT_HEIGHT - (((data[2] & 0x0f) << 8) | data[3]);
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE
-  uint16_t swap;
-  swap = *x;
-  *x = *y;
-  *y = TFT_WIDTH - swap;
+  *x = ((data[2] & 0x0f) << 8) | data[3];
+  *y = TFT_WIDTH - (((data[0] & 0x0f) << 8) | data[1]);
 #else
 #ifdef TFT_ORIENTATION_PORTRAIT_INV
+  *x = ((data[0] & 0x0f) << 8) | data[1];
+  *y = ((data[2] & 0x0f) << 8) | data[3];
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE_INV
-  uint16_t swap;
-  swap = *x;
-  *x = TFT_HEIGHT - *y;
-  *y = swap;
+  *x = TFT_HEIGHT - (((data[2] & 0x0f) << 8) | data[3]);
+  *y = ((data[0] & 0x0f) << 8) | data[1];
 #else
 #error TFT_ORIENTATION not defined!
 #endif

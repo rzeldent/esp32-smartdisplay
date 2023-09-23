@@ -159,7 +159,7 @@ void smartdisplay_init()
   // Clear screen
   lv_obj_clean(lv_scr_act());
 
-#if !defined(ESP32_8048S070N)
+#if !defined(ESP32_2432S024N) && !defined(ESP32_8048S070N)
   // Setup touch
   lvgl_touch_init();
   static lv_indev_drv_t indev_drv;
