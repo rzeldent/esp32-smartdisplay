@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <lvgl.h>
-#if defined(ESP32_3248S035C) || defined(ESP32_8048S070C)
+#if defined(ESP32_2432S024C) || defined(ESP32_3248S035C) || defined(ESP32_8048S070C)
 #include <Wire.h>
 #endif
 
@@ -26,8 +26,93 @@ extern void smartdisplay_tft_sleep();
 // Wake the display
 extern void smartdisplay_tft_wake();
 
-// Buffer size for drawing
-#define DRAW_BUFFER_SIZE (TFT_WIDTH * 10)
+// Default orientation
+#if !defined(TFT_ORIENTATION_PORTRAIT) && !defined(TFT_ORIENTATION_LANDSCAPE) && !defined(TFT_ORIENTATION_PORTRAIT_INV) && !defined(TFT_ORIENTATION_LANDSCAPE_INV)
+#define TFT_ORIENTATION_PORTRAIT
+#endif
+
+// Default RGB order
+#if !defined(TFT_PANEL_ORDER_RGB) && !defined(TFT_PANEL_ORDER_BGR)
+#define TFT_PANEL_ORDER_RGB
+#endif
+
+// ESP32_2432S024N
+#ifdef ESP32_2432S024N
+#define TFT_WIDTH 240
+#define TFT_HEIGHT 320
+#define ILI9431
+#define ILI9431_SPI_SCLK 14
+#define ILI9431_SPI_MOSI 13
+#define ILI9431_SPI_MISO 12
+#define ILI9341_PIN_CS 15
+#define ILI9341_PIN_DC 2
+#define ILI9341_SPI_FREQ 50000000
+#define ILI9341_PIN_BL 21
+#define ILI9341_PWM_CHANNEL_BL 12
+#define ILI9341_PWM_FREQ_BL 5000
+#define ILI9341_PWM_BITS_BL 8
+#define ILI9341_PWM_MAX_BL ((1 << ILI9341_PWM_BITS_BL) - 1)
+
+extern SPIClass spi_ili9431;
+#endif
+
+// ESP32_2432S024R
+#ifdef ESP32_2432S024R
+#define TFT_WIDTH 240
+#define TFT_HEIGHT 320
+#define ILI9431
+#define ILI9431_SPI_SCLK 14
+#define ILI9431_SPI_MOSI 13
+#define ILI9431_SPI_MISO 12
+#define ILI9341_PIN_CS 15
+#define ILI9341_PIN_DC 2
+#define ILI9341_SPI_FREQ 50000000
+#define ILI9341_PIN_BL 21
+#define ILI9341_PWM_CHANNEL_BL 12
+#define ILI9341_PWM_FREQ_BL 5000
+#define ILI9341_PWM_BITS_BL 8
+#define ILI9341_PWM_MAX_BL ((1 << ILI9341_PWM_BITS_BL) - 1)
+#define XPT2046
+#define XPT2046_SPI_SCLK 25
+#define XPT2046_SPI_MOSI 32
+#define XPT2046_SPI_MISO 39
+#define XPT2046_SPI_FREQ 2000000
+#define XPT2046_PIN_INT 36
+#define XPT2046_PIN_CS 33
+// Calibration 240x320
+#define XPT2046_MIN_X 349
+#define XPT2046_MAX_X 3859
+#define XPT2046_MIN_Y 247
+#define XPT2046_MAX_Y 3871
+
+extern SPIClass spi_ili9431;
+extern SPIClass spi_xpt2046;
+#endif
+
+// ESP32_2432S024C
+#ifdef ESP32_2432S024C
+#define TFT_WIDTH 320
+#define TFT_HEIGHT 480
+#define ST7796
+#define ST7796_SPI_SCLK 14
+#define ST7796_SPI_MOSI 13
+#define ST7796_SPI_MISO 12
+#define ST7796_PIN_CS 15
+#define ST7796_PIN_DC 2
+#define ST7796_SPI_FREQ 80000000
+#define ST7796_PIN_BL 27
+#define ST7796_PWM_CHANNEL_BL 12
+#define ST7796_PWM_FREQ_BL 5000
+#define ST7796_PWM_BITS_BL 8
+#define ST7796_PWM_MAX_BL ((1 << ST7796_PWM_BITS_BL) - 1)
+#define CST820
+#define CST820_IIC_SDA 33
+#define CST820_IIC_SCL 32
+#define CST820_IIC_RST 25
+
+extern SPIClass spi_st7796;
+extern TwoWire i2c_cst820;
+#endif
 
 // ESP32_2432S028R
 #ifdef ESP32_2432S028R
@@ -160,6 +245,9 @@ extern SPIClass spi_ili9431;
 extern SPIClass spi_ili9431;
 extern TwoWire i2c_gt911;
 #endif
+
+// Buffer size for drawing
+#define DRAW_BUFFER_SIZE (TFT_WIDTH * 10)
 
 // Build in RGB LED
 #define LED_PIN_R 4
