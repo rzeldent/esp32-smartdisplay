@@ -2,7 +2,7 @@
 
 [![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
 
-## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards ESP32-2432S028R, ESP32-3248S035R and ESP32-3248S035C
+## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards 2432S028R, 3248S035R, 3248S035C, 8048S070N and 8048S070C
 
 This library supports these boards without any effort.
 
@@ -21,7 +21,7 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 
 - [ESP32-2432S028R - 2.8" 240x320 TFT Resistive touch](https://www.aliexpress.com/item/1005004502250619.html)
 - [ESP32-3248S035R/C 3.5" 320x480 TFT Resistive/Capacitive touch](https://www.aliexpress.com/item/1005004632953455.html)
-- [ESP32-8048S070C - 7.0" 800x480 TFT Capacitive touch](https://www.aliexpress.us/item/1005004952726089.html)
+- [ESP32-8048S070C/N - 7.0" 800x480 TFT Capacitive touch](https://www.aliexpress.us/item/1005004952726089.html)
 
 ![ESP32-3248S035R front](assets/images/esp32-3248S035-front.png)
 ![ESP32-3248S035R back](assets/images/esp32-3248S035-back.png)
@@ -46,7 +46,7 @@ These boards offer:
 This library depends on some standard libraries to access the SPI and I2C busses:
 
 - SPI (version ^2.0.0)
-- Wire (version ^2.0.0)
+- Wire (version ^2.0.0) when using capacitive touch
 
 To have all the constants and prototypes from LVGL, the LVGL library is already included.:
 
@@ -57,8 +57,8 @@ This file needs to be provided by the application.
 As this file is referenced from the build of LVGL, the path must be known.
 Normally this file is included in the include directory of your project so the define must be
 
-``` ini
-  -D LV_CONF_PATH=${platformio.src_include}/lv_conf.h
+```ini
+    -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
 ```
 
 The template for the ```lv_conf.h``` file can be found in the LVGL library at ```.pio/libdeps/esp32dev/lvgl/lv_conf_template.h```.
@@ -67,7 +67,7 @@ The template for the ```lv_conf.h``` file can be found in the LVGL library at ``
 
 Basically there is only **ONE** define that need to be defined: The type of board assuming everything is default.
 
-- Type of board
+- Type of board (required)
   - ESP32_2432S028R
   - ESP32_3248S035R
   - ESP32_3248S035C
@@ -86,10 +86,10 @@ Basically there is only **ONE** define that need to be defined: The type of boar
 
 These can be defined in the ```platformio.ini``` file defining the settings:
 
-``` ini
+```ini
 build_flags =
     # LVGL settings
-    -D LV_CONF_PATH="${platformio.include_dir}/lv_conf.h"
+    -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
     # Smart display settings
     -D TFT_PANEL_ORDER_RGB
     #-D TFT_PANEL_ORDER_BGR
@@ -107,7 +107,7 @@ lib_deps =
     rzeldent/esp32_smartdisplay@^1.0.2
 ```
 
-The path for the lv_conf.h above is ```${platformio.include_dir}```.
+The path for the lv_conf.h above is ```${PROJECT_INCLUDE_DIR}```.
 This needs to be specified because the LVGL library included this header file.
 
 ## Demo application
@@ -123,7 +123,7 @@ When used in multiple threads, this corrupts the display and/or state of LVGL
 
 Use like this:
 
-``` c++
+```c++
 const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
 ```
 
@@ -142,7 +142,7 @@ Each channel has a 8 bit resolution so from 0-255.
 
 The lv_colo32_t can be set in the following manner:
 
-``` c++
+```c++
 lv_color32_t({.ch = {.green = 0xFF}}) : lv_color32_t({.ch = {.red = 0xFF}})
 ```
 
