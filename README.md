@@ -19,9 +19,10 @@ There is also a library for [LVGL](https://lvgl.io/) present [LVGL_ESP32_drivers
 These boards are available on AliExpress for decent prices and offer a lot.
 They can be bought in the [Sunton Store](https://www.aliexpress.com/store/1100192306) on AliExpress but saw them also from other sellers.
 
+- [ESP32-2432S024R/C/N - 2.4" 240x320 TFT Resistive/Capacitive touch/No touch](https://www.aliexpress.com/item/1005005865107357.html)
 - [ESP32-2432S028R - 2.8" 240x320 TFT Resistive touch](https://www.aliexpress.com/item/1005004502250619.html)
 - [ESP32-3248S035R/C 3.5" 320x480 TFT Resistive/Capacitive touch](https://www.aliexpress.com/item/1005004632953455.html)
-- [ESP32-8048S070C/N - 7.0" 800x480 TFT Capacitive touch](https://www.aliexpress.us/item/1005004952726089.html)
+- [ESP32-8048S070C/N - 7.0" 800x480 TFT Capacitive touch/No touch](https://www.aliexpress.us/item/1005004952726089.html)
 
 ![ESP32-3248S035R front](assets/images/esp32-3248S035-front.png)
 ![ESP32-3248S035R back](assets/images/esp32-3248S035-back.png)
@@ -68,6 +69,9 @@ The template for the ```lv_conf.h``` file can be found in the LVGL library at ``
 Basically there is only **ONE** define that need to be defined: The type of board assuming everything is default.
 
 - Type of board (required)
+  - ESP32_2432S024R
+  - ESP32_2432S024C
+  - ESP32_2432S024N
   - ESP32_2432S028R
   - ESP32_3248S035R
   - ESP32_3248S035C
@@ -107,7 +111,7 @@ build_flags =
     #-D ESP32_8048S070C
 
 lib_deps =
-    rzeldent/esp32_smartdisplay@^1.0.2
+    rzeldent/esp32_smartdisplay@^1.0.6
 ```
 
 The path for the lv_conf.h above is ```${PROJECT_INCLUDE_DIR}```.
