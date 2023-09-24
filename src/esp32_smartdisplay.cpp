@@ -26,7 +26,7 @@ SPIClass spi_xpt2046;
 #endif
 
 #ifdef ESP32_2432S024C
-SPIClass spi_st7796;
+SPIClass spi_ili9431;
 TwoWire i2c_cst820 = TwoWire(1); // Bus number 1
 #endif
 
@@ -104,7 +104,7 @@ void smartdisplay_init()
 #endif
 
 #ifdef ESP32_3248S024C
-  spi_st7796.begin(ST7796_SPI_SCLK, ST7796_SPI_MISO, ST7796_SPI_MOSI);
+  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
   i2c_cst820.begin(CST820_IIC_SDA, CST820_IIC_SCL);
 #endif
 

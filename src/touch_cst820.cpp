@@ -93,7 +93,7 @@ void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data)
   static int16_t last_x = 0, last_y = 0;
   uint16_t x, y;
   uint8_t gesture;
-  if (cst820_read_touch(&x, &y, &gesture) && gesture == Gesture::SingleTap)
+  if (cst820_read_touch(&x, &y, &gesture) && gesture == Gesture::None)
   {
     log_d("Touch: (%d,%d)", x, y);
     data->state = LV_INDEV_STATE_PR;

@@ -110,7 +110,7 @@ extern SPIClass spi_xpt2046;
 #define CST820_IIC_SCL 32
 #define CST820_IIC_RST 25
 
-extern SPIClass spi_st7796;
+extern SPIClass spi_ili9431;
 extern TwoWire i2c_cst820;
 #endif
 
