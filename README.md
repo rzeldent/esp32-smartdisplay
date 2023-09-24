@@ -91,13 +91,16 @@ build_flags =
     # LVGL settings
     -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
     # Smart display settings
-    -D TFT_PANEL_ORDER_RGB
+    #-D TFT_PANEL_ORDER_RGB
     #-D TFT_PANEL_ORDER_BGR
-    -D TFT_ORIENTATION_PORTRAIT
+    #-D TFT_ORIENTATION_PORTRAIT
     #-D TFT_ORIENTATION_LANDSCAPE
     #-D TFT_ORIENTATION_PORTRAIT_INV
     #-D TFT_ORIENTATION_LANDSCAPE_INV
-    -D ESP32_2432S028R
+    #-D ESP32_2432S024N
+    #-D ESP32_2432S024R
+    -D ESP32_2432S024C
+    #-D ESP32_2432S028R
     #-D ESP32_3248S035R
     #-D ESP32_3248S035C
     #-D ESP32_8048S070N
@@ -169,6 +172,9 @@ Wake the display.
 
 ## Change history
 
+- September
+  - Added support for ESP32_2432S024N/R/S
+  - Version 1.0.7
 - August 2023
   - Added support for esp32_8048S070N/S
   - Display buffer size configurable

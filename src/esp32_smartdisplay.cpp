@@ -10,21 +10,26 @@ extern void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t
 extern void lvgl_touch_init();
 extern void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 
-#if !defined(ESP32_2432S028R) && !defined(ESP32_3248S035R) && !defined(ESP32_3248S035C) && !defined(ESP32_8048S070N) && !defined(ESP32_8048S070C)
-#error Please define type: ESP32_2432S028R, ESP32_3248S035R, ESP32_3248S035C, ESP32_8048S070N or ESP32_8048S070C
-#endif
-
-// Default orientation
-#if !defined(TFT_ORIENTATION_PORTRAIT) && !defined(TFT_ORIENTATION_LANDSCAPE) && !defined(TFT_ORIENTATION_PORTRAIT_INV) && !defined(TFT_ORIENTATION_LANDSCAPE_INV)
-#define TFT_ORIENTATION_PORTRAIT
-#endif
-
-// Default RGB order
-#if !defined(TFT_PANEL_ORDER_RGB) && !defined(TFT_PANEL_ORDER_BGR)
-#define TFT_PANEL_ORDER_RGB
+#if !defined(ESP32_2432S024N) && !defined(ESP32_2432S024R) && !defined(ESP32_2432S024C) && !defined(ESP32_2432S028R) && !defined(ESP32_3248S035R) && !defined(ESP32_3248S035C) && !defined(ESP32_8048S070N) && !defined(ESP32_8048S070C)
+#error Please define type: ESP32_2432S024N, ESP32_2432S024R, ESP32_2432S024C, ESP32_2432S028R, ESP32_3248S035R, ESP32_3248S035C, ESP32_8048S070N or ESP32_8048S070C
 #endif
 
 // Hardware interfaces
+
+#ifdef ESP32_2432S024N
+SPIClass spi_ili9431;
+#endif
+
+#ifdef ESP32_2432S024R
+SPIClass spi_ili9431;
+SPIClass spi_xpt2046;
+#endif
+
+#ifdef ESP32_2432S024C
+SPIClass spi_ili9431;
+TwoWire i2c_cst820 = TwoWire(1); // Bus number 1
+#endif
+
 #ifdef ESP32_2432S028R
 SPIClass spi_ili9431;
 SPIClass spi_xpt2046;
@@ -89,6 +94,20 @@ void smartdisplay_init()
   lv_init();
 
 // Setup interfaces
+#ifdef ESP32_2432S024N
+  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
+#endif
+
+#ifdef ESP32_2432S024R
+  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
+  spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
+#endif
+
+#ifdef ESP32_2432S024C
+  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
+  i2c_cst820.begin(CST820_IIC_SDA, CST820_IIC_SCL);
+#endif
+
 #ifdef ESP32_2432S028R
   spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
   spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
@@ -140,7 +159,7 @@ void smartdisplay_init()
   // Clear screen
   lv_obj_clean(lv_scr_act());
 
-#if !defined(ESP32_8048S070N)
+#if !defined(ESP32_2432S024N) && !defined(ESP32_8048S070N)
   // Setup touch
   lvgl_touch_init();
   static lv_indev_drv_t indev_drv;
