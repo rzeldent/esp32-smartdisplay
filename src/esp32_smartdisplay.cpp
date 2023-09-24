@@ -103,7 +103,7 @@ void smartdisplay_init()
   spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
 #endif
 
-#ifdef ESP32_3248S024C
+#ifdef ESP32_2432S024C
   spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
   i2c_cst820.begin(CST820_IIC_SDA, CST820_IIC_SCL);
 #endif
