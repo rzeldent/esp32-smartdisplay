@@ -19,6 +19,6 @@
     "dependencies": {
         "SPI": "^2.0.0",
         "Wire": "^2.0.0.",
-        "lvgl/lvgl": "^8.3.4"
+        "lvgl/lvgl": "^8.3.9"
     }
 }
