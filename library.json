@@ -1,8 +1,8 @@
 {
     "name": "esp32_smartdisplay",
     "version": "1.0.7",
-    "description": "LVGL drivers for Sunton 2432S024, 2432S028, 3248S035 and 8048S070 boards",
-    "keywords": "LVGL ESP32-2432S024 ESP32-2432S028 ESP32-3248S035 ESP-8048S070 SmartDisplay",
+    "description": "LVGL driver for Sunton ESP32 TFT display boards",
+    "keywords": "LVGL 2432S024 2432S028 3248S035 8048S070",
     "repository": {
         "type": "git",
         "url": "https://github.com/rzeldent/esp32-smartdisplay"
