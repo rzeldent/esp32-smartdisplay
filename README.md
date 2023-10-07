@@ -80,13 +80,13 @@ Basically there is only **ONE** define that need to be defined: The type of boar
 
 - Orientation of the board (optional)
   - TFT_ORIENTATION_PORTRAIT (default)
-  - TFT_ORIENTATION_LANDSCAPE
-  - TFT_ORIENTATION_PORTRAIT_INV
-  - TFT_ORIENTATION_LANDSCAPE_INV
+  - TFT_ORIENTATION_LANDSCAPE (rotated 90 degrees)
+  - TFT_ORIENTATION_PORTRAIT_INV (rotated 180 degrees)
+  - TFT_ORIENTATION_LANDSCAPE_INV (rotated 270/-90 degrees)
 
 - LCD Panel RGB order (if red and blue are swapped on the display, optional)
-  - TFT_PANEL_ORDER_RGB (default)
-  - TFT_PANEL_ORDER_BGR
+  - TFT_PANEL_ORDER_RGB
+  - TFT_PANEL_ORDER_BGR (default)
 
 These can be defined in the ```platformio.ini``` file defining the settings:
 
@@ -95,8 +95,8 @@ build_flags =
     # LVGL settings
     -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
     # Smart display settings
-    #-D TFT_PANEL_ORDER_RGB
     #-D TFT_PANEL_ORDER_BGR
+    #-D TFT_PANEL_ORDER_RGB
     #-D TFT_ORIENTATION_PORTRAIT
     #-D TFT_ORIENTATION_LANDSCAPE
     #-D TFT_ORIENTATION_PORTRAIT_INV
@@ -174,26 +174,27 @@ Put the display to sleep.
 
 Wake the display.
 
-## Change history
-
-- September
+## Version history
+- October 2023
+  - Cganged default RGB order to BGR
+- September 2023
   - Added support for ESP32_2432S024N/R/S
   - Version 1.0.7
 - August 2023
   - Added support for esp32_8048S070N/S
   - Display buffer size configurable
-- Feb 2023
+- February 2023
   - Version 1.0.3
   - Added variable for the LCD panel RGB/BGR order
-- Feb 2023
+- February 2023
   - Version 1.0.3
   - Added mutex for access to lvgl, required for multithreading
   - Changed RGB led input to lv_color32_t
-- Dec 2022
+- December 2022
   - Initial version 1.0.2.
   - Drivers for ESP32_2432S028R, ESP32_3248S035R and ESP32_3248S035C displays working.
   - Sound output
   - RGB Led output
   - CDS light sensor input
-- Jul 2022
+- July 2022
   - Initial work started

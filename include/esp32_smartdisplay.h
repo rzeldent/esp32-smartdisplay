@@ -33,7 +33,7 @@ extern void smartdisplay_tft_wake();
 
 // Default RGB order
 #if !defined(TFT_PANEL_ORDER_RGB) && !defined(TFT_PANEL_ORDER_BGR)
-#define TFT_PANEL_ORDER_RGB
+#define TFT_PANEL_ORDER_BGR
 #endif
 
 // ESP32_2432S024N

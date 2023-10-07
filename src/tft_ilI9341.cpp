@@ -45,7 +45,7 @@
 #endif
 
 #if !defined(TFT_PANEL_ORDER_RGB) && !defined(TFT_PANEL_ORDER_BGR)
-#error Please define RGB order: TFT_PANEL_ORDER_BGR or
+#error Please define RGB order: TFT_PANEL_ORDER_RGB or TFT_PANEL_ORDER_BGR
 #endif
 
 #ifdef TFT_PANEL_ORDER_RGB
