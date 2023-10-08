@@ -176,7 +176,8 @@ Wake the display.
 
 ## Version history
 - October 2023
-  - Cganged default RGB order to BGR
+  - Changed default RGB order to BGR
+  - Version 1.0.8
 - September 2023
   - Added support for ESP32_2432S024N/R/S
   - Version 1.0.7
