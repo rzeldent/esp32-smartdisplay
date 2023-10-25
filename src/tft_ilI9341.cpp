@@ -59,19 +59,19 @@
 #endif
 
 void ili9341_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
+{
+  digitalWrite(ILI9341_PIN_DC, LOW); // Command mode => command
+  spi_ili9431.beginTransaction(SPISettings(ILI9341_SPI_FREQ, MSBFIRST, SPI_MODE0));
+  digitalWrite(ILI9341_PIN_CS, LOW); // Chip select => enable
+  spi_ili9431.write(command);
+  if (length > 0)
   {
-    digitalWrite(ILI9341_PIN_DC, LOW); // Command mode => command
-    spi_ili9431.beginTransaction(SPISettings(ILI9341_SPI_FREQ, MSBFIRST, SPI_MODE0));
-    digitalWrite(ILI9341_PIN_CS, LOW); // Chip select => enable
-    spi_ili9431.write(command);
-    if (length > 0)
-    {
-      digitalWrite(ILI9341_PIN_DC, HIGH); // Command mode => data
-      spi_ili9431.writeBytes(data, length);
-    }
-    digitalWrite(ILI9341_PIN_CS, HIGH); // Chip select => disable
-    spi_ili9431.endTransaction();
+    digitalWrite(ILI9341_PIN_DC, HIGH); // Command mode => data
+    spi_ili9431.writeBytes(data, length);
   }
+  digitalWrite(ILI9341_PIN_CS, HIGH); // Chip select => disable
+  spi_ili9431.endTransaction();
+}
 
 void ili9341_send_pixels(const uint8_t command, const lv_color_t data[], const ushort length)
 {
@@ -110,17 +110,38 @@ void ili9341_send_init_commands()
   ili9341_send_command(CMD_VCOMVTRL1, vcomctr1, sizeof(vcomctr1));         // VCOM Control 1
   static const uint8_t vcomctr2[] = {0xBE};                                //
   ili9341_send_command(CMD_VCOMVTRL2, vcomctr2, sizeof(vcomctr2));         // VCOM Control 2
+
 #ifdef TFT_ORIENTATION_PORTRAIT
-  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_PANEL_ORDER}; // Portrait 0 Degrees
+// Portrait 0 Degrees
+#ifndef TFT_MIRRORED
+  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_PANEL_ORDER};
+#else
+  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MV | MADCTL_PANEL_ORDER}; // Mirrored
+#endif
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE
-  static const uint8_t madctl[] = {MADCTL_MV | MADCTL_PANEL_ORDER}; // Landscape 90 Degrees
+// Landscape 90 Degrees
+#ifndef TFT_MIRRORED
+  static const uint8_t madctl[] = {MADCTL_MV | MADCTL_PANEL_ORDER};
+#else
+  static const uint8_t madctl[] = {MADCTL_ML | MADCTL_PANEL_ORDER}; // Mirrored
+#endif
 #else
 #ifdef TFT_ORIENTATION_PORTRAIT_INV
-  static const uint8_t madctl[] = {MADCTL_MX | MADCTL_PANEL_ORDER}; // Portrait inverted 180 Degrees
+// Portrait inverted 180 Degrees
+#ifndef TFT_MIRRORED
+  static const uint8_t madctl[] = {MADCTL_MX | MADCTL_PANEL_ORDER};
+#else
+  static const uint8_t madctl[] = {MADCTL_MX | MADCTL_MV | MADCTL_PANEL_ORDER}; // Mirrored
+#endif
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE_INV
-  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MX | MADCTL_MV | MADCTL_PANEL_ORDER}; // Landscape inverted 270 Degrees
+// Landscape inverted 270 Degrees
+#ifndef TFT_MIRRORED
+  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MX | MADCTL_MV | MADCTL_PANEL_ORDER};
+#else
+  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MX | MADCTL_MH | MADCTL_PANEL_ORDER}; // Mirrored
+#endif
 #else
 #error TFT_ORIENTATION not defined!
 #endif

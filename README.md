@@ -53,7 +53,7 @@ To have all the constants and prototypes from LVGL, the LVGL library is already 
 
 - LVGL (version ^8.3.2)
 
-To use the LVGL library, a ```lv_conf.h``` file is required to define the settings for LVGL.
+To use the LVGL library, a `lv_conf.h` file is required to define the settings for LVGL.
 This file needs to be provided by the application.
 As this file is referenced from the build of LVGL, the path must be known.
 Normally this file is included in the include directory of your project so the define must be
@@ -62,13 +62,14 @@ Normally this file is included in the include directory of your project so the d
     -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
 ```
 
-The template for the ```lv_conf.h``` file can be found in the LVGL library at ```.pio/libdeps/esp32dev/lvgl/lv_conf_template.h```.
+The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/libdeps/esp32dev/lvgl/lv_conf_template.h`.
 
 ## How to use
 
 Basically there is only **ONE** define that need to be defined: The type of board assuming everything is default.
 
 - Type of board (required)
+
   - ESP32_2432S024R
   - ESP32_2432S024C
   - ESP32_2432S024N
@@ -79,16 +80,21 @@ Basically there is only **ONE** define that need to be defined: The type of boar
   - ESP32_8048S070C
 
 - Orientation of the board (optional)
+
   - TFT_ORIENTATION_PORTRAIT (default)
   - TFT_ORIENTATION_LANDSCAPE (rotated 90 degrees)
   - TFT_ORIENTATION_PORTRAIT_INV (rotated 180 degrees)
   - TFT_ORIENTATION_LANDSCAPE_INV (rotated 270/-90 degrees)
 
+- Mirrored (optional)
+  Some TFT batches seem to have the contents mirrored (vertical orientation flipped).
+  The flag TFT_MIRRORED compensates for this anomaly.
+
 - LCD Panel RGB order (if red and blue are swapped on the display, optional)
   - TFT_PANEL_ORDER_RGB
   - TFT_PANEL_ORDER_BGR (default)
 
-These can be defined in the ```platformio.ini``` file defining the settings:
+These can be defined in the `platformio.ini` file defining the settings:
 
 ```ini
 build_flags =
@@ -101,6 +107,7 @@ build_flags =
     #-D TFT_ORIENTATION_LANDSCAPE
     #-D TFT_ORIENTATION_PORTRAIT_INV
     #-D TFT_ORIENTATION_LANDSCAPE_INV
+    #-D TFT_MIRRORED
     #-D ESP32_2432S024N
     #-D ESP32_2432S024R
     -D ESP32_2432S024C
@@ -111,10 +118,10 @@ build_flags =
     #-D ESP32_8048S070C
 
 lib_deps =
-    rzeldent/esp32_smartdisplay@^1.0.6
+    rzeldent/esp32_smartdisplay@^1.0.9
 ```
 
-The path for the lv_conf.h above is ```${PROJECT_INCLUDE_DIR}```.
+The path for the lv_conf.h above is `${PROJECT_INCLUDE_DIR}`.
 This needs to be specified because the LVGL library included this header file.
 
 ## Demo application
@@ -175,9 +182,11 @@ Put the display to sleep.
 Wake the display.
 
 ## Version history
+
 - October 2023
+  - Added option for mirrored TFT's
   - Changed default RGB order to BGR
-  - Version 1.0.8
+  - Version 1.0.8 and 1.0.9
 - September 2023
   - Added support for ESP32_2432S024N/R/S
   - Version 1.0.7
