@@ -86,9 +86,9 @@ Basically there is only **ONE** define that need to be defined: The type of boar
   - TFT_ORIENTATION_PORTRAIT_INV (rotated 180 degrees)
   - TFT_ORIENTATION_LANDSCAPE_INV (rotated 270/-90 degrees)
 
-- Mirrored (optional)
-  Some TFT batches seem to have the contents mirrored (vertical orientation flipped).
-  The flag TFT_MIRRORED compensates for this anomaly.
+- Flipped/Mirrored (optional)
+  Some TFT batches seem to have the contents mirrored and flipped.
+  The flag TFT_FLIPPEDMIRRORED compensates for this (production?) anomaly.
 
 - LCD Panel RGB order (if red and blue are swapped on the display, optional)
   - TFT_PANEL_ORDER_RGB
@@ -107,10 +107,10 @@ build_flags =
     #-D TFT_ORIENTATION_LANDSCAPE
     #-D TFT_ORIENTATION_PORTRAIT_INV
     #-D TFT_ORIENTATION_LANDSCAPE_INV
-    #-D TFT_MIRRORED
+    #-D TFT_FLIPPEDMIRRORED
     #-D ESP32_2432S024N
     #-D ESP32_2432S024R
-    -D ESP32_2432S024C
+    #-D ESP32_2432S024C
     #-D ESP32_2432S028R
     #-D ESP32_3248S035R
     #-D ESP32_3248S035C
@@ -184,7 +184,7 @@ Wake the display.
 ## Version history
 
 - October 2023
-  - Added option for mirrored TFT's
+  - Added option for flipped/mirrored TFT's
   - Changed default RGB order to BGR
   - Version 1.0.8 and 1.0.9
 - September 2023

@@ -9,7 +9,7 @@ jobs:
         smartboard: ["-DESP32_2432S024N", "-DESP32_2432S024R", "-DESP32_2432S024C", "-DESP32_2432S028R", "-DESP32_3248S035R", "-DESP32_3248S035C", "-DESP32_8048S070N", "-DESP32_8048S070C"]
         orientation: ["-DTFT_ORIENTATION_PORTRAIT", "-DTFT_ORIENTATION_LANDSCAPE", "-DTFT_ORIENTATION_PORTRAIT_INV", "-DTFT_ORIENTATION_LANDSCAPE_INV"]
         rgborder: ["-DTFT_PANEL_ORDER_RGB", "-DTFT_PANEL_ORDER_BGR"]
-        mirrored: ["", "-DTFT_MIRRORED"]
+        flippedmirrored: ["", "-DTFT_FLIPPEDMIRRORED"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up python
@@ -22,7 +22,7 @@ jobs:
       - name: Build firmware
         run: pio ci --lib="." --board esp32dev "examples/lvgl_pushbutton/main.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -Ofast -DLV_CONF_PATH="${{github.workspace}}/examples/lvgl_pushbutton/lv_conf.h" ${{matrix.smartboard}} ${{matrix.orientation}} ${{matrix.rgborder}} ${{matrix.mirrored}}
+          PLATFORMIO_BUILD_FLAGS: -Ofast -DLV_CONF_PATH="${{github.workspace}}/examples/lvgl_pushbutton/lv_conf.h" ${{matrix.smartboard}} ${{matrix.orientation}} ${{matrix.rgborder}} ${{matrix.flippedmirrored}}
       - name: Archive
         uses: actions/upload-artifact@v3
         with:

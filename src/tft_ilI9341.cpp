@@ -113,34 +113,34 @@ void ili9341_send_init_commands()
 
 #ifdef TFT_ORIENTATION_PORTRAIT
 // Portrait 0 Degrees
-#ifndef TFT_MIRRORED
+#ifndef TFT_FLIPPEDMIRRORED
   static const uint8_t madctl[] = {MADCTL_MY | MADCTL_PANEL_ORDER};
 #else
-  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MV | MADCTL_PANEL_ORDER}; // Mirrored
+  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MV | MADCTL_PANEL_ORDER}; // Flipped/Mirrored anomaly
 #endif
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE
 // Landscape 90 Degrees
-#ifndef TFT_MIRRORED
+#ifndef TFT_FLIPPEDMIRRORED
   static const uint8_t madctl[] = {MADCTL_MV | MADCTL_PANEL_ORDER};
 #else
-  static const uint8_t madctl[] = {MADCTL_ML | MADCTL_PANEL_ORDER}; // Mirrored
+  static const uint8_t madctl[] = {MADCTL_ML | MADCTL_PANEL_ORDER}; // Flipped/Mirrored anomaly
 #endif
 #else
 #ifdef TFT_ORIENTATION_PORTRAIT_INV
 // Portrait inverted 180 Degrees
-#ifndef TFT_MIRRORED
+#ifndef TFT_FLIPPEDMIRRORED
   static const uint8_t madctl[] = {MADCTL_MX | MADCTL_PANEL_ORDER};
 #else
-  static const uint8_t madctl[] = {MADCTL_MX | MADCTL_MV | MADCTL_PANEL_ORDER}; // Mirrored
+  static const uint8_t madctl[] = {MADCTL_MX | MADCTL_MV | MADCTL_PANEL_ORDER}; // Flipped/Mirrored anomaly
 #endif
 #else
 #ifdef TFT_ORIENTATION_LANDSCAPE_INV
 // Landscape inverted 270 Degrees
-#ifndef TFT_MIRRORED
+#ifndef TFT_FLIPPEDMIRRORED
   static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MX | MADCTL_MV | MADCTL_PANEL_ORDER};
 #else
-  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MX | MADCTL_MH | MADCTL_PANEL_ORDER}; // Mirrored
+  static const uint8_t madctl[] = {MADCTL_MY | MADCTL_MX | MADCTL_MH | MADCTL_PANEL_ORDER}; // Flipped/Mirrored anomaly
 #endif
 #else
 #error TFT_ORIENTATION not defined!
