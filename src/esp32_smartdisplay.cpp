@@ -15,7 +15,7 @@ extern void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 #endif
 
 // Hardware interfaces
-#if defined(ESP32_2432S024N) || defined(ESP32_2432S024R)
+#if defined(ESP32_2432S024N) || defined(ESP32_2432S024R) || defined(ESP32_2432S024C)
 SPIClass spi_ili9431;
 #ifdef ESP32_2432S024R
 SPIClass spi_xpt2046;
