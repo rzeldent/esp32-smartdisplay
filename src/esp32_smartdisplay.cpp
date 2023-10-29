@@ -10,24 +10,19 @@ extern void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t
 extern void lvgl_touch_init();
 extern void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 
-#if !defined(ESP32_2432S024N) && !defined(ESP32_2432S024R) && !defined(ESP32_2432S024C) && !defined(ESP32_2432S028R) && !defined(ESP32_3248S035R) && !defined(ESP32_3248S035C) && !defined(ESP32_8048S070N) && !defined(ESP32_8048S070C)
-#error Please define type: ESP32_2432S024N, ESP32_2432S024R, ESP32_2432S024C, ESP32_2432S028R, ESP32_3248S035R, ESP32_3248S035C, ESP32_8048S070N or ESP32_8048S070C
+#if !defined(ESP32_SMARTDISPLAY_BOARD_VALID)
+#error Please define the board: ESP32_2432S024N, ESP32_2432S024R, ESP32_2432S024C, ESP32_2432S028R, ESP32_3248S035R, ESP32_3248S035C, ESP32_8048S043N, ESP32_8048S043R, ESP32_8048S050N, ESP32_8048S050C, ESP32_8048S070N or ESP32_8048S070C
 #endif
 
 // Hardware interfaces
-
-#ifdef ESP32_2432S024N
+#if defined(ESP32_2432S024N) || defined(ESP32_2432S024R)
 SPIClass spi_ili9431;
-#endif
-
 #ifdef ESP32_2432S024R
-SPIClass spi_ili9431;
 SPIClass spi_xpt2046;
 #endif
-
 #ifdef ESP32_2432S024C
-SPIClass spi_ili9431;
 TwoWire i2c_cst820 = TwoWire(1); // Bus number 1
+#endif
 #endif
 
 #ifdef ESP32_2432S028R
@@ -35,22 +30,41 @@ SPIClass spi_ili9431;
 SPIClass spi_xpt2046;
 #endif
 
-#ifdef ESP32_3248S035R
+#if defined(ESP32_3248S035R) || defined(ESP32_3248S035C)
 SPIClass spi_st7796;
-#endif
-
 #ifdef ESP32_3248S035C
-SPIClass spi_st7796;
 TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
 #endif
-
-#ifdef ESP32_8048S070N
-SPIClass spi_ili9431;
 #endif
 
+#if defined(ESP32_8048S043N) || defined(ESP32_8048S043R) || defined(ESP32_8048S043C)
+SPIClass spi_ili9431;
+#ifdef ESP32_8048S043R
+SPIClass spi_xpt2046;
+#endif
+#ifdef ESP32_3248S043C
+TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
+#endif
+#endif
+
+#if defined(ESP32_8048S050N) || defined(ESP32_8048S050R) || defined(ESP32_8048S050C)
+SPIClass spi_ili9431;
+#ifdef ESP32_8048S050R
+SPIClass spi_xpt2046;
+#endif
+#ifdef ESP32_8048S050C
+TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
+#endif
+#endif
+
+#if defined(ESP32_8048S070N) || defined(ESP32_8048S070R) || defined(ESP32_8048S070C)
+SPIClass spi_ili9431;
+#ifdef ESP32_8048S070R
+SPIClass spi_xpt2046;
+#endif
 #ifdef ESP32_8048S070C
-SPIClass spi_ili9431;
 TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
+#endif
 #endif
 
 #if LV_USE_LOG
@@ -83,10 +97,10 @@ void smartdisplay_init()
 
   // Setup CDS Light sensor
   analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
-  pinMode(CDS_PIN, INPUT);
+  pinMode(LIGHTSENSOR_IN, INPUT);
 
   // Audio
-  pinMode(AUDIO_PIN, INPUT); // Set high impedance
+  pinMode(SPEAKER_OUT, INPUT); // Set high impedance
 
 #if LV_USE_LOG
   lv_log_register_print_cb(lvgl_log);
@@ -94,18 +108,14 @@ void smartdisplay_init()
   lv_init();
 
 // Setup interfaces
-#ifdef ESP32_2432S024N
+#if defined(ESP32_2432S024N) || defined(ESP32_2432S024R) || defined(ESP32_2432S024C)
   spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
-#endif
-
 #ifdef ESP32_2432S024R
-  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
   spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
 #endif
-
 #ifdef ESP32_2432S024C
-  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
   i2c_cst820.begin(CST820_IIC_SDA, CST820_IIC_SCL);
+#endif
 #endif
 
 #ifdef ESP32_2432S028R
@@ -113,23 +123,26 @@ void smartdisplay_init()
   spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
 #endif
 
-#ifdef ESP32_3248S035R
+#if defined(ESP32_3248S035R) || defined(ESP32_3248S035C)
   spi_st7796.begin(ST7796_SPI_SCLK, ST7796_SPI_MISO, ST7796_SPI_MOSI);
-  // xpy2046 uses same SPI bus
-#endif
-
+  // xpt2046 uses same SPI bus
 #ifdef ESP32_3248S035C
-  spi_st7796.begin(ST7796_SPI_SCLK, ST7796_SPI_MISO, ST7796_SPI_MOSI);
   i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
 #endif
-
-#ifdef ESP32_8048S070N
-  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
 #endif
 
+#if defined(ESP32_8048S043N) || defined(ESP32_8048S043R)
+  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
+#ifdef ESP32_8048S043R
+  i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
+#endif
+#endif
+
+#if defined(ESP32_8048S070N) || defined(ESP32_8048S070C)
+  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
 #ifdef ESP32_8048S070C
-  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
   i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
+#endif
 #endif
 
   // Setup TFT display
@@ -159,7 +172,8 @@ void smartdisplay_init()
   // Clear screen
   lv_obj_clean(lv_scr_act());
 
-#if !defined(ESP32_2432S024N) && !defined(ESP32_8048S070N)
+// If there is a touch controller defined
+#if defined(CST820) || defined(XPT2046) || defined(GT911)
   // Setup touch
   lvgl_touch_init();
   static lv_indev_drv_t indev_drv;
@@ -167,7 +181,7 @@ void smartdisplay_init()
   indev_drv.type = LV_INDEV_TYPE_POINTER;
   indev_drv.read_cb = lvgl_touch_read;
   lv_indev_drv_register(&indev_drv);
-#endif  
+#endif
 }
 
 void smartdisplay_set_led_color(lv_color32_t rgb)
@@ -179,11 +193,14 @@ void smartdisplay_set_led_color(lv_color32_t rgb)
 
 int smartdisplay_get_light_intensity()
 {
-  return analogRead(CDS_PIN);
+  return analogRead(LIGHTSENSOR_IN);
 }
 
 void smartdisplay_beep(unsigned int frequency, unsigned long duration)
 {
+  // Newer boards have I2S
+  #ifdef SPEAKER_OUT
   // Uses PWM Channel 0
-  tone(AUDIO_PIN, frequency, duration);
+  tone(SPEAKER_OUT, frequency, duration);
+  #endif
 }

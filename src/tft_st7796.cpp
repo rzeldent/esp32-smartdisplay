@@ -29,24 +29,6 @@
 #define COLMOD_CTRL_16BIT 0x05
 #define COLMOD_RGB656 (COLMOD_RGB_16BIT | COLMOD_CTRL_16BIT)
 
-#if !defined(TFT_ORIENTATION_PORTRAIT) && !defined(TFT_ORIENTATION_LANDSCAPE) && !defined(TFT_ORIENTATION_PORTRAIT_INV) && !defined(TFT_ORIENTATION_LANDSCAPE_INV)
-#error Please define orientation: TFT_ORIENTATION_PORTRAIT, TFT_ORIENTATION_LANDSCAPE, TFT_ORIENTATION_PORTRAIT_INV or TFT_ORIENTATION_LANDSCAPE_INV
-#endif
-
-#if !defined(TFT_PANEL_ORDER_RGB) && !defined(TFT_PANEL_ORDER_BGR)
-#error Please define RGB order: TFT_PANEL_ORDER_BGR or
-#endif
-
-#ifdef TFT_PANEL_ORDER_RGB
-#define MADCTL_PANEL_ORDER MADCTL_RGB
-#else
-#ifdef TFT_PANEL_ORDER_BGR
-#define MADCTL_PANEL_ORDER MADCTL_BGR
-#else
-#error TFT_PANEL_ORDER not defined!
-#endif
-#endif
-
 void st7796_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
 {
   digitalWrite(ST7796_PIN_DC, LOW); // Command mode => command
@@ -132,12 +114,12 @@ void lvgl_tft_init()
   digitalWrite(ST7796_PIN_CS, HIGH);
 
   pinMode(ST7796_PIN_BL, OUTPUT); // Backlight
-  ledcSetup(ST7796_PWM_CHANNEL_BL, ST7796_PWM_FREQ_BL, ST7796_PWM_BITS_BL);
-  ledcAttachPin(ST7796_PIN_BL, ST7796_PWM_CHANNEL_BL);
+  ledcSetup(PWM_CHANNEL_BL, PWM_FREQ_BL, PWM_BITS_BL);
+  ledcAttachPin(ST7796_PIN_BL, PWM_CHANNEL_BL);
 
   st7796_send_init_commands();
 
-  smartdisplay_tft_set_backlight(ST7796_PWM_MAX_BL); // Backlight on
+  smartdisplay_tft_set_backlight(PWM_MAX_BL); // Backlight on
 }
 
 void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
@@ -164,7 +146,7 @@ void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color
 
 void smartdisplay_tft_set_backlight(uint16_t duty)
 {
-  ledcWrite(ST7796_PWM_CHANNEL_BL, duty);
+  ledcWrite(PWM_CHANNEL_BL, duty);
 }
 
 void smartdisplay_tft_sleep()

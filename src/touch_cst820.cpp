@@ -16,10 +16,6 @@ enum Gesture : uint8_t
   LongPress = 0x0C
 };
 
-#if !defined(TFT_ORIENTATION_PORTRAIT) && !defined(TFT_ORIENTATION_LANDSCAPE) && !defined(TFT_ORIENTATION_PORTRAIT_INV) && !defined(TFT_ORIENTATION_LANDSCAPE_INV)
-#error Please define orientation: TFT_ORIENTATION_PORTRAIT, TFT_ORIENTATION_LANDSCAPE, TFT_ORIENTATION_PORTRAIT_INV or TFT_ORIENTATION_LANDSCAPE_INV
-#endif
-
 bool cst820_write_register(uint8_t reg, const uint8_t buf[], int len)
 {
   i2c_cst820.beginTransmission(CST820_I2C_SLAVE_ADDR);

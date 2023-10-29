@@ -2,7 +2,7 @@
 
 [![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
 
-## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards 2432S024R/C/N, 2432S028R, 3248S035R/C and 8048S070N/C
+## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards 2432S024R/C/N, 2432S028R, 3248S035R/C, 8048S035N/C and 8048S070N/C
 
 This library supports these boards without any effort.
 
@@ -22,6 +22,7 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 - [ESP32-2432S024R/C/N - 2.4" 240x320 TFT Resistive/Capacitive touch/No touch](https://www.aliexpress.com/item/1005005865107357.html)
 - [ESP32-2432S028R - 2.8" 240x320 TFT Resistive touch](https://www.aliexpress.com/item/1005004502250619.html)
 - [ESP32-3248S035R/C 3.5" 320x480 TFT Resistive/Capacitive touch](https://www.aliexpress.com/item/1005004632953455.html)
+- [ESP32-8048S035C/N - 4.3" 800x480 TFT Capacitive touch/No touch](https://wiki.makerfabs.com/Sunton_ESP32_S3_4.3_inch_800x400_IPS_with_Touch.html)
 - [ESP32-8048S070C/N - 7.0" 800x480 TFT Capacitive touch/No touch](https://www.aliexpress.us/item/1005004952726089.html)
 
 ![ESP32-3248S035R front](assets/images/esp32-3248S035-front.png)
@@ -76,7 +77,14 @@ Basically there is only **ONE** define that need to be defined: The type of boar
   - ESP32_2432S028R
   - ESP32_3248S035R
   - ESP32_3248S035C
+  - ESP32_8048S043N
+  - ESP32_8048S043R
+  - ESP32_8048S043C
+  - ESP32_8048S050N
+  - ESP32_8048S050R
+  - ESP32_8048S050C
   - ESP32_8048S070N
+  - ESP32_8048S070R
   - ESP32_8048S070C
 
 - Orientation of the board (optional)
@@ -114,6 +122,8 @@ build_flags =
     #-D ESP32_2432S028R
     #-D ESP32_3248S035R
     #-D ESP32_3248S035C
+    #-D ESP32_8048S043N
+    #-D ESP32_8048S043C
     #-D ESP32_8048S070N
     #-D ESP32_8048S070C
 
@@ -168,6 +178,7 @@ The sensor measures the (ambient) light level and can be used to adjust the brig
 ### void smartdisplay_beep(unsigned int frequency, unsigned long duration)
 
 Beep with the specified frequency and duration. To hear the sound a 8 ohms speaker must be connected.
+Later versions of the board (ESP32_8048S043, ESP32_8048S050, ESP32_8048S070) have I2S audio and this function does not work.
 
 ### void smartdisplay_tft_set_backlight(uint16_t duty)
 
@@ -184,6 +195,7 @@ Wake the display.
 ## Version history
 
 - October 2023
+  - Added support for esp32_8048S034N/C
   - Added option for flipped/mirrored TFT's
   - Changed default RGB order to BGR
   - Version 1.0.8 and 1.0.9
@@ -191,7 +203,7 @@ Wake the display.
   - Added support for ESP32_2432S024N/R/S
   - Version 1.0.7
 - August 2023
-  - Added support for esp32_8048S070N/S
+  - Added support for esp32_8048S070N/C
   - Display buffer size configurable
 - February 2023
   - Version 1.0.3
