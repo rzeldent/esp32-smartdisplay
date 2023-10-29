@@ -40,6 +40,16 @@
 #define COLMOD_CTRL_16BIT 0x05
 #define COLMOD_RGB656 (COLMOD_RGB_16BIT | COLMOD_CTRL_16BIT)
 
+#ifdef TFT_PANEL_ORDER_RGB
+#define MADCTL_PANEL_ORDER MADCTL_RGB
+#else
+#ifdef TFT_PANEL_ORDER_BGR
+#define MADCTL_PANEL_ORDER MADCTL_BGR
+#else
+#error TFT_PANEL_ORDER not defined!
+#endif
+#endif
+
 void ili9341_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
 {
   digitalWrite(ILI9341_PIN_DC, LOW); // Command mode => command
