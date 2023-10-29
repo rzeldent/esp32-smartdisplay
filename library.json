@@ -1,6 +1,6 @@
 {
     "name": "esp32_smartdisplay",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "LVGL driver for Sunton ESP32 TFT display boards",
     "keywords": "LVGL 2432S024 2432S028 3248S035 8048S070",
     "repository": {
