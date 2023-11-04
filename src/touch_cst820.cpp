@@ -1,6 +1,6 @@
 #include <esp32_smartdisplay.h>
 
-#ifdef CST820
+#ifdef HAS_CST820
 
 #define CST820_I2C_SLAVE_ADDR 0x15
 
@@ -18,28 +18,28 @@ enum Gesture : uint8_t
 
 bool cst820_write_register(uint8_t reg, const uint8_t buf[], int len)
 {
-  i2c_cst820.beginTransmission(CST820_I2C_SLAVE_ADDR);
-  if (!i2c_cst820.write(reg))
+  Wire1.beginTransmission(CST820_I2C_SLAVE_ADDR);
+  if (!Wire1.write(reg))
     return false;
 
-  auto sent = i2c_cst820.write(buf, len);
-  i2c_cst820.endTransmission();
+  auto sent = Wire1.write(buf, len);
+  Wire1.endTransmission();
   return sent == len;
 }
 
 bool cst820_read_register(uint8_t reg, uint8_t buf[], int len)
 {
-  i2c_cst820.beginTransmission(CST820_I2C_SLAVE_ADDR);
-  if (!i2c_cst820.write(reg))
+  Wire1.beginTransmission(CST820_I2C_SLAVE_ADDR);
+  if (!Wire1.write(reg))
     return false;
 
-  i2c_cst820.endTransmission(false);
-  auto requested = i2c_cst820.requestFrom(CST820_I2C_SLAVE_ADDR, len);
+  Wire1.endTransmission(false);
+  auto requested = Wire1.requestFrom(CST820_I2C_SLAVE_ADDR, len);
   if (requested != len)
     return false;
 
-  while (i2c_cst820.available() && len--)
-    *buf++ = i2c_cst820.read();
+  while (Wire1.available() && len--)
+    *buf++ = Wire1.read();
 
   return len == 0;
 }

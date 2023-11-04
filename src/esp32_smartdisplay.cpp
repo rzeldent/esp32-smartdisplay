@@ -1,7 +1,5 @@
 #include <esp32_smartdisplay.h>
 
-std::recursive_mutex lvgl_mutex;
-
 // Functions to be defined in the tft driver
 extern void lvgl_tft_init();
 extern void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map);
@@ -14,59 +12,6 @@ extern void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 #error Please define the board: ESP32_2432S024N, ESP32_2432S024R, ESP32_2432S024C, ESP32_2432S028R, ESP32_3248S035R, ESP32_3248S035C, ESP32_8048S043N, ESP32_8048S043R, ESP32_8048S050N, ESP32_8048S050C, ESP32_8048S070N or ESP32_8048S070C
 #endif
 
-// Hardware interfaces
-#if defined(ESP32_2432S024N) || defined(ESP32_2432S024R) || defined(ESP32_2432S024C)
-SPIClass spi_ili9431;
-#ifdef ESP32_2432S024R
-SPIClass spi_xpt2046;
-#endif
-#ifdef ESP32_2432S024C
-TwoWire i2c_cst820 = TwoWire(1); // Bus number 1
-#endif
-#endif
-
-#ifdef ESP32_2432S028R
-SPIClass spi_ili9431;
-SPIClass spi_xpt2046;
-#endif
-
-#if defined(ESP32_3248S035R) || defined(ESP32_3248S035C)
-SPIClass spi_st7796;
-#ifdef ESP32_3248S035C
-TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
-#endif
-#endif
-
-#if defined(ESP32_8048S043N) || defined(ESP32_8048S043R) || defined(ESP32_8048S043C)
-SPIClass spi_ili9431;
-#ifdef ESP32_8048S043R
-SPIClass spi_xpt2046;
-#endif
-#ifdef ESP32_3248S043C
-TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
-#endif
-#endif
-
-#if defined(ESP32_8048S050N) || defined(ESP32_8048S050R) || defined(ESP32_8048S050C)
-SPIClass spi_ili9431;
-#ifdef ESP32_8048S050R
-SPIClass spi_xpt2046;
-#endif
-#ifdef ESP32_8048S050C
-TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
-#endif
-#endif
-
-#if defined(ESP32_8048S070N) || defined(ESP32_8048S070R) || defined(ESP32_8048S070C)
-SPIClass spi_ili9431;
-#ifdef ESP32_8048S070R
-SPIClass spi_xpt2046;
-#endif
-#ifdef ESP32_8048S070C
-TwoWire i2c_gt911 = TwoWire(1); // Bus number 1
-#endif
-#endif
-
 #if LV_USE_LOG
 void lvgl_log(const char *buf)
 {
@@ -76,31 +21,31 @@ void lvgl_log(const char *buf)
 
 void smartdisplay_init()
 {
-  // Lock access to LVGL
-  const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
+#ifdef HAS_RGB_LED
   // Setup RGB LED.  High is off
   // Use channel 0=R, 1=G, 2=B, 5kHz,  8 bit resolution
   pinMode(LED_PIN_R, OUTPUT);
   digitalWrite(LED_PIN_R, true);
   ledcSetup(LED_PWM_CHANNEL_R, LED_PWM_FREQ, LED_PWM_BITS);
   ledcAttachPin(LED_PIN_R, LED_PWM_CHANNEL_R);
-
   pinMode(LED_PIN_G, OUTPUT);
   digitalWrite(LED_PIN_G, true);
   ledcSetup(LED_PWM_CHANNEL_G, LED_PWM_FREQ, LED_PWM_BITS);
   ledcAttachPin(LED_PIN_G, LED_PWM_CHANNEL_G);
-
   pinMode(LED_PIN_B, OUTPUT);
   digitalWrite(LED_PIN_B, true);
   ledcSetup(LED_PWM_CHANNEL_B, LED_PWM_FREQ, LED_PWM_BITS);
   ledcAttachPin(LED_PIN_B, LED_PWM_CHANNEL_B);
-
+#endif
+#ifdef HAS_LIGHTSENSOR
   // Setup CDS Light sensor
   analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
   pinMode(LIGHTSENSOR_IN, INPUT);
-
+#endif
+#ifdef HAS_SPEAKER
   // Audio
-  pinMode(SPEAKER_OUT, INPUT); // Set high impedance
+  pinMode(SPEAKER_PIN, INPUT); // Set high impedance
+#endif
 
 #if LV_USE_LOG
   lv_log_register_print_cb(lvgl_log);
@@ -108,41 +53,17 @@ void smartdisplay_init()
   lv_init();
 
 // Setup interfaces
-#if defined(ESP32_2432S024N) || defined(ESP32_2432S024R) || defined(ESP32_2432S024C)
-  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
-#ifdef ESP32_2432S024R
-  spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
-#endif
-#ifdef ESP32_2432S024C
-  i2c_cst820.begin(CST820_IIC_SDA, CST820_IIC_SCL);
-#endif
+#if  defined(HAS_ILI9431) || defined(HAS_ST7796)
+  SPI.begin(TFT_SPI_SCLK, TFT_SPI_MISO, TFT_SPI_MOSI);
 #endif
 
-#ifdef ESP32_2432S028R
-  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
-  spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
+// XPT2046 sometimes shares the TFT
+#ifdef HAS_XPT2046
+  SPI.begin(TOUCH_SPI_SCLK, TOUCH_SPI_MISO, TOUCH_SPI_MOSI);
 #endif
 
-#if defined(ESP32_3248S035R) || defined(ESP32_3248S035C)
-  spi_st7796.begin(ST7796_SPI_SCLK, ST7796_SPI_MISO, ST7796_SPI_MOSI);
-  // xpt2046 uses same SPI bus
-#ifdef ESP32_3248S035C
-  i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
-#endif
-#endif
-
-#if defined(ESP32_8048S043N) || defined(ESP32_8048S043R)
-  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
-#ifdef ESP32_8048S043R
-  i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
-#endif
-#endif
-
-#if defined(ESP32_8048S070N) || defined(ESP32_8048S070C)
-  spi_ili9431.begin(ILI9431_SPI_SCLK, ILI9431_SPI_MISO, ILI9431_SPI_MOSI);
-#ifdef ESP32_8048S070C
-  i2c_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
-#endif
+#if defined(HAS_CST820) || defined(HAS_GT911)
+  Wire1.begin(TOUCH_IIC_SDA, TOUCH_IIC_SCL);
 #endif
 
   // Setup TFT display
@@ -173,7 +94,7 @@ void smartdisplay_init()
   lv_obj_clean(lv_scr_act());
 
 // If there is a touch controller defined
-#if defined(CST820) || defined(XPT2046) || defined(GT911)
+#if defined(HAS_CST820) || defined(HAS_XPT2046) || defined(HAS_GT911)
   // Setup touch
   lvgl_touch_init();
   static lv_indev_drv_t indev_drv;
@@ -184,23 +105,26 @@ void smartdisplay_init()
 #endif
 }
 
+#ifdef HAS_RGB_LED
 void smartdisplay_set_led_color(lv_color32_t rgb)
 {
   ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - rgb.ch.red);
   ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - rgb.ch.green);
   ledcWrite(LED_PWM_CHANNEL_B, LED_PWM_MAX - rgb.ch.blue);
 }
+#endif
 
+#ifdef HAS_LIGHTSENSOR
 int smartdisplay_get_light_intensity()
 {
   return analogRead(LIGHTSENSOR_IN);
 }
+#endif
 
+#ifdef SPEAKER_PIN
 void smartdisplay_beep(unsigned int frequency, unsigned long duration)
 {
-  // Newer boards have I2S
-  #ifdef SPEAKER_OUT
   // Uses PWM Channel 0
-  tone(SPEAKER_OUT, frequency, duration);
-  #endif
+  tone(SPEAKER_PIN, frequency, duration);
 }
+#endif

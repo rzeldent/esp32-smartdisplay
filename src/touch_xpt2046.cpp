@@ -1,6 +1,6 @@
 #include <esp32_smartdisplay.h>
 
-#ifdef XPT2046
+#ifdef HAS_XPT2046
 
 #define CMD_START_Z1_CONVERSION 0xB1
 #define CMD_START_Z2_CONVERSION 0xC1
@@ -10,15 +10,15 @@
 
 bool xpt2046_read_xy(int16_t *x, int16_t *y)
 {
-  spi_xpt2046.beginTransaction(SPISettings(XPT2046_SPI_FREQ, MSBFIRST, SPI_MODE0));
+  SPI.beginTransaction(SPISettings(TOUCH_SPI_FREQ, MSBFIRST, SPI_MODE0));
   digitalWrite(XPT2046_PIN_CS, LOW);
-  spi_xpt2046.transfer16(CMD_START_Z1_CONVERSION);
-  auto z1 = spi_xpt2046.transfer16(CMD_START_Z2_CONVERSION) >> 3;
-  auto z2 = spi_xpt2046.transfer16(CMD_START_X_CONVERSION) >> 3;
-  auto raw_x = spi_xpt2046.transfer16(CMD_START_Y_CONVERSION) >> 3; // Normalize to 12 bits
-  auto raw_y = spi_xpt2046.transfer16(0) >> 3;                      // Normalize to 12 bits
+  SPI.transfer16(CMD_START_Z1_CONVERSION);
+  auto z1 = SPI.transfer16(CMD_START_Z2_CONVERSION) >> 3;
+  auto z2 = SPI.transfer16(CMD_START_X_CONVERSION) >> 3;
+  auto raw_x = SPI.transfer16(CMD_START_Y_CONVERSION) >> 3; // Normalize to 12 bits
+  auto raw_y = SPI.transfer16(0) >> 3;                      // Normalize to 12 bits
   digitalWrite(XPT2046_PIN_CS, HIGH);
-  spi_xpt2046.endTransaction();
+  SPI.endTransaction();
   int16_t z = z1 + 4095 - z2;
   if (z < Z_THRESHOLD)
     return false;

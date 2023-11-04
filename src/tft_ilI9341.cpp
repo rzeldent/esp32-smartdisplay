@@ -1,6 +1,6 @@
 #include <esp32_smartdisplay.h>
 
-#ifdef ILI9431
+#ifdef HAS_ILI9431
 
 #define CMD_SLPIN 0x10       // Sleep in
 #define CMD_SLPOUT 0x11      // Sleep out
@@ -53,31 +53,31 @@
 void ili9341_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
 {
   digitalWrite(ILI9341_PIN_DC, LOW); // Command mode => command
-  spi_ili9431.beginTransaction(SPISettings(ILI9341_SPI_FREQ, MSBFIRST, SPI_MODE0));
+  SPI.beginTransaction(SPISettings(ILI9341_SPI_FREQ, MSBFIRST, SPI_MODE0));
   digitalWrite(ILI9341_PIN_CS, LOW); // Chip select => enable
-  spi_ili9431.write(command);
+  SPI.write(command);
   if (length > 0)
   {
     digitalWrite(ILI9341_PIN_DC, HIGH); // Command mode => data
-    spi_ili9431.writeBytes(data, length);
+    SPI.writeBytes(data, length);
   }
   digitalWrite(ILI9341_PIN_CS, HIGH); // Chip select => disable
-  spi_ili9431.endTransaction();
+  SPI.endTransaction();
 }
 
 void ili9341_send_pixels(const uint8_t command, const lv_color_t data[], const ushort length)
 {
   digitalWrite(ILI9341_PIN_DC, LOW); // Command mode => command
-  spi_ili9431.beginTransaction(SPISettings(ILI9341_SPI_FREQ, MSBFIRST, SPI_MODE0));
+  SPI.beginTransaction(SPISettings(ILI9341_SPI_FREQ, MSBFIRST, SPI_MODE0));
   digitalWrite(ILI9341_PIN_CS, LOW); // Chip select => enable
-  spi_ili9431.write(command);
+  SPI.write(command);
   if (length > 0)
   {
     digitalWrite(ILI9341_PIN_DC, HIGH); // Command mode => data
-    spi_ili9431.writePixels(data, sizeof(lv_color_t) * length);
+    SPI.writePixels(data, sizeof(lv_color_t) * length);
   }
   digitalWrite(ILI9341_PIN_CS, HIGH); // Chip select => disable
-  spi_ili9431.endTransaction();
+  SPI.endTransaction();
 }
 
 void ili9341_send_init_commands()

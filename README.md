@@ -106,9 +106,12 @@ These can be defined in the `platformio.ini` file defining the settings:
 
 ```ini
 build_flags =
+    -Ofast
+    #-Wall
+    -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
     # LVGL settings
     -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
-    # Smart display settings
+    # Smartdisplay settings
     #-D TFT_PANEL_ORDER_BGR
     #-D TFT_PANEL_ORDER_RGB
     #-D TFT_ORIENTATION_PORTRAIT
@@ -122,13 +125,18 @@ build_flags =
     #-D ESP32_2432S028R
     #-D ESP32_3248S035R
     #-D ESP32_3248S035C
+    #-D ESP32_4827S043R
+    #-D ESP32_4827S043R
+    #-D ESP32_4827S043C
     #-D ESP32_8048S043N
     #-D ESP32_8048S043C
+    #-D ESP32_8048S050N
+    #-D ESP32_8048S050C
     #-D ESP32_8048S070N
     #-D ESP32_8048S070C
 
 lib_deps =
-    rzeldent/esp32_smartdisplay@^1.0.9
+    rzeldent/esp32_smartdisplay
 ```
 
 The path for the lv_conf.h above is `${PROJECT_INCLUDE_DIR}`.

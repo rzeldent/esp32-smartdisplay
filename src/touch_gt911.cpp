@@ -1,6 +1,6 @@
 #include <esp32_smartdisplay.h>
 
-#ifdef GT911
+#ifdef HAS_GT911
 
 #define GT911_I2C_SLAVE_ADDR 0x5D
 #define GT911_MAX_CONTACTS 5
@@ -23,28 +23,28 @@ struct __attribute__((packed)) GTPoint
 
 bool gt911_write_register(uint16_t reg, const uint8_t buf[], int len)
 {
-  i2c_gt911.beginTransmission(GT911_I2C_SLAVE_ADDR);
-  if (!i2c_gt911.write(reg >> 8) || !i2c_gt911.write(reg & 0xFF))
+  Wire1.beginTransmission(GT911_I2C_SLAVE_ADDR);
+  if (!Wire1.write(reg >> 8) || !Wire1.write(reg & 0xFF))
     return false;
 
-  auto sent = i2c_gt911.write(buf, len);
-  i2c_gt911.endTransmission();
+  auto sent = Wire1.write(buf, len);
+  Wire1.endTransmission();
   return sent == len;
 }
 
 bool gt911_read_register(uint16_t reg, uint8_t buf[], int len)
 {
-  i2c_gt911.beginTransmission(GT911_I2C_SLAVE_ADDR);
-  if (!i2c_gt911.write(reg >> 8) || !i2c_gt911.write(reg & 0xFF))
+  Wire1.beginTransmission(GT911_I2C_SLAVE_ADDR);
+  if (!Wire1.write(reg >> 8) || !Wire1.write(reg & 0xFF))
     return false;
 
-  i2c_gt911.endTransmission(false);
-  auto requested = i2c_gt911.requestFrom(GT911_I2C_SLAVE_ADDR, len);
+  Wire1.endTransmission(false);
+  auto requested = Wire1.requestFrom(GT911_I2C_SLAVE_ADDR, len);
   if (requested != len)
     return false;
 
-  while (i2c_gt911.available() && len--)
-    *buf++ = i2c_gt911.read();
+  while (Wire1.available() && len--)
+    *buf++ = Wire1.read();
 
   return len == 0;
 }
