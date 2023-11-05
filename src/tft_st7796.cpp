@@ -1,6 +1,6 @@
 #include <esp32_smartdisplay.h>
 
-#ifdef HAS_ST7796
+#ifdef USES_ST7796
 
 #define CMD_SWRESET 0x01 // Software Reset
 #define CMD_SLPIN 0x10   // Sleep in
@@ -41,31 +41,31 @@
 void st7796_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
 {
   digitalWrite(ST7796_PIN_DC, LOW); // Command mode => command
-  SPI.beginTransaction(SPISettings(TFT_SPI_FREQ, MSBFIRST, SPI_MODE0));
+  spi_st7796.beginTransaction(SPISettings(ST7796_SPI_FREQ, MSBFIRST, SPI_MODE0));
   digitalWrite(ST7796_PIN_CS, LOW); // Chip select => enable
-  SPI.write(command);
+  spi_st7796.write(command);
   if (length > 0)
   {
     digitalWrite(ST7796_PIN_DC, HIGH); // Command mode => data
-    SPI.writeBytes(data, length);
+    spi_st7796.writeBytes(data, length);
   }
   digitalWrite(ST7796_PIN_CS, HIGH); // Chip select => disable
-  SPI.endTransaction();
+  spi_st7796.endTransaction();
 }
 
 void st7796_send_pixels(const uint8_t command, const lv_color_t data[], const ushort length)
 {
   digitalWrite(ST7796_PIN_DC, LOW); // Command mode => command
-  SPI.beginTransaction(SPISettings(TFT_SPI_FREQ, MSBFIRST, SPI_MODE0));
+  spi_st7796.beginTransaction(SPISettings(ST7796_SPI_FREQ, MSBFIRST, SPI_MODE0));
   digitalWrite(ST7796_PIN_CS, LOW); // Chip select => enable
-  SPI.write(command);
+  spi_st7796.write(command);
   if (length > 0)
   {
     digitalWrite(ST7796_PIN_DC, HIGH); // Command mode => data
-    SPI.writePixels(data, sizeof(lv_color_t) * length);
+    spi_st7796.writePixels(data, sizeof(lv_color_t) * length);
   }
   digitalWrite(ST7796_PIN_CS, HIGH); // Chip select => disable
-  SPI.endTransaction();
+  spi_st7796.endTransaction();
 }
 
 void st7796_send_init_commands()

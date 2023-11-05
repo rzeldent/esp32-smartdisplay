@@ -23,28 +23,28 @@ struct __attribute__((packed)) GTPoint
 
 bool gt911_write_register(uint16_t reg, const uint8_t buf[], int len)
 {
-  Wire1.beginTransmission(GT911_I2C_SLAVE_ADDR);
-  if (!Wire1.write(reg >> 8) || !Wire1.write(reg & 0xFF))
+  wire_gt911.beginTransmission(GT911_I2C_SLAVE_ADDR);
+  if (!wire_gt911.write(reg >> 8) || !wire_gt911.write(reg & 0xFF))
     return false;
 
-  auto sent = Wire1.write(buf, len);
-  Wire1.endTransmission();
+  auto sent = wire_gt911.write(buf, len);
+  wire_gt911.endTransmission();
   return sent == len;
 }
 
 bool gt911_read_register(uint16_t reg, uint8_t buf[], int len)
 {
-  Wire1.beginTransmission(GT911_I2C_SLAVE_ADDR);
-  if (!Wire1.write(reg >> 8) || !Wire1.write(reg & 0xFF))
+  wire_gt911.beginTransmission(GT911_I2C_SLAVE_ADDR);
+  if (!wire_gt911.write(reg >> 8) || !wire_gt911.write(reg & 0xFF))
     return false;
 
-  Wire1.endTransmission(false);
-  auto requested = Wire1.requestFrom(GT911_I2C_SLAVE_ADDR, len);
+  wire_gt911.endTransmission(false);
+  auto requested = wire_gt911.requestFrom(GT911_I2C_SLAVE_ADDR, len);
   if (requested != len)
     return false;
 
-  while (Wire1.available() && len--)
-    *buf++ = Wire1.read();
+  while (wire_gt911.available() && len--)
+    *buf++ = wire_gt911.read();
 
   return len == 0;
 }

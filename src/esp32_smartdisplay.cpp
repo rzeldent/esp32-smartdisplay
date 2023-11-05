@@ -8,8 +8,54 @@ extern void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t
 extern void lvgl_touch_init();
 extern void lvgl_touch_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 
-#if !defined(ESP32_SMARTDISPLAY_BOARD_VALID)
-#error Please define the board: ESP32_2432S024N, ESP32_2432S024R, ESP32_2432S024C, ESP32_2432S028R, ESP32_3248S035R, ESP32_3248S035C, ESP32_8048S043N, ESP32_8048S043R, ESP32_8048S050N, ESP32_8048S050C, ESP32_8048S070N or ESP32_8048S070C
+// ESP32_2432S024
+#if defined(ESP32_2432S024N) || defined(ESP32_2432S024R) || defined(ESP32_2432S024C)
+SPIClass spi_ili9341;
+#ifdef ESP32_2432S024R
+SPIClass spi_xpt2046;
+#else
+#ifdef ESP32_2432S024C
+TwoWire wire_cst820 = TwoWire(1); // Bus number 1
+#endif
+#endif
+#endif
+
+// ESP32_2432S028
+#if defined(ESP32_2432S028R)
+SPIClass spi_ili9341;
+SPIClass spi_xpt2046;
+#endif
+
+// ESP32_3248S035
+#if defined(ESP32_3248S035R) || defined(ESP32_3248S035C)
+SPIClass spi_st7796;
+#ifdef ESP32_3248S035C
+TwoWire wire_gt911 = TwoWire(1); // Bus number 1
+#endif
+#endif
+
+// ESP32_4827S043 + ESP32_8048S043
+#if defined(ESP32_4827S043N) || defined(ESP32_4827S043R) || defined(ESP32_4827S043C) || defined(ESP32_8048S043N) || defined(ESP32_8048S043R) || defined(ESP32_8048S043C)
+#if defined(ESP32_4827S043R) || defined(ESP32_8048S043R)
+#else
+#if defined(ESP32_4827S043C) || defined(ESP32_8048S043C)
+TwoWire wire_gt911 = TwoWire(1);  // Bus number 1
+#endif
+#endif
+#endif
+
+// ESP32_4827S043 + ESP32_8048S043 + ESP32_8048S050 + ESP32_8048S070
+#if defined(ESP32_4827S043N) || defined(ESP32_4827S043R) || defined(ESP32_4827S043C) || \
+    defined(ESP32_8048S043N) || defined(ESP32_8048S043R) || defined(ESP32_8048S043C) || \
+    defined(ESP32_8048S050N) || defined(ESP32_8048S050R) || defined(ESP32_8048S050C) || \
+    defined(ESP32_8048S070N) || defined(ESP32_8048S070R) || defined(ESP32_8048S070C)
+#if defined(ESP32_4827S043R) || defined(ESP32_8048S043R) || defined(ESP32_8048S050R) || defined(ESP32_8048S070R)
+SPIClass spi_xpt2046;
+#else
+#if defined(ESP32_4827S043C) || defined(ESP32_8048S043C) || defined(ESP32_8048S050C) || defined(ESP32_8048S070C)
+TwoWire wire_gt911 = TwoWire(1);  // Bus number 1
+#endif
+#endif
 #endif
 
 #if LV_USE_LOG
@@ -37,11 +83,13 @@ void smartdisplay_init()
   ledcSetup(LED_PWM_CHANNEL_B, LED_PWM_FREQ, LED_PWM_BITS);
   ledcAttachPin(LED_PIN_B, LED_PWM_CHANNEL_B);
 #endif
+
 #ifdef HAS_LIGHTSENSOR
-  // Setup CDS Light sensor
+  // CDS Light sensor
   analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
   pinMode(LIGHTSENSOR_IN, INPUT);
 #endif
+
 #ifdef HAS_SPEAKER
   // Audio
   pinMode(SPEAKER_PIN, INPUT); // Set high impedance
@@ -50,20 +98,51 @@ void smartdisplay_init()
 #if LV_USE_LOG
   lv_log_register_print_cb(lvgl_log);
 #endif
+
   lv_init();
 
-// Setup interfaces
-#if  defined(HAS_ILI9431) || defined(HAS_ST7796)
-  SPI.begin(TFT_SPI_SCLK, TFT_SPI_MISO, TFT_SPI_MOSI);
+// ESP32_2432S024
+#if defined(ESP32_2432S024N) || defined(ESP32_2432S024R) || defined(ESP32_2432S024C)
+  spi_ili9341.begin(ILI9341_SPI_SCLK, ILI9341_SPI_MISO, ILI9341_SPI_MOSI);
+#ifdef ESP32_2432S024R
+  spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
+#else
+#ifdef ESP32_2432S024C
+  wire_cst820.begin(CST820_IIC_SDA, CST820_IIC_SCL);
+#endif
+#endif
 #endif
 
-// XPT2046 sometimes shares the TFT
-#ifdef HAS_XPT2046
-  SPI.begin(TOUCH_SPI_SCLK, TOUCH_SPI_MISO, TOUCH_SPI_MOSI);
+// ESP32_2432S028
+#if defined(ESP32_2432S028R)
+  spi_ili9341.begin(ILI9341_SPI_SCLK, ILI9341_SPI_MISO, ILI9341_SPI_MOSI);
+//  spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
 #endif
 
-#if defined(HAS_CST820) || defined(HAS_GT911)
-  Wire1.begin(TOUCH_IIC_SDA, TOUCH_IIC_SCL);
+// ESP32_3248S035
+#if defined(ESP32_3248S035R) || defined(ESP32_3248S035C)
+  spi_st7796.begin(ST7796_SPI_SCLK, ST7796_SPI_MISO, ST7796_SPI_MOSI);
+#ifdef ESP32_3248S035R
+  spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
+#else
+#ifdef ESP32_3248S035C
+  wire_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
+#endif
+#endif
+#endif
+
+// ESP32_4827S043 + ESP32_8048S043 + ESP32_8048S050 + ESP32_8048S070
+#if defined(ESP32_4827S043N) || defined(ESP32_4827S043R) || defined(ESP32_4827S043C) || \
+    defined(ESP32_8048S043N) || defined(ESP32_8048S043R) || defined(ESP32_8048S043C) || \
+    defined(ESP32_8048S050N) || defined(ESP32_8048S050R) || defined(ESP32_8048S050C) || \
+    defined(ESP32_8048S070N) || defined(ESP32_8048S070R) || defined(ESP32_8048S070C)
+#if defined(ESP32_4827S043R) || defined(ESP32_8048S043R) || defined(ESP32_8048S050R) || defined(ESP32_8048S070R)
+  spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
+#else
+#if defined(ESP32_4827S043C) || defined(ESP32_8048S043C) || defined(ESP32_8048S050C) || defined(ESP32_8048S070C)
+  wire_gt911.begin(GT911_IIC_SDA, GT911_IIC_SCL);
+#endif
+#endif
 #endif
 
   // Setup TFT display
@@ -94,7 +173,7 @@ void smartdisplay_init()
   lv_obj_clean(lv_scr_act());
 
 // If there is a touch controller defined
-#if defined(HAS_CST820) || defined(HAS_XPT2046) || defined(HAS_GT911)
+#if defined(USES_CST820) || defined(USES_XPT2046) || defined(HAS_GT911)
   // Setup touch
   lvgl_touch_init();
   static lv_indev_drv_t indev_drv;

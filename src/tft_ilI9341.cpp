@@ -53,31 +53,31 @@
 void ili9341_send_command(const uint8_t command, const uint8_t data[] = nullptr, const ushort length = 0)
 {
   digitalWrite(ILI9341_PIN_DC, LOW); // Command mode => command
-  SPI.beginTransaction(SPISettings(ILI9341_SPI_FREQ, MSBFIRST, SPI_MODE0));
+  spi_ili9341.beginTransaction(SPISettings(ILI9341_SPI_FREQ, MSBFIRST, SPI_MODE0));
   digitalWrite(ILI9341_PIN_CS, LOW); // Chip select => enable
-  SPI.write(command);
+  spi_ili9341.write(command);
   if (length > 0)
   {
     digitalWrite(ILI9341_PIN_DC, HIGH); // Command mode => data
-    SPI.writeBytes(data, length);
+    spi_ili9341.writeBytes(data, length);
   }
   digitalWrite(ILI9341_PIN_CS, HIGH); // Chip select => disable
-  SPI.endTransaction();
+  spi_ili9341.endTransaction();
 }
 
 void ili9341_send_pixels(const uint8_t command, const lv_color_t data[], const ushort length)
 {
   digitalWrite(ILI9341_PIN_DC, LOW); // Command mode => command
-  SPI.beginTransaction(SPISettings(ILI9341_SPI_FREQ, MSBFIRST, SPI_MODE0));
+  spi_ili9341.beginTransaction(SPISettings(ILI9341_SPI_FREQ, MSBFIRST, SPI_MODE0));
   digitalWrite(ILI9341_PIN_CS, LOW); // Chip select => enable
-  SPI.write(command);
+  spi_ili9341.write(command);
   if (length > 0)
   {
     digitalWrite(ILI9341_PIN_DC, HIGH); // Command mode => data
-    SPI.writePixels(data, sizeof(lv_color_t) * length);
+    spi_ili9341.writePixels(data, sizeof(lv_color_t) * length);
   }
   digitalWrite(ILI9341_PIN_CS, HIGH); // Chip select => disable
-  SPI.endTransaction();
+  spi_ili9341.endTransaction();
 }
 
 void ili9341_send_init_commands()

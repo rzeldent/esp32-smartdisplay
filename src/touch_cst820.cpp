@@ -18,28 +18,28 @@ enum Gesture : uint8_t
 
 bool cst820_write_register(uint8_t reg, const uint8_t buf[], int len)
 {
-  Wire1.beginTransmission(CST820_I2C_SLAVE_ADDR);
-  if (!Wire1.write(reg))
+  wire_cst820.beginTransmission(CST820_I2C_SLAVE_ADDR);
+  if (!wire_cst820.write(reg))
     return false;
 
-  auto sent = Wire1.write(buf, len);
-  Wire1.endTransmission();
+  auto sent = wire_cst820.write(buf, len);
+  wire_cst820.endTransmission();
   return sent == len;
 }
 
 bool cst820_read_register(uint8_t reg, uint8_t buf[], int len)
 {
-  Wire1.beginTransmission(CST820_I2C_SLAVE_ADDR);
-  if (!Wire1.write(reg))
+  wire_cst820.beginTransmission(CST820_I2C_SLAVE_ADDR);
+  if (!wire_cst820.write(reg))
     return false;
 
-  Wire1.endTransmission(false);
-  auto requested = Wire1.requestFrom(CST820_I2C_SLAVE_ADDR, len);
+  wire_cst820.endTransmission(false);
+  auto requested = wire_cst820.requestFrom(CST820_I2C_SLAVE_ADDR, len);
   if (requested != len)
     return false;
 
-  while (Wire1.available() && len--)
-    *buf++ = Wire1.read();
+  while (wire_cst820.available() && len--)
+    *buf++ = wire_cst820.read();
 
   return len == 0;
 }
