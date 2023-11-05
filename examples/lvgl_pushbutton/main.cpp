@@ -18,8 +18,6 @@ void display_update()
 
 void btn_event_cb(lv_event_t *e)
 {
-  const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
-
   auto code = lv_event_get_code(e);
   auto btn = lv_event_get_target(e);
   if (code == LV_EVENT_CLICKED)
@@ -36,8 +34,6 @@ void btn_event_cb(lv_event_t *e)
 
 void mainscreen()
 {
-  const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
-
   // Clear screen
   lv_obj_clean(lv_scr_act());
 
@@ -87,7 +83,7 @@ void loop()
   // put your main code here, to run repeatedly:
 
   // Red if no wifi, otherwise green
-  bool connected = WiFi.isConnected();
+  auto connected = WiFi.isConnected();
   smartdisplay_set_led_color(connected ? lv_color32_t({.ch = {.green = 0xFF}}) : lv_color32_t({.ch = {.red = 0xFF}}));
 
   ArduinoOTA.handle();
