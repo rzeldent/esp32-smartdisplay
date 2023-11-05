@@ -85,7 +85,7 @@ extern TwoWire wire_cst820;
 #define SPEAKER_PIN 26
 #endif
 
-// ESP32_2432S028R
+// ESP32_2432S028 R
 #ifdef ESP32_2432S028R
 #define TFT_WIDTH 240
 #define TFT_HEIGHT 320
@@ -137,7 +137,7 @@ extern SPIClass spi_xpt2046;
 #define SPEAKER_PIN 26
 #endif
 
-// ESP32_3248S035
+// ESP32_3248S035 R/C
 #if defined(ESP32_3248S035R) || defined(ESP32_3248S035C)
 #define TFT_WIDTH 320
 #define TFT_HEIGHT 480
@@ -172,7 +172,7 @@ extern SPIClass spi_st7796;
 #define XPT2046_MAX_Y 3900
 #else
 #ifdef ESP32_3248S035C
-#define HAS_GT911
+#define USES_GT911
 #include <Wire.h>
 extern TwoWire wire_gt911;
 #define GT911_IIC_SDA 33
@@ -200,7 +200,7 @@ extern TwoWire wire_gt911;
 #define SPEAKER_PIN 26
 #endif
 
-// ESP32_4827S043
+// ESP32_4827S043 N/R/C
 #if defined(ESP32_4827S043N) || defined(ESP32_4827S043R) || defined(ESP32_4827S043C)
 #define TFT_WIDTH 480
 #define TFT_HEIGHT 272
@@ -260,7 +260,7 @@ extern SPIClass spi_xpt2046;
 #define XPT2046_MAX_Y 3871
 #else
 #ifdef ESP32_4827S043C
-#define HAS_GT911
+#define USES_GT911
 #include <Wire.h>
 extern TwoWire wire_gt911;
 #define GT911_IIC_SDA 19
@@ -270,7 +270,7 @@ extern TwoWire wire_gt911;
 #endif
 #endif
 
-// ESP32_8048S043
+// ESP32_8048S043 N/R/C
 #if defined(ESP32_8048S043N) || defined(ESP32_8048S043R) || defined(ESP32_8048S043C)
 #define TFT_WIDTH 800
 #define TFT_HEIGHT 480
@@ -330,7 +330,7 @@ extern SPIClass spi_xpt2046;
 #define XPT2046_MAX_Y 3871
 #else
 #ifdef ESP32_8048S043C
-#define HAS_GT911
+#define USES_GT911
 #include <Wire.h>
 extern TwoWire wire_gt911;
 #define GT911_IIC_SDA 19
@@ -340,7 +340,7 @@ extern TwoWire wire_gt911;
 #endif
 #endif
 
-// ESP32_8048S050
+// ESP32_8048S050 N/R/C
 #if defined(ESP32_8048S050N) || defined(ESP32_8048S050R) || defined(ESP32_8048S050C)
 #define TFT_WIDTH 800
 #define TFT_HEIGHT 480
@@ -400,7 +400,7 @@ extern SPIClass spi_xpt2046;
 #define XPT2046_MAX_Y 3871
 #else
 #ifdef ESP32_8048S050C
-#define HAS_GT911
+#define USES_GT911
 #include <Wire.h>
 extern TwoWire wire_gt911;
 #define GT911_IIC_SDA 19
@@ -410,7 +410,7 @@ extern TwoWire wire_gt911;
 #endif
 #endif
 
-// ESP32_8048S070
+// ESP32_8048S070 N/R/C
 #if defined(ESP32_8048S070N) || defined(ESP32_8048S070R) || defined(ESP32_8048S070C)
 #define TFT_WIDTH 800
 #define TFT_HEIGHT 480
@@ -470,7 +470,7 @@ extern SPIClass spi_xpt2046;
 #define XPT2046_MAX_Y 3871
 #else
 #ifdef ESP32_8048S070C
-#define HAS_GT911
+#define USES_GT911
 #include <Wire.h>
 extern TwoWire wire_gt911;
 #define GT911_IIC_SDA 19

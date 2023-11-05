@@ -1,6 +1,6 @@
 #include <esp32_smartdisplay.h>
 
-#ifdef HAS_GT911
+#ifdef USES_GT911
 
 #define GT911_I2C_SLAVE_ADDR 0x5D
 #define GT911_MAX_CONTACTS 5

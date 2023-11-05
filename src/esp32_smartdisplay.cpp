@@ -101,7 +101,7 @@ void smartdisplay_init()
 
   lv_init();
 
-// ESP32_2432S024
+// ESP32_2432S024 N/R/C
 #if defined(ESP32_2432S024N) || defined(ESP32_2432S024R) || defined(ESP32_2432S024C)
   spi_ili9341.begin(ILI9341_SPI_SCLK, ILI9341_SPI_MISO, ILI9341_SPI_MOSI);
 #ifdef ESP32_2432S024R
@@ -113,13 +113,13 @@ void smartdisplay_init()
 #endif
 #endif
 
-// ESP32_2432S028
+// ESP32_2432S028 R
 #if defined(ESP32_2432S028R)
   spi_ili9341.begin(ILI9341_SPI_SCLK, ILI9341_SPI_MISO, ILI9341_SPI_MOSI);
 //  spi_xpt2046.begin(XPT2046_SPI_SCLK, XPT2046_SPI_MISO, XPT2046_SPI_MOSI);
 #endif
 
-// ESP32_3248S035
+// ESP32_3248S035 R/C
 #if defined(ESP32_3248S035R) || defined(ESP32_3248S035C)
   spi_st7796.begin(ST7796_SPI_SCLK, ST7796_SPI_MISO, ST7796_SPI_MOSI);
 #ifdef ESP32_3248S035R
@@ -131,7 +131,7 @@ void smartdisplay_init()
 #endif
 #endif
 
-// ESP32_4827S043 + ESP32_8048S043 + ESP32_8048S050 + ESP32_8048S070
+// ESP32_4827S043 N/R/C + ESP32_8048S043 N/R/C + ESP32_8048S050 N/R/C + ESP32_8048S070 N/R/C
 #if defined(ESP32_4827S043N) || defined(ESP32_4827S043R) || defined(ESP32_4827S043C) || \
     defined(ESP32_8048S043N) || defined(ESP32_8048S043R) || defined(ESP32_8048S043C) || \
     defined(ESP32_8048S050N) || defined(ESP32_8048S050R) || defined(ESP32_8048S050C) || \
@@ -173,7 +173,7 @@ void smartdisplay_init()
   lv_obj_clean(lv_scr_act());
 
 // If there is a touch controller defined
-#if defined(USES_CST820) || defined(USES_XPT2046) || defined(HAS_GT911)
+#if defined(USES_CST820) || defined(USES_XPT2046) || defined(USES_GT911)
   // Setup touch
   lvgl_touch_init();
   static lv_indev_drv_t indev_drv;
