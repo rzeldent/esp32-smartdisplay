@@ -34,7 +34,7 @@ extern SPIClass spi_ili9341;
 #define ILI9341_SPI_MISO 12
 #define ILI9341_PIN_CS 15
 #define ILI9341_PIN_DC 2
-#define ILI9341_SPI_FREQ 50000000
+#define ILI9341_SPI_FREQ (50 * 1000 * 1000)
 #define ILI9341_PIN_BL 21
 #define PWM_CHANNEL_BL 12
 #define PWM_FREQ_BL 5000
@@ -47,7 +47,7 @@ extern SPIClass spi_xpt2046;
 #define XPT2046_SPI_SCLK 25
 #define XPT2046_SPI_MOSI 32
 #define XPT2046_SPI_MISO 39
-#define XPT2046_SPI_FREQ 2000000
+#define XPT2046_SPI_FREQ (2 * 1000 * 1000)
 #define XPT2046_PIN_INT 36
 #define XPT2046_PIN_CS 33
 // Calibration 240x320
@@ -97,7 +97,7 @@ extern SPIClass spi_ili9341;
 #define ILI9341_SPI_MISO 12
 #define ILI9341_PIN_CS 15
 #define ILI9341_PIN_DC 2
-#define ILI9341_SPI_FREQ 50000000
+#define ILI9341_SPI_FREQ (50 * 1000 * 1000)
 #define ILI9341_PIN_BL 21
 #define PWM_CHANNEL_BL 12
 #define PWM_FREQ_BL 5000
@@ -109,7 +109,7 @@ extern SPIClass spi_xpt2046;
 #define XPT2046_SPI_SCLK 25
 #define XPT2046_SPI_MOSI 32
 #define XPT2046_SPI_MISO 39
-#define XPT2046_SPI_FREQ 2000000
+#define XPT2046_SPI_FREQ (2 * 1000 * 1000)
 #define XPT2046_PIN_INT 36
 #define XPT2046_PIN_CS 33
 // Calibration 240x320
@@ -149,7 +149,7 @@ extern SPIClass spi_st7796;
 #define ST7796_SPI_MISO 12
 #define ST7796_PIN_CS 15
 #define ST7796_PIN_DC 2
-#define ST7796_SPI_FREQ 80000000
+#define ST7796_SPI_FREQ (80 * 1000 * 1000)
 #define ST7796_PIN_BL 27
 #define PWM_CHANNEL_BL 12
 #define PWM_FREQ_BL 5000
@@ -162,7 +162,7 @@ extern SPIClass spi_st7796;
 #define XPT2046_SPI_SCLK 14
 #define XPT2046_SPI_MOSI 13
 #define XPT2046_SPI_MISO 12
-#define XPT2046_SPI_FREQ 2000000
+#define XPT2046_SPI_FREQ (2 * 1000 * 1000)
 #define XPT2046_PIN_INT 36
 #define XPT2046_PIN_CS 33
 // Calibration 320x480
@@ -209,7 +209,7 @@ extern TwoWire wire_gt911;
 constexpr esp_lcd_rgb_panel_config_t tft_panel_config = {
     .clk_src = LCD_CLK_SRC_PLL160M,
     .timings = {
-        .pclk_hz = 14000000,
+        .pclk_hz = 14 * 1000 * 1000,
         .h_res = TFT_WIDTH,
         .v_res = TFT_HEIGHT,
         .hsync_pulse_width = 4,

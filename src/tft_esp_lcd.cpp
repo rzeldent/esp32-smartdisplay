@@ -6,7 +6,7 @@
 
 esp_lcd_panel_handle_t panel_handle;
 
-void lvgl_tft_init()
+void lvgl_tft_init(lv_disp_drv_t *drv)
 {
   ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&tft_panel_config, &panel_handle));
   ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));

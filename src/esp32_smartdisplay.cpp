@@ -1,7 +1,7 @@
 #include <esp32_smartdisplay.h>
 
 // Functions to be defined in the tft driver
-extern void lvgl_tft_init();
+extern void lvgl_tft_init(lv_disp_drv_t *drv);
 extern void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map);
 
 // Functions to be defined in the touch driver
@@ -146,14 +146,15 @@ void smartdisplay_init()
 #endif
 
   // Setup TFT display
-  lvgl_tft_init();
+    static lv_disp_drv_t disp_drv;
+  lv_disp_drv_init(&disp_drv);
+
+  lvgl_tft_init(&disp_drv);
   static lv_disp_draw_buf_t draw_buf;
   static lv_color_t buf[DRAW_BUFFER_SIZE];
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, DRAW_BUFFER_SIZE);
 
   // Setup TFT display
-  static lv_disp_drv_t disp_drv;
-  lv_disp_drv_init(&disp_drv);
 #if defined(TFT_ORIENTATION_PORTRAIT) || defined(TFT_ORIENTATION_PORTRAIT_INV)
   disp_drv.hor_res = TFT_WIDTH;
   disp_drv.ver_res = TFT_HEIGHT;

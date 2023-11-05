@@ -116,7 +116,7 @@ void st7796_send_init_commands()
   st7796_send_command(CMD_DISPON); // Main screen turn on
 }
 
-void lvgl_tft_init()
+void lvgl_tft_init(lv_disp_drv_t *drv)
 {
   pinMode(ST7796_PIN_DC, OUTPUT); // Data or Command
   pinMode(ST7796_PIN_CS, OUTPUT); // Chip Select
