@@ -21,12 +21,12 @@ jobs:
         run: pio ci --lib="." --board esp32-s3-devkitc-1 "example/main.cpp"
         env:
           PLATFORMIO_BUILD_FLAGS: -Ofast -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h" ${{matrix.smartboard}} \
-            -D ESP_LCD_ST7796_VER_MAJOR=1 \
-            -D ESP_LCD_ST7796_VER_MINOR=2 \
-            -D ESP_LCD_ST7796_VER_PATCH=0 \
-            -D ESP_LCD_ILI9341_VER_MAJOR=1 \
-            -D ESP_LCD_ILI9341_VER_MINOR=2 \
-            -D ESP_LCD_ILI9341_VER_PATCH=0 \
-            -D CONFIG_ESP_LCD_TOUCH_MAX_POINTS=1 \
-            -D CONFIG_XPT2046_CONVERT_ADC_TO_COORDS \
-            -D CONFIG_XPT2046_Z_THRESHOLD=600
+            -DESP_LCD_ST7796_VER_MAJOR=1 \
+            -DESP_LCD_ST7796_VER_MINOR=2 \
+            -DESP_LCD_ST7796_VER_PATCH=0 \
+            -DESP_LCD_ILI9341_VER_MAJOR=1 \
+            -DESP_LCD_ILI9341_VER_MINOR=2 \
+            -DESP_LCD_ILI9341_VER_PATCH=0 \
+            -DCONFIG_ESP_LCD_TOUCH_MAX_POINTS=1 \
+            -DCONFIG_XPT2046_CONVERT_ADC_TO_COORDS \
+            -DCONFIG_XPT2046_Z_THRESHOLD=600
