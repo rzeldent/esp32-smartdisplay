@@ -20,4 +20,4 @@ jobs:
       - name: Build firmware
         run: pio ci --lib="." --board esp32-s3-devkitc-1 "src/*.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -Ofast -DLV_CONF_PATH="${{github.workspace}}/.pio/libdeps/esp32dev/lvgl/lv_conf.h" ${{matrix.smartboard}}
+          PLATFORMIO_BUILD_FLAGS: -Ofast -DLV_CONF_PATH="${{github.workspace}}/inlcude/lv_conf.h" ${{matrix.smartboard}}
