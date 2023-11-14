@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <lvgl.h>
 
+#include <hal/gpio_types.h>
+
 // Push button
 #define PUSHBUTTON_BOOT 0
 // TF Card
