@@ -78,7 +78,7 @@ constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
     .int_gpio_num = GPIO_NUM_36};
 #else
 #ifdef ESP32_2432S024C
-#define USES_CST816
+#define USES_CST816S
 #include <driver/i2c.h>
 #include "esp_lcd_touch_cst816s.h"
 constexpr i2c_config_t cst816s_i2c_config = {

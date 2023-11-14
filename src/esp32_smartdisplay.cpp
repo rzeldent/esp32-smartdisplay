@@ -68,7 +68,7 @@ void smartdisplay_init()
   ledcWrite(PWM_CHANNEL_BCKL, PWM_MAX_BCKL);
 
 // If there is a touch controller defined
-#if defined(USES_CST816) || defined(USES_XPT2046) || defined(USES_GT911)
+#if defined(USES_CST816S) || defined(USES_XPT2046) || defined(USES_GT911)
   // Setup touch
   static lv_indev_drv_t indev_drv;
   lv_indev_drv_init(&indev_drv);

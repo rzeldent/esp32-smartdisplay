@@ -1,6 +1,6 @@
 #include <esp32_smartdisplay.h>
 
-#ifdef USES_CST816
+#ifdef USES_CST816S
 
 #include "driver/i2c.h"
 #include "esp_lcd_touch.h"
