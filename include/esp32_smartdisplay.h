@@ -471,6 +471,99 @@ constexpr esp_lcd_touch_config_t gt911_touch_config = {
 #endif
 #endif
 
+// ESP32_8048S050 N/R/C
+#if defined(ESP32_8048S050N) || defined(ESP32_8048S050R) || defined(ESP32_8048S050C)
+#define TFT_WIDTH 800
+#define TFT_HEIGHT 480
+// Backlight
+#define PIN_BCKL 2
+#define PWM_CHANNEL_BCKL 7
+// LCD 800x480
+#define USES_LCD_RGB
+#include <esp_lcd_panel_rgb.h>
+constexpr esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
+    .clk_src = LCD_CLK_SRC_PLL160M,
+    .timings = {
+        .pclk_hz = 16000000,
+        .h_res = TFT_WIDTH,
+        .v_res = TFT_HEIGHT,
+        .hsync_pulse_width = 4,
+        .hsync_back_porch = 8,
+        .hsync_front_porch = 8,
+        .vsync_pulse_width = 4,
+        .vsync_back_porch = 8,
+        .vsync_front_porch = 8,
+        .flags = {
+            .hsync_idle_low = 1,
+            .vsync_idle_low = 1,
+            .de_idle_high = 0,
+            .pclk_active_neg = 1,
+            .pclk_idle_high = 0,
+        }},
+    .data_width = 16, // R5G6B5
+    .sram_trans_align = 8,
+    .hsync_gpio_num = 39,
+    .vsync_gpio_num = 41,
+    .de_gpio_num = 40,
+    .pclk_gpio_num = 42,
+    .data_gpio_nums = {8, 3, 46, 9, 1, 5, 6, 7, 15, 16, 4, 45, 48, 47, 21, 14},
+    .disp_gpio_num = -1,
+    .flags = {.disp_active_low = 0, .relax_on_idle = 0, .fb_in_psram = 0}};
+// Touch
+#ifdef ESP32_8048S050R
+#define USES_XPT2046
+#include <driver/spi_common.h>
+#include <esp_lcd_touch.h>
+#define XPT2046_SPI_HOST SPI2_HOST
+constexpr spi_bus_config_t xpt2046_spi_bus_config = {
+    .mosi_io_num = 11,
+    .miso_io_num = 13,
+    .sclk_io_num = 12,
+    .quadwp_io_num = -1,
+    .quadhd_io_num = -1};
+constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
+    .cs_gpio_num = 38,
+    .dc_gpio_num = -1,
+    .spi_mode = SPI_MODE0,
+    .pclk_hz = 2000000,
+    .trans_queue_depth = 3,
+    .lcd_cmd_bits = 8,
+    .lcd_param_bits = 8};
+constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
+    .x_max = TFT_WIDTH,
+    .y_max = TFT_HEIGHT,
+    .rst_gpio_num = GPIO_NUM_NC,
+    .int_gpio_num = GPIO_NUM_18};
+#else
+#ifdef ESP32_8048S050C
+#define USES_GT911
+#include <driver/i2c.h>
+#include "esp_lcd_touch_gt911.h"
+const i2c_config_t gt911_i2c_config = {
+    .mode = I2C_MODE_MASTER,
+    .sda_io_num = 19,
+    .scl_io_num = 20,
+    .sda_pullup_en = GPIO_PULLUP_ENABLE,
+    .scl_pullup_en = GPIO_PULLUP_ENABLE,
+    .master = {
+        .clk_speed = 400000}};
+constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
+    .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
+    .control_phase_bytes = 1,
+    .dc_bit_offset = 0,
+    .lcd_cmd_bits = 16,
+    .flags = {
+        .disable_control_phase = 1,
+    }};
+constexpr esp_lcd_touch_config_t gt911_touch_config = {
+    .x_max = TFT_WIDTH,
+    .y_max = TFT_HEIGHT,
+    .rst_gpio_num = GPIO_NUM_38,
+    .int_gpio_num = GPIO_NUM_NC};
+#endif
+#endif
+#endif
+
 // ESP32_8048S070 N/R/C
 #if defined(ESP32_8048S070N) || defined(ESP32_8048S070R) || defined(ESP32_8048S070C)
 #define TFT_WIDTH 800
