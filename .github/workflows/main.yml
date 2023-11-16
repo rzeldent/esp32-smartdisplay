@@ -41,6 +41,6 @@ jobs:
       - name: Install PlatformIO
         run: python -m pip install platformio
       - name: Build firmware
-        run: pio ci --lib="." --board ${{board}} "example/main.cpp"
+        run: pio ci --lib="." "example/main.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -Ofast -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h" ${{matrix.smartboard}} -DESP_LCD_ST7796_VER_MAJOR=1 -DESP_LCD_ST7796_VER_MINOR=2 -DESP_LCD_ST7796_VER_PATCH=0 -DESP_LCD_ILI9341_VER_MAJOR=1 -DESP_LCD_ILI9341_VER_MINOR=2 -DESP_LCD_ILI9341_VER_PATCH=0 -DCONFIG_ESP_LCD_TOUCH_MAX_POINTS=1 -DCONFIG_XPT2046_CONVERT_ADC_TO_COORDS -DCONFIG_XPT2046_Z_THRESHOLD=600
+          PLATFORMIO_BUILD_FLAGS: -Ofast -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h" --board ${{board}} ${{matrix.smartboard}} -DESP_LCD_ST7796_VER_MAJOR=1 -DESP_LCD_ST7796_VER_MINOR=2 -DESP_LCD_ST7796_VER_PATCH=0 -DESP_LCD_ILI9341_VER_MAJOR=1 -DESP_LCD_ILI9341_VER_MINOR=2 -DESP_LCD_ILI9341_VER_PATCH=0 -DCONFIG_ESP_LCD_TOUCH_MAX_POINTS=1 -DCONFIG_XPT2046_CONVERT_ADC_TO_COORDS -DCONFIG_XPT2046_Z_THRESHOLD=600
