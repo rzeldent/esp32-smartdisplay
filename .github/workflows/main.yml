@@ -6,31 +6,29 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        board: ["esp32dev", "esp32-s3-devkitc-1"]
-        # TODO: "-DESP32_8048S043N", "-DESP32_8048S043R", "-DESP32_8048S043C", "-DESP32_8048S050N", "-DESP32_8048S050R", "-DESP32_8048S050C", "-DESP32_8048S070N", "-DESP32_8048S070R", "-DESP32_8048S070C"
-        #smartboard: ["-DESP32_2432S024N", "-DESP32_2432S024R", "-DESP32_2432S024C", "-DESP32_2432S028R", "-DESP32_3248S035R", "-DESP32_3248S035C"]
-        include:
-          - esp32dev:
-              [
-                "-DESP32_2432S024N",
-                "-DESP32_2432S024R",
-                "-DESP32_2432S024C",
-                "-DESP32_2432S028R",
-                "-DESP32_3248S035R",
-                "-DESP32_3248S035C",
-              ]
-          - esp32-s3-devkitc-1:
-              [
-                "-DESP32_8048S043N",
-                "-DESP32_8048S043R",
-                "-DESP32_8048S043C",
-                "-DESP32_8048S050N",
-                "-DESP32_8048S050R",
-                "-DESP32_8048S050C",
-                "-DESP32_8048S070N",
-                "-DESP32_8048S070R",
-                "-DESP32_8048S070C",
-              ]
+        - board: "esp32dev"
+          smartboard:  
+            [
+            "-DESP32_2432S024N",
+            "-DESP32_2432S024R",
+            "-DESP32_2432S024C",
+            "-DESP32_2432S028R",
+            "-DESP32_3248S035R",
+            "-DESP32_3248S035C",
+          ]
+        -board: "esp32-s3-devkitc-1"
+         smartboard:
+          [
+            "-DESP32_8048S043N",
+            "-DESP32_8048S043R",
+            "-DESP32_8048S043C",
+            "-DESP32_8048S050N",
+            "-DESP32_8048S050R",
+            "-DESP32_8048S050C",
+            "-DESP32_8048S070N",
+            "-DESP32_8048S070R",
+            "-DESP32_8048S070C",
+          ]
     steps:
       - uses: actions/checkout@v3
       - name: Set up python
@@ -41,6 +39,6 @@ jobs:
       - name: Install PlatformIO
         run: python -m pip install platformio
       - name: Build firmware
-        run: pio ci --lib="." "example/main.cpp"
+        run: pio ci --lib="." --board ${{board}} "example/main.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -Ofast -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h" --board ${{board}} ${{matrix.smartboard}} -DESP_LCD_ST7796_VER_MAJOR=1 -DESP_LCD_ST7796_VER_MINOR=2 -DESP_LCD_ST7796_VER_PATCH=0 -DESP_LCD_ILI9341_VER_MAJOR=1 -DESP_LCD_ILI9341_VER_MINOR=2 -DESP_LCD_ILI9341_VER_PATCH=0 -DCONFIG_ESP_LCD_TOUCH_MAX_POINTS=1 -DCONFIG_XPT2046_CONVERT_ADC_TO_COORDS -DCONFIG_XPT2046_Z_THRESHOLD=600
+          PLATFORMIO_BUILD_FLAGS: -Ofast -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h" ${{matrix.smartboard}} -DESP_LCD_ST7796_VER_MAJOR=1 -DESP_LCD_ST7796_VER_MINOR=2 -DESP_LCD_ST7796_VER_PATCH=0 -DESP_LCD_ILI9341_VER_MAJOR=1 -DESP_LCD_ILI9341_VER_MINOR=2 -DESP_LCD_ILI9341_VER_PATCH=0 -DCONFIG_ESP_LCD_TOUCH_MAX_POINTS=1 -DCONFIG_XPT2046_CONVERT_ADC_TO_COORDS -DCONFIG_XPT2046_Z_THRESHOLD=600
