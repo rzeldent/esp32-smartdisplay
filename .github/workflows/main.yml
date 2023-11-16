@@ -49,4 +49,4 @@ jobs:
       - name: Build firmware
         run: pio ci --lib="." --project-conf "example/platformio.ini" --environment ${{matrix.board}} "example/main.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -D${{matrix.smartboard}}
+          PLATFORMIO_BUILD_FLAGS: -D${{matrix.smartboard}} -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h"
