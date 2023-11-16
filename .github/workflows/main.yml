@@ -8,28 +8,35 @@ jobs:
       matrix:
         include:
           - board: "esp32dev"
-            smartboard:  
-              [
-              "-DESP32_2432S024N",
-              "-DESP32_2432S024R",
-              "-DESP32_2432S024C",
-              "-DESP32_2432S028R",
-              "-DESP32_3248S035R",
-              "-DESP32_3248S035C",
-              ]
+            smartboard: "-DESP32_2432S024N"
+          - board: "esp32dev"
+            smartboard: "-DESP32_2432S024R"
+          - board: "esp32dev"
+            smartboard: "-DESP32_2432S024C"
+          - board: "esp32dev"
+            smartboard: "-DESP32_2432S028R"
+          - board: "esp32dev"
+            smartboard: "-DESP32_3248S035R"
+          - board: "esp32dev"
+            smartboard: "-DESP32_3248S035C"
           - board: "esp32-s3-devkitc-1"
-            smartboard:
-              [
-                "-DESP32_8048S043N",
-                "-DESP32_8048S043R",
-                "-DESP32_8048S043C",
-                "-DESP32_8048S050N",
-                "-DESP32_8048S050R",
-                "-DESP32_8048S050C",
-                "-DESP32_8048S070N",
-                "-DESP32_8048S070R",
-                "-DESP32_8048S070C",
-              ]
+            smartboard: "-DESP32_8048S043N"
+          - board: "esp32-s3-devkitc-1"
+            smartboard: "-DESP32_8048S043R"
+          - board: "esp32-s3-devkitc-1"
+            smartboard: "-DESP32_8048S043C"
+          - board: "esp32-s3-devkitc-1"
+            smartboard: "-DESP32_8048S050N"
+          - board: "esp32-s3-devkitc-1"
+            smartboard: "-DESP32_8048S050R"
+          - board: "esp32-s3-devkitc-1"
+            smartboard: "-DESP32_8048S050C"
+          - board: "esp32-s3-devkitc-1"
+            smartboard: "-DESP32_8048S070N"
+          - board: "esp32-s3-devkitc-1"
+            smartboard:  "-DESP32_8048S070R"
+          - board: "esp32-s3-devkitc-1"
+            smartboard: "-DESP32_8048S070C"
     steps:
       - uses: actions/checkout@v3
       - name: Set up python
