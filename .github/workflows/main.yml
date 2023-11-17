@@ -9,34 +9,58 @@ jobs:
         include:
           - board: "esp32dev"
             smartboard: "ESP32_2432S024N"
+            color16swap: 1
           - board: "esp32dev"
             smartboard: "ESP32_2432S024R"
+            color16swap: 1
           - board: "esp32dev"
             smartboard: "ESP32_2432S024C"
+            color16swap: 1
           - board: "esp32dev"
             smartboard: "ESP32_2432S028R"
+            color16swap: 1
           - board: "esp32dev"
             smartboard: "ESP32_3248S035R"
+            color16swap: 1
           - board: "esp32dev"
             smartboard: "ESP32_3248S035C"
+            color16swap: 1
+          - board: "esp32-s3-devkitc-1"
+            smartboard: "ESP32_4827S043N"
+            color16swap: 0
+          - board: "esp32-s3-devkitc-1"
+            smartboard: "ESP32_4827S043R"
+            color16swap: 0
+          - board: "esp32-s3-devkitc-1"
+            smartboard: "ESP32_4827S043C"
+            color16swap: 0
           - board: "esp32-s3-devkitc-1"
             smartboard: "ESP32_8048S043N"
+            color16swap: 0
           - board: "esp32-s3-devkitc-1"
             smartboard: "ESP32_8048S043R"
+            color16swap: 0
           - board: "esp32-s3-devkitc-1"
             smartboard: "ESP32_8048S043C"
+            color16swap: 0
           - board: "esp32-s3-devkitc-1"
             smartboard: "ESP32_8048S050N"
+            color16swap: 0
           - board: "esp32-s3-devkitc-1"
             smartboard: "ESP32_8048S050R"
+            color16swap: 0
           - board: "esp32-s3-devkitc-1"
             smartboard: "ESP32_8048S050C"
+            color16swap: 0
           - board: "esp32-s3-devkitc-1"
             smartboard: "ESP32_8048S070N"
+            color16swap: 0
           - board: "esp32-s3-devkitc-1"
             smartboard:  "ESP32_8048S070R"
+            color16swap: 0
           - board: "esp32-s3-devkitc-1"
             smartboard: "ESP32_8048S070C"
+            color16swap: 0
     steps:
       - uses: actions/checkout@v3
       - name: Set up python
@@ -49,4 +73,4 @@ jobs:
       - name: Build firmware
         run: pio ci --lib="." --project-conf "example/platformio.ini" --environment ${{matrix.board}} "example/main.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -D${{matrix.smartboard}} -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h"
+          PLATFORMIO_BUILD_FLAGS: -D${{matrix.smartboard}} -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h" -DLV_COLOR_16_SWAP=${{matrix.color16swap}}
