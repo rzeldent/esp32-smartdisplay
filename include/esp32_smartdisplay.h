@@ -83,6 +83,7 @@ constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
 #define USES_CST816S
 #include <driver/i2c.h>
 #include "esp_lcd_touch_cst816s.h"
+#define CST816S_I2C_HOST 0
 constexpr i2c_config_t cst816s_i2c_config = {
     .mode = I2C_MODE_MASTER,
     .sda_io_num = 33,
@@ -249,6 +250,7 @@ constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
 #define USES_GT911
 #include <driver/i2c.h>
 #include "esp_lcd_touch_gt911.h"
+#define GT911_I2C_HOST 0
 const i2c_config_t gt911_i2c_config = {
     .mode = I2C_MODE_MASTER,
     .sda_io_num = 33,
@@ -353,6 +355,7 @@ constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
 #define USES_GT911
 #include <driver/i2c.h>
 #include "esp_lcd_touch_gt911.h"
+#define GT911_I2C_HOST 0
 const i2c_config_t gt911_i2c_config = {
     .mode = I2C_MODE_MASTER,
     .sda_io_num = 19,
@@ -446,6 +449,7 @@ constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
 #define USES_GT911
 #include <driver/i2c.h>
 #include "esp_lcd_touch_gt911.h"
+#define GT911_I2C_HOST 0
 const i2c_config_t gt911_i2c_config = {
     .mode = I2C_MODE_MASTER,
     .sda_io_num = 19,
@@ -539,6 +543,7 @@ constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
 #define USES_GT911
 #include <driver/i2c.h>
 #include "esp_lcd_touch_gt911.h"
+#define GT911_I2C_HOST 0
 const i2c_config_t gt911_i2c_config = {
     .mode = I2C_MODE_MASTER,
     .sda_io_num = 19,
@@ -632,6 +637,7 @@ constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
 #define USES_GT911
 #include <driver/i2c.h>
 #include "esp_lcd_touch_gt911.h"
+#define GT911_I2C_HOST 0
 const i2c_config_t gt911_i2c_config = {
     .mode = I2C_MODE_MASTER,
     .sda_io_num = 19,
@@ -656,6 +662,15 @@ constexpr esp_lcd_touch_config_t gt911_touch_config = {
 #endif
 #endif
 #endif
+
+#if defined(USES_ILI9341) || defined(USES_ST7796)
+// These use an SPI interface. Because display is LSB first the option LV_COLOR_16_SWAP must be set
+#if LV_COLOR_16_SWAP == 0
+#error "LV_COLOR_16_SWAP should be set to 1 in lv_conf.h because of SPI interface"
+#endif
+#endif
+
+// Exported functions
 
 // Initialize the display and touch
 extern void smartdisplay_init();

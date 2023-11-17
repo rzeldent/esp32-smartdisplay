@@ -24,6 +24,7 @@ void lvgl_tft_init(lv_disp_drv_t *drv)
     esp_lcd_rgb_panel_config_t tft_panel_config = esp_lcd_rgb_panel_config;
     tft_panel_config.on_frame_trans_done = direct_io_frame_trans_done;
     tft_panel_config.user_ctx = drv;
+    
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&tft_panel_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));

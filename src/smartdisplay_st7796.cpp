@@ -19,13 +19,6 @@ bool st7796_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_i
 void st7796_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
 {
     const auto panel_handle = (esp_lcd_panel_handle_t)drv->user_data;
-    // This is really a pity. Only SPI MSB first is suported. So far unable to find a better solution.
-    // Ideal would to set display in LSB first
-    auto size = lv_area_get_width(area) * lv_area_get_height(area);
-    auto p = color_map;
-    while (size--)
-        p++->full = __bswap16(p->full);
-
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, color_map));
 };
 
@@ -47,6 +40,7 @@ void lvgl_tft_init(lv_disp_drv_t *drv)
         .reset_gpio_num = GPIO_NUM_NC,
         .color_space = ESP_LCD_COLOR_SPACE_BGR,
         .bits_per_pixel = 16};
+
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7796(io_handle, &panel_dev_config, &panel_handle));
 
@@ -54,6 +48,7 @@ void lvgl_tft_init(lv_disp_drv_t *drv)
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
     drv->user_data = panel_handle;
     drv->flush_cb = st7796_lv_flush;
+    
     // Turn display on
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
 }

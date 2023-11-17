@@ -28,8 +28,10 @@ void xpt2046_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 
 void lvgl_touch_init(lv_indev_drv_t *drv)
 {
+#if ST7796_SPI_HOST != XPT2046_SPI_HOST
     // Create SPI bus only if not already initialized (S035R shares the SPI bus)
     ESP_ERROR_CHECK(spi_bus_initialize(XPT2046_SPI_HOST, &xpt2046_spi_bus_config, SPI_DMA_CH_AUTO));
+#endif
 
     // Attach the touch controller to the SPI bus
     esp_lcd_panel_io_spi_config_t io_spi_config = xpt2046_io_spi_config;
