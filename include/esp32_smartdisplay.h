@@ -732,8 +732,6 @@ constexpr esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
     .data_gpio_nums = {15, 7, 6, 5, 4, 9, 46, 3, 8, 16, 1, 14, 21, 47, 48, 45},
     .disp_gpio_num = -1,
     .flags = {.disp_active_low = 0, .relax_on_idle = 0, .fb_in_psram = 0}};
-#define PANEL_ROT_NONE_SWAP_XY false
-#define PANEL_ROT_NONE_MIRROR true, false
 // Touch
 #ifdef ESP32_8048S070R
 #define USES_XPT2046
@@ -759,8 +757,6 @@ constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_NC,
     .int_gpio_num = GPIO_NUM_18};
-#define TOUCH_ROT_NONE_SWAP_X false
-#define TOUCH_ROT_NONE_SWAP_Y false
 #else
 #ifdef ESP32_8048S070C
 #define USES_GT911
@@ -788,8 +784,6 @@ constexpr esp_lcd_touch_config_t gt911_touch_config = {
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_38,
     .int_gpio_num = GPIO_NUM_NC};
-#define TOUCH_ROT_NONE_SWAP_X false
-#define TOUCH_ROT_NONE_SWAP_Y false
 #endif
 #endif
 #endif
