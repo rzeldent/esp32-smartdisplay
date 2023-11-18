@@ -1,5 +1,7 @@
 #include <esp32_smartdisplay.h>
 
+#include <esp_lcd_types.h>
+#include <esp_lcd_touch.h>
 #include <esp_lcd_panel_ops.h>
 
 // Functions to be defined in the tft/touch driver
