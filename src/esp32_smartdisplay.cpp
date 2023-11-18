@@ -1,12 +1,13 @@
 #include <esp32_smartdisplay.h>
 
-// #include <esp_err.h>
-// #include <esp_lcd_panel_ops.h>
+#include <esp_lcd_panel_ops.h>
 
-// Functions to be defined in the tft driver
+// Functions to be defined in the tft/touch driver
 extern void lvgl_tft_init(lv_disp_drv_t *drv);
-// Functions to be defined in the touch driver
 extern void lvgl_touch_init(lv_indev_drv_t *drv);
+
+static lv_disp_drv_t disp_drv;
+static lv_indev_drv_t indev_drv;
 
 #if LV_USE_LOG
 void lvgl_log(const char *buf)
@@ -14,6 +15,51 @@ void lvgl_log(const char *buf)
   log_printf("%s", buf);
 }
 #endif
+
+// Called when driver parameters are updated (rotation)
+// Top of the display is top left when connector is at the bottom
+static void lvgl_update_callback(lv_disp_drv_t *drv)
+{
+  const auto panel_handle = (esp_lcd_panel_handle_t)disp_drv.user_data;
+  const auto touch_handle = (esp_lcd_touch_handle_t)indev_drv.user_data;
+#ifdef PANEL_ROT_NONE_SWAP_XY
+  switch (drv->rotated)
+  {
+  case LV_DISP_ROT_NONE:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, PANEL_ROT_NONE_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, PANEL_ROT_NONE_MIRROR_X, PANEL_ROT_NONE_MIRROR_Y));
+#ifdef USES_TOUCH
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_ROT_NONE_SWAP_X));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_ROT_NONE_SWAP_Y));
+#endif
+    break;
+  case LV_DISP_ROT_90:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !PANEL_ROT_NONE_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !PANEL_ROT_NONE_MIRROR_X, PANEL_ROT_NONE_MIRROR_Y));
+#ifdef USES_TOUCH
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_ROT_NONE_SWAP_X));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_ROT_NONE_SWAP_Y));
+#endif
+    break;
+  case LV_DISP_ROT_180:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, PANEL_ROT_NONE_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !PANEL_ROT_NONE_MIRROR_X, !PANEL_ROT_NONE_MIRROR_Y));
+#ifdef USES_TOUCH
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_ROT_NONE_SWAP_X));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_ROT_NONE_SWAP_Y));
+#endif
+    break;
+  case LV_DISP_ROT_270:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !PANEL_ROT_NONE_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, PANEL_ROT_NONE_MIRROR_X, !PANEL_ROT_NONE_MIRROR_Y));
+#ifdef USES_TOUCH
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_ROT_NONE_SWAP_X));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_ROT_NONE_SWAP_Y));
+#endif
+    break;
+  }
+#endif
+}
 
 void smartdisplay_init()
 {
@@ -50,7 +96,6 @@ void smartdisplay_init()
   ledcAttachPin(PIN_BCKL, PWM_CHANNEL_BCKL);
   digitalWrite(PIN_BCKL, LOW);
   // Setup TFT display
-  static lv_disp_drv_t disp_drv;
   lv_disp_drv_init(&disp_drv);
   disp_drv.hor_res = TFT_WIDTH;
   disp_drv.ver_res = TFT_HEIGHT;
@@ -68,14 +113,18 @@ void smartdisplay_init()
   ledcWrite(PWM_CHANNEL_BCKL, PWM_MAX_BCKL);
 
 // If there is a touch controller defined
-#if defined(USES_CST816S) || defined(USES_XPT2046) || defined(USES_GT911)
+#ifdef USES_TOUCH
   // Setup touch
-  static lv_indev_drv_t indev_drv;
   lv_indev_drv_init(&indev_drv);
   indev_drv.disp = display;
   lvgl_touch_init(&indev_drv);
   lv_indev_drv_register(&indev_drv);
 #endif
+
+  // Register callback for changes to the driver parameters
+  disp_drv.drv_update_cb = lvgl_update_callback;
+  // Call the callback to set the rotation
+  lvgl_update_callback(&disp_drv);
 }
 
 void smartdisplay_tft_set_backlight(uint16_t duty)

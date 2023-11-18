@@ -10,54 +10,54 @@ This library supports these boards without any effort.
 
 With the boards, there is a link supplied and there are a lot of examples present and this looks fine.
 These examples for [LVGL](https://lvgl.io/) depend on external libraries ([TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)).
-However, when implementing the capacitive version, I found out that these libraries had their flaws using these boards.
-Additionally, There was a log of unnecessary code included in these libraries.
-There is also a library for [LVGL](https://lvgl.io/) present [LVGL_ESP32_drivers](https://github.com/lvgl/lvgl_esp32_drivers) but this is not aimed at the Arduino framework but ESP-IDF framework.
+However, when implementing the capacitive version, I found out that these libraries had their flaws using these boards:
 
-## Where and why buying these boards
+- A lot of not unnecessary code is included (for other boards)
+- No support for on the fly rotating
+- No auto of the box support for touch
+- A lot of configuring to do before it all works
+
+This library uses the "official" drivers from the EspressIf repository. These drivers use the newly introduced esp_lcd_panel interfaces.
+This should provide some support in the future for updates and new boards.
+
+## How to obtain these boards
 
 These boards are available on AliExpress for decent prices and offer a lot.
 They can be bought in the [Sunton Store](https://www.aliexpress.com/store/1100192306) on AliExpress but saw them also from other sellers.
 
-- [ESP32-2432S024R/C/N - 2.4" 240x320 TFT Resistive/Capacitive touch/No touch](https://www.aliexpress.com/item/1005005865107357.html)
-- [ESP32-2432S028R - 2.8" 240x320 TFT Resistive touch](https://www.aliexpress.com/item/1005004502250619.html)
-- [ESP32-3248S035R/C 3.5" 320x480 TFT Resistive/Capacitive touch](https://www.aliexpress.com/item/1005004632953455.html)
-- [ESP32-8048S035C/N - 4.3" 800x480 TFT Capacitive touch/No touch](https://wiki.makerfabs.com/Sunton_ESP32_S3_4.3_inch_800x400_IPS_with_Touch.html)
-- [ESP32-8048S070C/N - 7.0" 800x480 TFT Capacitive touch/No touch](https://www.aliexpress.us/item/1005004952726089.html)
+## Supported boards
+
+| Type            | CPU       | Display | Size  | Controller                        | Rotate support  | LV_COLOR_16_SWAP | Touch                              | Audio  | Flash  | RGB LED  | CDS    | Link|
+|---              |---        |---      |--     |---                                |---              |---               |---                                 |---     |---     |---       |---     |--- |
+| ESP32-2432S024N | ESP32     | 240x320 | 2.4"  | [ILI9341](datasheets/ILI9341.pdf) | yes             | yes              | n/a                                | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S024R | ESP32     | 240x320 | 2.4"  | [ILI9341](datasheets/ILI9341.pdf) | yes             | yes              | [XPT2046](datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S024C | ESP32     | 240x320 | 2.4"  | [ILI9341](datasheets/ILI9341.pdf) | yes             | yes              | [CST816S](datasheets/CST816S.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S028R | ESP32     | 240x320 | 2.8"  | [ILI9341](datasheets/ILI9341.pdf) | yes             | yes              | [XPT2046](datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html) |
+| ESP32-2432S032N | ESP32     | 240x320 | 3.2"  | [ST7796](datasheets/ST7796.pdf)   | yes             | yes              | n/a                                | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-2432S032R | ESP32     | 240x320 | 3.2"  | [ST7796](datasheets/ST7796.pdf)   | yes             | yes              | [XPT2046](datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-2432S032C | ESP32     | 240x320 | 3.2"  | [ST7796](datasheets/ST7796.pdf)   | yes             | yes              | [GT911](datesheets/GT911.pdf)      | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-3248S035R | ESP32     | 320x480 | 3.5"  | [ST7796](datasheets/ST7796.pdf)   | yes             | yes              | [XPT2046](datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
+| ESP32-3248S035C | ESP32     | 320x480 | 3.5"  | [ST7796](datasheets/ST7796.pdf)   | yes             | yes              | [GT911](datesheets/GT911.pdf)      | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
+| ESP32-4827S043R | ESP32-S3  | 480x272 | 4.3"  | n/a                               | no              | no               | [XPT2046](datasheets/XPT2046.pdf)  | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
+| ESP32-4827S043C | ESP32-S3  | 480x272 | 4.3"  | n/a                               | no              | no               | [GT911](datesheets/GT911.pdf)      | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
+| ESP32-8048S050N | ESP32-S3  | 800x480 | 5.0"  | n/a                               | no              | no               | n/a                                | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
+| ESP32-8048S050C | ESP32-S3  | 800x480 | 5.0"  | n/a                               | no              | no               | [GT911](datesheets/GT911.pdf)      | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
+| ESP32-8048S070N | ESP32-S3  | 800x480 | 7.0"  | n/a                               | no              | no               | n/a                                | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
+| ESP32-8048S070C | ESP32-S3  | 800x480 | 7.0"  | n/a                               | no              | no               | [GT911](datesheets/GT911.pdf)      | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
 
 ![ESP32-3248S035R front](assets/images/esp32-3248S035-front.png)
 ![ESP32-3248S035R back](assets/images/esp32-3248S035-back.png)
 
-These boards offer:
-
-- ESP32-WROOM,
-- 4MB Additional Flash,
-- Display with touch (IL9341/ST7796 and XPT2046/GT911),
-- Light sensor (CDS),
-- Audio amplifier,
-- RGB led (3.5" front, 2.8" back),
-- Extension connectors,
-- USB Serial interface,
-- Expansion connectors,
-- Power connector,
-- 4 Holes so can easily be attached,
-- ...
-
 ## Dependencies
 
-This library depends on some standard libraries to access the SPI and I2C busses:
-
-- SPI (version ^2.0.0)
-- Wire (version ^2.0.0) when using capacitive touch
-
-To have all the constants and prototypes from LVGL, the LVGL library is already included.:
+This library depends on:
 
 - LVGL (version ^8.3.2)
 
 To use the LVGL library, a `lv_conf.h` file is required to define the settings for LVGL.
 This file needs to be provided by the application.
 As this file is referenced from the build of LVGL, the path must be known.
-Normally this file is included in the include directory of your project so the define must be
+Normally this file is included in the include directory of **your** project so the define must be
 
 ```ini
     -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
@@ -68,75 +68,109 @@ The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/
 ## How to use
 
 Basically there is only **ONE** define that need to be defined: The type of board assuming everything is default.
+Be aware that the platform board must also match but this is a requirement for a platform io project.
 
-- Type of board (required)
+- Type of board
 
-  - ESP32_2432S024R
-  - ESP32_2432S024C
-  - ESP32_2432S024N
-  - ESP32_2432S028R
-  - ESP32_3248S035R
-  - ESP32_3248S035C
-  - ESP32_8048S043N
-  - ESP32_8048S043R
-  - ESP32_8048S043C
-  - ESP32_8048S050N
-  - ESP32_8048S050R
-  - ESP32_8048S050C
-  - ESP32_8048S070N
-  - ESP32_8048S070R
-  - ESP32_8048S070C
+  - esp32dev
+    - ESP32_2432S024R
+    - ESP32_2432S024C
+    - ESP32_2432S024N
+    - ESP32_2432S028R
+    - ESP32_3248S035R
+    - ESP32_3248S035C
 
-- Orientation of the board (optional)
-
-  - TFT_ORIENTATION_PORTRAIT (default)
-  - TFT_ORIENTATION_LANDSCAPE (rotated 90 degrees)
-  - TFT_ORIENTATION_PORTRAIT_INV (rotated 180 degrees)
-  - TFT_ORIENTATION_LANDSCAPE_INV (rotated 270/-90 degrees)
-
-- Flipped/Mirrored (optional)
-  Some TFT batches seem to have the contents mirrored and flipped.
-  The flag TFT_FLIPPEDMIRRORED compensates for this (production?) anomaly.
-
-- LCD Panel RGB order (if red and blue are swapped on the display, optional)
-  - TFT_PANEL_ORDER_RGB
-  - TFT_PANEL_ORDER_BGR (default)
+  - esp32-s3-devkitc-1
+    - ESP32_8048S043N
+    - ESP32_8048S043R
+    - ESP32_8048S043C
+    - ESP32_8048S050N
+    - ESP32_8048S050R
+    - ESP32_8048S050C
+    - ESP32_8048S070N
+    - ESP32_8048S070R
+    - ESP32_8048S070C
 
 These can be defined in the `platformio.ini` file defining the settings:
 
 ```ini
+; PlatformIO Project Configuration File
+;
+;   Build options: build flags, source filter
+;   Upload options: custom upload port, speed and extra flags
+;   Library options: dependencies, extra library storages
+;   Advanced options: extra scripting
+;
+; Please visit documentation for the other options and examples
+; https://docs.platformio.org/page/projectconf.html
+
+[platformio]
+default_envs = esp32-s3-devkitc-1
+
+[env]
+platform = espressif32
+framework = arduino
+monitor_speed = 115200
+
+monitor_filters = esp32_exception_decoder
+
 build_flags =
     -Ofast
-    #-Wall
+    -Wall
     -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
     # LVGL settings
     -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
-    # Smartdisplay settings
-    #-D TFT_PANEL_ORDER_BGR
-    #-D TFT_PANEL_ORDER_RGB
-    #-D TFT_ORIENTATION_PORTRAIT
-    #-D TFT_ORIENTATION_LANDSCAPE
-    #-D TFT_ORIENTATION_PORTRAIT_INV
-    #-D TFT_ORIENTATION_LANDSCAPE_INV
-    #-D TFT_FLIPPEDMIRRORED
+    # EspressIf library defines
+    -D ESP_LCD_ST7796_VER_MAJOR=1
+    -D ESP_LCD_ST7796_VER_MINOR=2
+    -D ESP_LCD_ST7796_VER_PATCH=0
+    -D ESP_LCD_ILI9341_VER_MAJOR=1
+    -D ESP_LCD_ILI9341_VER_MINOR=2
+    -D ESP_LCD_ILI9341_VER_PATCH=0
+    -D CONFIG_ESP_LCD_TOUCH_MAX_POINTS=1
+    -D CONFIG_XPT2046_CONVERT_ADC_TO_COORDS
+    -D CONFIG_XPT2046_Z_THRESHOLD=600
+
+lib_deps = rzeldent/esp32_smartdisplay
+
+[env:esp32dev]
+board = esp32dev
+
+build_flags =
+    ${env.build_flags}
+    # Smartdisplay selection
     #-D ESP32_2432S024N
     #-D ESP32_2432S024R
     #-D ESP32_2432S024C
     #-D ESP32_2432S028R
+    #-D ESP32_3248S032N
+    #-D ESP32_3248S032R
+    #-D ESP32_3248S032C
     #-D ESP32_3248S035R
     #-D ESP32_3248S035C
-    #-D ESP32_4827S043R
+
+lib_deps = ${env.lib_deps}
+
+[env:esp32-s3-devkitc-1]
+board = esp32-s3-devkitc-1
+
+build_flags =
+    ${env.build_flags}
+    # Smartdisplay selection
+    #-D ESP32_4827S043N
     #-D ESP32_4827S043R
     #-D ESP32_4827S043C
     #-D ESP32_8048S043N
+    #-D ESP32_8048S043R
     #-D ESP32_8048S043C
     #-D ESP32_8048S050N
+    #-D ESP32_8048S050R
     #-D ESP32_8048S050C
     #-D ESP32_8048S070N
+    #-D ESP32_8048S070R
     #-D ESP32_8048S070C
 
-lib_deps =
-    rzeldent/esp32_smartdisplay
+lib_deps = ${env.lib_deps}
 ```
 
 The path for the lv_conf.h above is `${PROJECT_INCLUDE_DIR}`.
@@ -148,60 +182,19 @@ An bare minimum application to demonstrate the library can be found at [esp32-sm
 
 ## Functions
 
-### std::recursive_mutex lvgl_mutex
-
-This mutex is defined to limit the access to lvgl functions to one thread.
-When used in multiple threads, this corrupts the display and/or state of LVGL
-
-Use like this:
-
-```c++
-const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
-```
-
-During the scope of this variable, the mutex is locked. This will allow only one thread or section to use lvgl.
-
 ### void smartdisplay_init()
 
-Initialize the display and touch.
 This is the first function that needs to be called.
 It initializes the display controller and touch controller.
-
-### void smartdisplay_set_led_color(lv_color32_t rgb)
-
-Set the color of the led. The led has 3 channels: R(ed), G(reen) and B(lue).
-Each channel has a 8 bit resolution so from 0-255.
-
-The lv_colo32_t can be set in the following manner:
-
-```c++
-lv_color32_t({.ch = {.green = 0xFF}}) : lv_color32_t({.ch = {.red = 0xFF}})
-```
-
-### int smartdisplay_get_light_intensity()
-
-Get the value of the CDS sensor.
-The sensor measures the (ambient) light level and can be used to adjust the brightness of the display.
-
-### void smartdisplay_beep(unsigned int frequency, unsigned long duration)
-
-Beep with the specified frequency and duration. To hear the sound a 8 ohms speaker must be connected.
-Later versions of the board (ESP32_8048S043, ESP32_8048S050, ESP32_8048S070) have I2S audio and this function does not work.
 
 ### void smartdisplay_tft_set_backlight(uint16_t duty)
 
 Set the brightness of the backlight display. The resolution is 12 bit so 0-1023.
 
-### void smartdisplay_tft_sleep()
-
-Put the display to sleep.
-
-### void smartdisplay_tft_wake()
-
-Wake the display.
-
 ## Version history
 
+- November 2023
+  - Rewrote library to also support the new ESP32-S3 panels
 - October 2023
   - Added support for esp32_8048S034N/C
   - Added option for flipped/mirrored TFT's

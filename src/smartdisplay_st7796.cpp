@@ -9,14 +9,14 @@
 
 #include "esp_lcd_st7796.h"
 
-bool st7796_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
+static bool st7796_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
     const auto disp_driver = (lv_disp_drv_t *)user_ctx;
     lv_disp_flush_ready(disp_driver);
     return false;
 }
 
-void st7796_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
+static void st7796_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
 {
     const auto panel_handle = (esp_lcd_panel_handle_t)drv->user_data;
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, color_map));
@@ -25,7 +25,7 @@ void st7796_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *colo
 void lvgl_tft_init(lv_disp_drv_t *drv)
 {
     // Create SPI bus
-    ESP_ERROR_CHECK(spi_bus_initialize(ST7796_SPI_HOST, &st7796_bus_config, SPI_DMA_CH_AUTO));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(ST7796_SPI_HOST, &st7796_bus_config, SPI_DMA_CH_AUTO));
 
     // Attach the LCD controller to the SPI bus
     esp_lcd_panel_io_spi_config_t io_config = st7796_spi_bus_config;

@@ -6,7 +6,7 @@
 #include "esp_lcd_touch.h"
 #include "esp_lcd_touch_cst816s.h"
 
-void cst816s_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
+static void cst816s_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
     const auto touch_handle = (esp_lcd_touch_handle_t)drv->user_data;
     uint16_t touchpad_x[1] = {0};
