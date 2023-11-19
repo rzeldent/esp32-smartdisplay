@@ -27,23 +27,25 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 
 ## Supported boards
 
-| Type            | CPU       | Display | Size  | Controller                        | Rotate support  | LV_COLOR_16_SWAP | Touch                              | Audio  | Flash  | RGB LED  | CDS    | Link|
-|---              |---        |---      |--     |---                                |---              |---               |---                                 |---     |---     |---       |---     |--- |
-| ESP32-2432S024N | ESP32     | 240x320 | 2.4"  | [ILI9341](datasheets/ILI9341.pdf) | yes             | yes              | n/a                                | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
-| ESP32-2432S024R | ESP32     | 240x320 | 2.4"  | [ILI9341](datasheets/ILI9341.pdf) | yes             | yes              | [XPT2046](datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
-| ESP32-2432S024C | ESP32     | 240x320 | 2.4"  | [ILI9341](datasheets/ILI9341.pdf) | yes             | yes              | [CST816S](datasheets/CST816S.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
-| ESP32-2432S028R | ESP32     | 240x320 | 2.8"  | [ILI9341](datasheets/ILI9341.pdf) | yes             | yes              | [XPT2046](datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html) |
-| ESP32-2432S032N | ESP32     | 240x320 | 3.2"  | [ST7796](datasheets/ST7796.pdf)   | yes             | yes              | n/a                                | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
-| ESP32-2432S032R | ESP32     | 240x320 | 3.2"  | [ST7796](datasheets/ST7796.pdf)   | yes             | yes              | [XPT2046](datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
-| ESP32-2432S032C | ESP32     | 240x320 | 3.2"  | [ST7796](datasheets/ST7796.pdf)   | yes             | yes              | [GT911](datesheets/GT911.pdf)      | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
-| ESP32-3248S035R | ESP32     | 320x480 | 3.5"  | [ST7796](datasheets/ST7796.pdf)   | yes             | yes              | [XPT2046](datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
-| ESP32-3248S035C | ESP32     | 320x480 | 3.5"  | [ST7796](datasheets/ST7796.pdf)   | yes             | yes              | [GT911](datesheets/GT911.pdf)      | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
-| ESP32-4827S043R | ESP32-S3  | 480x272 | 4.3"  | n/a                               | no              | no               | [XPT2046](datasheets/XPT2046.pdf)  | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
-| ESP32-4827S043C | ESP32-S3  | 480x272 | 4.3"  | n/a                               | no              | no               | [GT911](datesheets/GT911.pdf)      | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
-| ESP32-8048S050N | ESP32-S3  | 800x480 | 5.0"  | n/a                               | no              | no               | n/a                                | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
-| ESP32-8048S050C | ESP32-S3  | 800x480 | 5.0"  | n/a                               | no              | no               | [GT911](datesheets/GT911.pdf)      | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
-| ESP32-8048S070N | ESP32-S3  | 800x480 | 7.0"  | n/a                               | no              | no               | n/a                                | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
-| ESP32-8048S070C | ESP32-S3  | 800x480 | 7.0"  | n/a                               | no              | no               | [GT911](datesheets/GT911.pdf)      | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
+| Type            | CPU       | Display | Size  | Controller                                | Rotate support  | LV_COLOR_16_SWAP  | Touch                                     | Audio  | Flash  | RGB LED  | CDS    | Link|
+|---              |---        |---      |--     |---                                        |---              |---                |---                                        |---     |---     |---       |---     |--- |
+| ESP32-2424S012N | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  |                 | yes               | n/a                                       | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
+| ESP32-2424S012C | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  |                 | yes               | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
+| ESP32-2432S024N | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | n/a                                       | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S024R | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S024C | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | [CST816S](assets/datasheets/CST816S.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S028R | ESP32     | 240x320 | 2.8"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html) |
+| ESP32-2432S032N | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes               | n/a                                       | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-2432S032R | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes               | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-2432S032C | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes               | [GT911](assets/datasheets//GT911.pdf)     | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-3248S035R | ESP32     | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes               | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
+| ESP32-3248S035C | ESP32     | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes               | [GT911](assets/datasheets//GT911.pdf)     | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
+| ESP32-4827S043R | ESP32-S3  | 480x272 | 4.3"  | n/a                                       | no              | no                | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
+| ESP32-4827S043C | ESP32-S3  | 480x272 | 4.3"  | n/a                                       | no              | no                | [GT911](assets/datasheets//GT911.pdf)     | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
+| ESP32-8048S050N | ESP32-S3  | 800x480 | 5.0"  | n/a                                       | no              | no                | n/a                                       | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
+| ESP32-8048S050C | ESP32-S3  | 800x480 | 5.0"  | n/a                                       | no              | no                | [GT911](assets/datasheets//GT911.pdf)     | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
+| ESP32-8048S070N | ESP32-S3  | 800x480 | 7.0"  | n/a                                       | no              | no                | n/a                                       | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
+| ESP32-8048S070C | ESP32-S3  | 800x480 | 7.0"  | n/a                                       | no              | no                | [GT911](assets/datasheets//GT911.pdf)     | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
 
 ![ESP32-3248S035R front](assets/images/esp32-3248S035-front.png)
 ![ESP32-3248S035R back](assets/images/esp32-3248S035-back.png)
@@ -80,6 +82,10 @@ Be aware that the platform board must also match but this is a requirement for a
     - ESP32_3248S035R
     - ESP32_3248S035C
 
+  - esp32-c3-devkitm-1
+    - ESP32_2424S012N
+    - ESP32_2424S012C
+
   - esp32-s3-devkitc-1
     - ESP32_8048S043N
     - ESP32_8048S043R
@@ -94,32 +100,16 @@ Be aware that the platform board must also match but this is a requirement for a
 These can be defined in the `platformio.ini` file defining the settings:
 
 ```ini
-; PlatformIO Project Configuration File
-;
-;   Build options: build flags, source filter
-;   Upload options: custom upload port, speed and extra flags
-;   Library options: dependencies, extra library storages
-;   Advanced options: extra scripting
-;
-; Please visit documentation for the other options and examples
-; https://docs.platformio.org/page/projectconf.html
-
-[platformio]
-default_envs = esp32-s3-devkitc-1
-
 [env]
 platform = espressif32
 framework = arduino
-monitor_speed = 115200
-
-monitor_filters = esp32_exception_decoder
 
 build_flags =
     -Ofast
     -Wall
     -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
     # LVGL settings
-    -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
+    #-D LV_CONF_PATH="${PROJECT_DIR}/example/lv_conf.h"
     # EspressIf library defines
     -D ESP_LCD_ST7796_VER_MAJOR=1
     -D ESP_LCD_ST7796_VER_MINOR=2
@@ -131,11 +121,8 @@ build_flags =
     -D CONFIG_XPT2046_CONVERT_ADC_TO_COORDS
     -D CONFIG_XPT2046_Z_THRESHOLD=600
 
-lib_deps = rzeldent/esp32_smartdisplay
-
 [env:esp32dev]
 board = esp32dev
-
 build_flags =
     ${env.build_flags}
     # Smartdisplay selection
@@ -149,15 +136,19 @@ build_flags =
     #-D ESP32_3248S035R
     #-D ESP32_3248S035C
 
-lib_deps = ${env.lib_deps}
-
-[env:esp32-s3-devkitc-1]
-board = esp32-s3-devkitc-1
-
+[env:esp32-c3-devkitm-1]
+board = esp32-c3-devkitm-1
 build_flags =
     ${env.build_flags}
     # Smartdisplay selection
-    #-D ESP32_4827S043N
+    #-D ESP32_2424S012N
+    #-D ESP32_2424S012C
+
+[env:esp32-s3-devkitc-1]
+board = esp32-s3-devkitc-1
+build_flags =
+    ${env.build_flags}
+    # Smartdisplay selection
     #-D ESP32_4827S043R
     #-D ESP32_4827S043C
     #-D ESP32_8048S043N
@@ -169,8 +160,6 @@ build_flags =
     #-D ESP32_8048S070N
     #-D ESP32_8048S070R
     #-D ESP32_8048S070C
-
-lib_deps = ${env.lib_deps}
 ```
 
 The path for the lv_conf.h above is `${PROJECT_INCLUDE_DIR}`.
@@ -189,12 +178,14 @@ It initializes the display controller and touch controller.
 
 ### void smartdisplay_tft_set_backlight(uint16_t duty)
 
-Set the brightness of the backlight display. The resolution is 12 bit so 0-1023.
+Set the brightness of the backlight display.
+The resolution is 12 bit so valid values are from 0-1023.
 
 ## Version history
 
 - November 2023
-  - Rewrote library to also support the new ESP32-S3 panels
+  - Major version update: 2.0.0
+  - Rewrote library to also support the new ESP32-S3 panels and new esp_lcd interface
 - October 2023
   - Added support for esp32_8048S034N/C
   - Added option for flipped/mirrored TFT's

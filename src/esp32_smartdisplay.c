@@ -22,8 +22,8 @@ void lvgl_log(const char *buf)
 // Top of the display is top left when connector is at the bottom
 static void lvgl_update_callback(lv_disp_drv_t *drv)
 {
-  const auto panel_handle = (esp_lcd_panel_handle_t)disp_drv.user_data;
-  const auto touch_handle = (esp_lcd_touch_handle_t)indev_drv.user_data;
+  esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
+  esp_lcd_touch_handle_t touch_handle = indev_drv.user_data;
 #ifdef PANEL_ROT_NONE_SWAP_XY
   switch (drv->rotated)
   {
@@ -102,13 +102,13 @@ void smartdisplay_init()
   disp_drv.hor_res = TFT_WIDTH;
   disp_drv.ver_res = TFT_HEIGHT;
   // Create drawBuffer
-  disp_drv.draw_buf = new lv_disp_draw_buf_t;
-  const auto drawBufferPixels = TFT_WIDTH * LVGL_PIXEL_BUFFER_LINES;
-  auto drawBuffer = heap_caps_malloc(sizeof(lv_color_t) * drawBufferPixels, MALLOC_CAP_DMA);
-  lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, nullptr, drawBufferPixels);
+  disp_drv.draw_buf = (lv_disp_draw_buf_t*)malloc(sizeof(lv_disp_draw_buf_t));
+  uint drawBufferPixels = TFT_WIDTH * LVGL_PIXEL_BUFFER_LINES;
+  void* drawBuffer = heap_caps_malloc(sizeof(lv_color_t) * drawBufferPixels, MALLOC_CAP_DMA);
+  lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, drawBufferPixels);
   // Initialize specific driver
   lvgl_tft_init(&disp_drv);
-  auto display = lv_disp_drv_register(&disp_drv);
+  lv_disp_t* display = lv_disp_drv_register(&disp_drv);
   // Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on

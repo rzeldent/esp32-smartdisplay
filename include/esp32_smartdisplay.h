@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ESP32_SMARTDISPLAY_H
+#define ESP32_SMARTDISPLAY_H
 
 #include <Arduino.h>
 #include <lvgl.h>
@@ -22,6 +23,35 @@
 #define PWM_BITS_BCKL 8
 #define PWM_MAX_BCKL ((1 << PWM_BITS_BCKL) - 1)
 
+// ESP32_2423S012 N/C
+#if defined(ESP32_2424S012N) || defined(ESP32_2424S012C)
+#define TFT_WIDTH 240
+#define TFT_HEIGHT 240
+// Backlight
+#define PIN_BCKL 3
+#define PWM_CHANNEL_BCKL 12
+// LCD
+#define USES_GC9A01
+#define GC9A01_SPI_HOST SPI2_HOST
+#define GC9A01_SPI_BUS_CONFIG {.mosi_io_num = 7, .miso_io_num = -1, .sclk_io_num = 6, .quadwp_io_num = -1, .quadhd_io_num = -1}
+#define GC9A01_IO_SPI_CONFIG {.cs_gpio_num = 10, .dc_gpio_num = 2, .spi_mode = SPI_MODE0, .pclk_hz = 80000000, .trans_queue_depth = 10, .lcd_cmd_bits = 8, .lcd_param_bits = 8}
+#define GC9A01_PANEL_DEV_CONFIG {.reset_gpio_num = -1, .color_space = ESP_LCD_COLOR_SPACE_BGR, .bits_per_pixel = 16}
+#define PANEL_ROT_NONE_SWAP_XY false
+#define PANEL_ROT_NONE_MIRROR_X true
+#define PANEL_ROT_NONE_MIRROR_Y false
+// Touch
+#ifdef ESP32_2424S012C
+#define USES_CST816S
+#include "esp_lcd_touch_cst816s.h"
+#define CST816S_I2C_HOST 0
+#define CST816S_I2C_CONFIG {.mode = I2C_MODE_MASTER, .sda_io_num = 4, .scl_io_num = 5, .sda_pullup_en = GPIO_PULLUP_ENABLE, .scl_pullup_en = GPIO_PULLUP_ENABLE, .master = { .clk_speed = 400000}}
+#define CST816S_IO_I2C_CONFIG {.dev_addr = ESP_LCD_TOUCH_IO_I2C_CST816S_ADDRESS, .control_phase_bytes = 1, .dc_bit_offset = 0, .lcd_cmd_bits = 8, .flags = {.disable_control_phase = 1}}
+#define CST816S_TOUCH_CONFIG {.x_max = TFT_WIDTH, .y_max = TFT_HEIGHT, .rst_gpio_num = GPIO_NUM_1, .int_gpio_num = GPIO_NUM_0}
+#define TOUCH_ROT_NONE_SWAP_X false
+#define TOUCH_ROT_NONE_SWAP_Y false
+#endif
+#endif
+
 // ESP32_2432S024 N/R/C
 #if defined(ESP32_2432S024N) || defined(ESP32_2432S024R) || defined(ESP32_2432S024C)
 #define TFT_WIDTH 240
@@ -35,13 +65,13 @@
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_vendor.h>
 #define ILI9341_SPI_HOST SPI2_HOST
-constexpr spi_bus_config_t ili9341_bus_config = {
+const spi_bus_config_t ili9341_bus_config = {
     .mosi_io_num = 13,
     .miso_io_num = 12,
     .sclk_io_num = 14,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t ili9341_io_spi_config = {
+const esp_lcd_panel_io_spi_config_t ili9341_io_spi_config = {
     .cs_gpio_num = 15,
     .dc_gpio_num = 2,
     .spi_mode = SPI_MODE0,
@@ -49,7 +79,7 @@ constexpr esp_lcd_panel_io_spi_config_t ili9341_io_spi_config = {
     .trans_queue_depth = 10,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_panel_dev_config_t ili9341_panel_dev_config = {
+const esp_lcd_panel_dev_config_t ili9341_panel_dev_config = {
     .reset_gpio_num = -1,
     .color_space = ESP_LCD_COLOR_SPACE_BGR,
     .bits_per_pixel = 16};
@@ -62,13 +92,13 @@ constexpr esp_lcd_panel_dev_config_t ili9341_panel_dev_config = {
 #include <driver/spi_master.h>
 #include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI3_HOST
-constexpr spi_bus_config_t xpt2046_spi_bus_config = {
+const spi_bus_config_t xpt2046_spi_bus_config = {
     .mosi_io_num = 32,
     .miso_io_num = 39,
     .sclk_io_num = 25,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
+const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .cs_gpio_num = 33,
     .dc_gpio_num = -1,
     .spi_mode = SPI_MODE0,
@@ -76,20 +106,20 @@ constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .trans_queue_depth = 3,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
+const esp_lcd_touch_config_t xpt2046_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_NC,
     .int_gpio_num = GPIO_NUM_36};
-#define TOUCH_ROT_NONE_SWAP_X   true
-#define TOUCH_ROT_NONE_SWAP_Y   false    
+#define TOUCH_ROT_NONE_SWAP_X true
+#define TOUCH_ROT_NONE_SWAP_Y false
 #else
 #ifdef ESP32_2432S024C
 #define USES_CST816S
 #include <driver/i2c.h>
 #include "esp_lcd_touch_cst816s.h"
 #define CST816S_I2C_HOST 0
-constexpr i2c_config_t cst816s_i2c_config = {
+const i2c_config_t cst816s_i2c_config = {
     .mode = I2C_MODE_MASTER,
     .sda_io_num = 33,
     .scl_io_num = 32,
@@ -97,7 +127,7 @@ constexpr i2c_config_t cst816s_i2c_config = {
     .scl_pullup_en = GPIO_PULLUP_ENABLE,
     .master = {
         .clk_speed = 400000}};
-constexpr esp_lcd_panel_io_i2c_config_t cst816s_io_i2c_config = {
+const esp_lcd_panel_io_i2c_config_t cst816s_io_i2c_config = {
     .dev_addr = ESP_LCD_TOUCH_IO_I2C_CST816S_ADDRESS,
     .control_phase_bytes = 1,
     .dc_bit_offset = 0,
@@ -105,13 +135,13 @@ constexpr esp_lcd_panel_io_i2c_config_t cst816s_io_i2c_config = {
     .flags = {
         .disable_control_phase = 1,
     }};
-constexpr esp_lcd_touch_config_t cst816s_touch_config = {
+const esp_lcd_touch_config_t cst816s_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_25,
     .int_gpio_num = GPIO_NUM_NC};
-#define TOUCH_ROT_NONE_SWAP_X   false
-#define TOUCH_ROT_NONE_SWAP_Y   false    
+#define TOUCH_ROT_NONE_SWAP_X false
+#define TOUCH_ROT_NONE_SWAP_Y false
 #endif
 #endif
 // Build in RGB LED
@@ -140,13 +170,13 @@ constexpr esp_lcd_touch_config_t cst816s_touch_config = {
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_vendor.h>
 #define ILI9341_SPI_HOST SPI2_HOST
-constexpr spi_bus_config_t ili9341_bus_config = {
+const spi_bus_config_t ili9341_bus_config = {
     .mosi_io_num = 13,
     .miso_io_num = 12,
     .sclk_io_num = 14,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t ili9341_io_spi_config = {
+const esp_lcd_panel_io_spi_config_t ili9341_io_spi_config = {
     .cs_gpio_num = 15,
     .dc_gpio_num = 2,
     .spi_mode = SPI_MODE0,
@@ -154,7 +184,7 @@ constexpr esp_lcd_panel_io_spi_config_t ili9341_io_spi_config = {
     .trans_queue_depth = 10,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_panel_dev_config_t ili9341_panel_dev_config = {
+const esp_lcd_panel_dev_config_t ili9341_panel_dev_config = {
     .reset_gpio_num = -1,
     .color_space = ESP_LCD_COLOR_SPACE_BGR,
     .bits_per_pixel = 16};
@@ -166,13 +196,13 @@ constexpr esp_lcd_panel_dev_config_t ili9341_panel_dev_config = {
 #include <driver/spi_common.h>
 #include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI3_HOST
-constexpr spi_bus_config_t xpt2046_spi_bus_config = {
+const spi_bus_config_t xpt2046_spi_bus_config = {
     .mosi_io_num = 32,
     .miso_io_num = 39,
     .sclk_io_num = 25,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
+const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .cs_gpio_num = 33,
     .dc_gpio_num = -1,
     .spi_mode = SPI_MODE0,
@@ -180,13 +210,13 @@ constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .trans_queue_depth = 3,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
+const esp_lcd_touch_config_t xpt2046_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_NC,
     .int_gpio_num = GPIO_NUM_36};
-#define TOUCH_ROT_NONE_SWAP_X   true
-#define TOUCH_ROT_NONE_SWAP_Y   false    
+#define TOUCH_ROT_NONE_SWAP_X true
+#define TOUCH_ROT_NONE_SWAP_Y false
 // Build in RGB LED
 #define HAS_RGB_LED
 #define LED_PIN_R 4
@@ -213,13 +243,13 @@ constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_vendor.h>
 #define ST7796_SPI_HOST SPI2_HOST
-constexpr spi_bus_config_t st7796_bus_config = {
+const spi_bus_config_t st7796_bus_config = {
     .mosi_io_num = 13,
     .miso_io_num = 12,
     .sclk_io_num = 14,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t st7796_spi_bus_config = {
+const esp_lcd_panel_io_spi_config_t st7796_spi_bus_config = {
     .cs_gpio_num = 15,
     .dc_gpio_num = 2,
     .spi_mode = SPI_MODE0,
@@ -227,7 +257,7 @@ constexpr esp_lcd_panel_io_spi_config_t st7796_spi_bus_config = {
     .trans_queue_depth = 10,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_panel_dev_config_t panel_dev_config = {
+const esp_lcd_panel_dev_config_t panel_dev_config = {
     .reset_gpio_num = -1,
     .color_space = ESP_LCD_COLOR_SPACE_BGR,
     .bits_per_pixel = 16};
@@ -241,13 +271,13 @@ constexpr esp_lcd_panel_dev_config_t panel_dev_config = {
 #include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI2_HOST
 // Do not initialize the bus; already done by the ST7796
-constexpr spi_bus_config_t xpt2046_spi_bus_config = {
+const spi_bus_config_t xpt2046_spi_bus_config = {
     .mosi_io_num = 13,
     .miso_io_num = 12,
     .sclk_io_num = 14,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
+const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .cs_gpio_num = 33,
     .dc_gpio_num = -1,
     .spi_mode = SPI_MODE0,
@@ -255,13 +285,13 @@ constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .trans_queue_depth = 3,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
+const esp_lcd_touch_config_t xpt2046_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_NC,
     .int_gpio_num = GPIO_NUM_36};
-#define TOUCH_ROT_NONE_SWAP_X   true
-#define TOUCH_ROT_NONE_SWAP_Y   false    
+#define TOUCH_ROT_NONE_SWAP_X true
+#define TOUCH_ROT_NONE_SWAP_Y false
 #else
 #ifdef ESP32_3248S032C
 #define USES_GT911
@@ -276,7 +306,7 @@ const i2c_config_t gt911_i2c_config = {
     .scl_pullup_en = GPIO_PULLUP_ENABLE,
     .master = {
         .clk_speed = 400000}};
-constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
+const esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
     .control_phase_bytes = 1,
     .dc_bit_offset = 0,
@@ -284,13 +314,13 @@ constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .flags = {
         .disable_control_phase = 1,
     }};
-constexpr esp_lcd_touch_config_t gt911_touch_config = {
+const esp_lcd_touch_config_t gt911_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_25,
     .int_gpio_num = GPIO_NUM_NC};
-#define TOUCH_ROT_NONE_SWAP_X   false
-#define TOUCH_ROT_NONE_SWAP_Y   false    
+#define TOUCH_ROT_NONE_SWAP_X false
+#define TOUCH_ROT_NONE_SWAP_Y false
 #endif
 #endif
 // Build in RGB LED
@@ -319,13 +349,13 @@ constexpr esp_lcd_touch_config_t gt911_touch_config = {
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_vendor.h>
 #define ST7796_SPI_HOST SPI2_HOST
-constexpr spi_bus_config_t st7796_bus_config = {
+const spi_bus_config_t st7796_bus_config = {
     .mosi_io_num = 13,
     .miso_io_num = 12,
     .sclk_io_num = 14,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t st7796_spi_bus_config = {
+const esp_lcd_panel_io_spi_config_t st7796_spi_bus_config = {
     .cs_gpio_num = 15,
     .dc_gpio_num = 2,
     .spi_mode = SPI_MODE0,
@@ -333,7 +363,7 @@ constexpr esp_lcd_panel_io_spi_config_t st7796_spi_bus_config = {
     .trans_queue_depth = 10,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_panel_dev_config_t panel_dev_config = {
+const esp_lcd_panel_dev_config_t panel_dev_config = {
     .reset_gpio_num = -1,
     .color_space = ESP_LCD_COLOR_SPACE_BGR,
     .bits_per_pixel = 16};
@@ -347,13 +377,13 @@ constexpr esp_lcd_panel_dev_config_t panel_dev_config = {
 #include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI2_HOST
 // Do not initialize the bus; already done by the ST7796
-constexpr spi_bus_config_t xpt2046_spi_bus_config = {
+const spi_bus_config_t xpt2046_spi_bus_config = {
     .mosi_io_num = 13,
     .miso_io_num = 12,
     .sclk_io_num = 14,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
+const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .cs_gpio_num = 33,
     .dc_gpio_num = -1,
     .spi_mode = SPI_MODE0,
@@ -361,13 +391,13 @@ constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .trans_queue_depth = 3,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
+const esp_lcd_touch_config_t xpt2046_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_NC,
     .int_gpio_num = GPIO_NUM_36};
-#define TOUCH_ROT_NONE_SWAP_X   true
-#define TOUCH_ROT_NONE_SWAP_Y   false    
+#define TOUCH_ROT_NONE_SWAP_X true
+#define TOUCH_ROT_NONE_SWAP_Y false
 #else
 #ifdef ESP32_3248S035C
 #define USES_GT911
@@ -382,7 +412,7 @@ const i2c_config_t gt911_i2c_config = {
     .scl_pullup_en = GPIO_PULLUP_ENABLE,
     .master = {
         .clk_speed = 400000}};
-constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
+const esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
     .control_phase_bytes = 1,
     .dc_bit_offset = 0,
@@ -390,13 +420,13 @@ constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .flags = {
         .disable_control_phase = 1,
     }};
-constexpr esp_lcd_touch_config_t gt911_touch_config = {
+const esp_lcd_touch_config_t gt911_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_25,
     .int_gpio_num = GPIO_NUM_NC};
-#define TOUCH_ROT_NONE_SWAP_X   false
-#define TOUCH_ROT_NONE_SWAP_Y   false    
+#define TOUCH_ROT_NONE_SWAP_X false
+#define TOUCH_ROT_NONE_SWAP_Y false
 #endif
 #endif
 // Build in RGB LED
@@ -422,7 +452,7 @@ constexpr esp_lcd_touch_config_t gt911_touch_config = {
 // LCD ILI6485 480x272
 #define USES_LCD_RGB
 #include <esp_lcd_panel_rgb.h>
-constexpr esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
+const esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
     .clk_src = LCD_CLK_SRC_PLL160M,
     .timings = {
         .pclk_hz = 9000000,
@@ -456,13 +486,13 @@ constexpr esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
 #include <driver/spi_common.h>
 #include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI2_HOST
-constexpr spi_bus_config_t xpt2046_spi_bus_config = {
+const spi_bus_config_t xpt2046_spi_bus_config = {
     .mosi_io_num = 11,
     .miso_io_num = 13,
     .sclk_io_num = 12,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
+const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .cs_gpio_num = 38,
     .dc_gpio_num = -1,
     .spi_mode = SPI_MODE0,
@@ -470,7 +500,7 @@ constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .trans_queue_depth = 3,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
+const esp_lcd_touch_config_t xpt2046_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_NC,
@@ -489,7 +519,7 @@ const i2c_config_t gt911_i2c_config = {
     .scl_pullup_en = GPIO_PULLUP_ENABLE,
     .master = {
         .clk_speed = 400000}};
-constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
+const esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
     .control_phase_bytes = 1,
     .dc_bit_offset = 0,
@@ -497,7 +527,7 @@ constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .flags = {
         .disable_control_phase = 1,
     }};
-constexpr esp_lcd_touch_config_t gt911_touch_config = {
+const esp_lcd_touch_config_t gt911_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_38,
@@ -516,7 +546,7 @@ constexpr esp_lcd_touch_config_t gt911_touch_config = {
 // LCD 800x480
 #define USES_LCD_RGB
 #include <esp_lcd_panel_rgb.h>
-constexpr esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
+const esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
     .clk_src = LCD_CLK_SRC_PLL160M,
     .timings = {
         .pclk_hz = 8000000,
@@ -550,13 +580,13 @@ constexpr esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
 #include <driver/spi_common.h>
 #include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI2_HOST
-constexpr spi_bus_config_t xpt2046_spi_bus_config = {
+const spi_bus_config_t xpt2046_spi_bus_config = {
     .mosi_io_num = 11,
     .miso_io_num = 13,
     .sclk_io_num = 12,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
+const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .cs_gpio_num = 38,
     .dc_gpio_num = -1,
     .spi_mode = SPI_MODE0,
@@ -564,7 +594,7 @@ constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .trans_queue_depth = 3,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
+const esp_lcd_touch_config_t xpt2046_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_NC,
@@ -583,7 +613,7 @@ const i2c_config_t gt911_i2c_config = {
     .scl_pullup_en = GPIO_PULLUP_ENABLE,
     .master = {
         .clk_speed = 400000}};
-constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
+const esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
     .control_phase_bytes = 1,
     .dc_bit_offset = 0,
@@ -591,7 +621,7 @@ constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .flags = {
         .disable_control_phase = 1,
     }};
-constexpr esp_lcd_touch_config_t gt911_touch_config = {
+const esp_lcd_touch_config_t gt911_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_38,
@@ -610,7 +640,7 @@ constexpr esp_lcd_touch_config_t gt911_touch_config = {
 // LCD 800x480
 #define USES_LCD_RGB
 #include <esp_lcd_panel_rgb.h>
-constexpr esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
+const esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
     .clk_src = LCD_CLK_SRC_PLL160M,
     .timings = {
         .pclk_hz = 16000000,
@@ -644,13 +674,13 @@ constexpr esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
 #include <driver/spi_common.h>
 #include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI2_HOST
-constexpr spi_bus_config_t xpt2046_spi_bus_config = {
+const spi_bus_config_t xpt2046_spi_bus_config = {
     .mosi_io_num = 11,
     .miso_io_num = 13,
     .sclk_io_num = 12,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
+const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .cs_gpio_num = 38,
     .dc_gpio_num = -1,
     .spi_mode = SPI_MODE0,
@@ -658,7 +688,7 @@ constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .trans_queue_depth = 3,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
+const esp_lcd_touch_config_t xpt2046_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_NC,
@@ -677,7 +707,7 @@ const i2c_config_t gt911_i2c_config = {
     .scl_pullup_en = GPIO_PULLUP_ENABLE,
     .master = {
         .clk_speed = 400000}};
-constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
+const esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
     .control_phase_bytes = 1,
     .dc_bit_offset = 0,
@@ -685,7 +715,7 @@ constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .flags = {
         .disable_control_phase = 1,
     }};
-constexpr esp_lcd_touch_config_t gt911_touch_config = {
+const esp_lcd_touch_config_t gt911_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_38,
@@ -704,7 +734,7 @@ constexpr esp_lcd_touch_config_t gt911_touch_config = {
 // LCD 800x480
 #define USES_LCD_RGB
 #include <esp_lcd_panel_rgb.h>
-constexpr esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
+const esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
     .clk_src = LCD_CLK_SRC_PLL160M,
     .timings = {
         .pclk_hz = 12000000,
@@ -738,13 +768,13 @@ constexpr esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config = {
 #include <driver/spi_common.h>
 #include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI2_HOST
-constexpr spi_bus_config_t xpt2046_spi_bus_config = {
+const spi_bus_config_t xpt2046_spi_bus_config = {
     .mosi_io_num = 11,
     .miso_io_num = 13,
     .sclk_io_num = 12,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1};
-constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
+const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .cs_gpio_num = 38,
     .dc_gpio_num = -1,
     .spi_mode = SPI_MODE0,
@@ -752,7 +782,7 @@ constexpr esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config = {
     .trans_queue_depth = 3,
     .lcd_cmd_bits = 8,
     .lcd_param_bits = 8};
-constexpr esp_lcd_touch_config_t xpt2046_touch_config = {
+const esp_lcd_touch_config_t xpt2046_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_NC,
@@ -771,7 +801,7 @@ const i2c_config_t gt911_i2c_config = {
     .scl_pullup_en = GPIO_PULLUP_ENABLE,
     .master = {
         .clk_speed = 400000}};
-constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
+const esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
     .control_phase_bytes = 1,
     .dc_bit_offset = 0,
@@ -779,7 +809,7 @@ constexpr esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config = {
     .flags = {
         .disable_control_phase = 1,
     }};
-constexpr esp_lcd_touch_config_t gt911_touch_config = {
+const esp_lcd_touch_config_t gt911_touch_config = {
     .x_max = TFT_WIDTH,
     .y_max = TFT_HEIGHT,
     .rst_gpio_num = GPIO_NUM_38,
@@ -801,7 +831,16 @@ constexpr esp_lcd_touch_config_t gt911_touch_config = {
 
 // Exported functions
 
-// Initialize the display and touch
-extern void smartdisplay_init();
-// Set the brightness of the backlight display
-extern void smartdisplay_tft_set_backlight(uint16_t duty); // 0-1023 (12 bits)
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    // Initialize the display and touch
+    void smartdisplay_init();
+    // Set the brightness of the backlight display
+    void smartdisplay_tft_set_backlight(uint16_t duty); // 0-1023 (12 bits)
+#ifdef __cplusplus
+}
+#endif
+
+#endif

@@ -8,7 +8,7 @@
 
 static void cst816s_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
-    const auto touch_handle = (esp_lcd_touch_handle_t)drv->user_data;
+    esp_lcd_touch_handle_t touch_handle = drv->user_data;
     uint16_t touchpad_x[1] = {0};
     uint16_t touchpad_y[1] = {0};
     uint8_t touchpad_cnt = 0;
@@ -16,8 +16,8 @@ static void cst816s_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
     /* Read touch controller data */
     ESP_ERROR_CHECK(esp_lcd_touch_read_data(touch_handle));
     /* Get coordinates */
-    auto touchpad_pressed = esp_lcd_touch_get_coordinates(touch_handle, touchpad_x, touchpad_y, nullptr, &touchpad_cnt, 1);
-    if (touchpad_pressed && touchpad_cnt > 0)
+    bool pressed = esp_lcd_touch_get_coordinates(touch_handle, touchpad_x, touchpad_y, NULL, &touchpad_cnt, 1);
+    if (pressed && touchpad_cnt > 0)
     {
         data->point.x = touchpad_x[0];
         data->point.y = touchpad_y[0];
@@ -30,19 +30,22 @@ static void cst816s_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 void lvgl_touch_init(lv_indev_drv_t *drv)
 {
     // Create I2C bus
-    ESP_ERROR_CHECK(i2c_param_config(CST816S_I2C_HOST, &cst816s_i2c_config));
-    ESP_ERROR_CHECK(i2c_driver_install(CST816S_I2C_HOST, cst816s_i2c_config.mode, 0, 0, 0));
+    const i2c_config_t i2c_config = CST816S_I2C_CONFIG;
+    ESP_ERROR_CHECK(i2c_param_config(CST816S_I2C_HOST, &i2c_config));
+    ESP_ERROR_CHECK(i2c_driver_install(CST816S_I2C_HOST, i2c_config.mode, 0, 0, 0));
 
     // Create IO handle
+    esp_lcd_panel_io_i2c_config_t io_i2c_config = CST816S_IO_I2C_CONFIG;
+    io_i2c_config.user_ctx = drv;
     esp_lcd_panel_io_handle_t io_handle;
-    ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)CST816S_I2C_HOST, &cst816s_io_i2c_config, &io_handle));
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)CST816S_I2C_HOST, &io_i2c_config, &io_handle));
 
     // Create touch configuration
-    esp_lcd_touch_config_t touch_config = cst816s_touch_config;
+    esp_lcd_touch_config_t touch_config = CST816S_TOUCH_CONFIG;
     touch_config.user_data = io_handle;
-
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_i2c_cst816s(io_handle, &touch_config, &touch_handle));
+
     drv->type = LV_INDEV_TYPE_POINTER;
     drv->user_data = touch_handle;
     drv->read_cb = cst816s_lvgl_touch_cb;
