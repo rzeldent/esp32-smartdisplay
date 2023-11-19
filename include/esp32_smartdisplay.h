@@ -21,13 +21,13 @@
 #define PWM_BITS_BCKL 8
 #define PWM_MAX_BCKL ((1 << PWM_BITS_BCKL) - 1)
 
-// ESP32_2423S012 N/C
+// ESP32_2424S012 N/C
 #if defined(ESP32_2424S012N) || defined(ESP32_2424S012C)
 #define TFT_WIDTH 240
 #define TFT_HEIGHT 240
 // Backlight
 #define PIN_BCKL 3
-#define PWM_CHANNEL_BCKL 12
+#define PWM_CHANNEL_BCKL 5
 // LCD
 #define USES_GC9A01
 #define GC9A01_SPI_HOST SPI2_HOST

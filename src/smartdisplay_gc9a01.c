@@ -45,6 +45,9 @@ void lvgl_tft_init(lv_disp_drv_t *drv)
     drv->user_data = panel_handle;
     drv->flush_cb = gc9a01_lv_flush;
     
+    // Colors are inverted
+    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle,  true));
+
     // Turn display on
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
 }
