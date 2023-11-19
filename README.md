@@ -17,7 +17,7 @@ However, when implementing the capacitive version, I found out that these librar
 - No auto of the box support for touch
 - A lot of configuring to do before it all works
 
-This library uses the "official" drivers from the EspressIf repository. These drivers use the newly introduced esp_lcd_panel interfaces.
+This library uses the "official" drivers from Espressif's component service. These drivers use the newly introduced esp_lcd_panel interfaces.
 This should provide some support in the future for updates and new boards.
 
 ## How to obtain these boards
