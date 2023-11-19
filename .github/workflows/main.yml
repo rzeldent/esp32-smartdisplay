@@ -20,13 +20,13 @@ jobs:
             smartboard: "ESP32_2432S028R"
             color16swap: 1
           - board: "esp32dev"
-            smartboard: "ESP32_3248S032N"
+            smartboard: "ESP32_2432S032N"
             color16swap: 1
           - board: "esp32dev"
-            smartboard: "ESP32_3248S032R"
+            smartboard: "ESP32_2432S032R"
             color16swap: 1
           - board: "esp32dev"
-            smartboard: "ESP32_3248S032C"
+            smartboard: "ESP32_2432S032C"
             color16swap: 1
           - board: "esp32dev"
             smartboard: "ESP32_3248S035R"
