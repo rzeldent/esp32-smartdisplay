@@ -4,8 +4,6 @@
 #include <Arduino.h>
 #include <lvgl.h>
 
-#include <hal/gpio_types.h>
-
 // Push button
 #define PUSHBUTTON_BOOT 0
 // TF Card
@@ -83,7 +81,7 @@
 #include "esp_lcd_touch_cst816s.h"
 #define CST816S_I2C_HOST 0
 #define CST816S_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=33,.scl_io_num=32,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
-#define CST816S_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_CST816S_ADDRESS,.control_phase_bytes=1,.dc_bit_offset=0,.lcd_cmd_bits=8,.flags={.disable_control_phase=1,}}
+#define CST816S_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_CST816S_ADDRESS,.control_phase_bytes=1,.dc_bit_offset=0,.lcd_cmd_bits=8,.flags={.disable_control_phase=1}}
 #define CST816S_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_25,.int_gpio_num=GPIO_NUM_NC}
 #define TOUCH_ROT_NONE_SWAP_X false
 #define TOUCH_ROT_NONE_SWAP_Y false
@@ -222,7 +220,7 @@
 #include "esp_lcd_touch_gt911.h"
 #define GT911_I2C_HOST 0
 #define GT911_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=33,.scl_io_num=32,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
-#define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.dc_bit_offset=0,.lcd_cmd_bits=16,.flags={.disable_control_phase=1,}}
+#define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.dc_bit_offset=0,.lcd_cmd_bits=16,.flags={.disable_control_phase=1}}
 #define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_25,.int_gpio_num=GPIO_NUM_NC}
 #define TOUCH_ROT_NONE_SWAP_X false
 #define TOUCH_ROT_NONE_SWAP_Y false
@@ -250,87 +248,22 @@
 #define PWM_CHANNEL_BCKL 7
 // LCD ILI6485 480x272
 #define USES_LCD_RGB
-#include <esp_lcd_panel_rgb.h>
-const esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config={
-    .clk_src=LCD_CLK_SRC_PLL160M,
-    .timings={
-        .pclk_hz=9000000,
-        .h_res=TFT_WIDTH,
-        .v_res=TFT_HEIGHT,
-        .hsync_pulse_width=4,
-        .hsync_back_porch=43,
-        .hsync_front_porch=8,
-        .vsync_pulse_width=4,
-        .vsync_back_porch=12,
-        .vsync_front_porch=8,
-        .flags={
-            .hsync_idle_low=1,
-            .vsync_idle_low=1,
-            .de_idle_high=0,
-            .pclk_active_neg=1,
-            .pclk_idle_high=0,
-        }},
-    .data_width=16, // R5G6B5
-    .sram_trans_align=8,
-    .hsync_gpio_num=39,
-    .vsync_gpio_num=41,
-    .de_gpio_num=40,
-    .pclk_gpio_num=42,
-    .data_gpio_nums={8, 3, 46, 9, 1, 5, 6, 7, 15, 16, 4, 45, 48, 47, 21, 14},
-    .disp_gpio_num=-1,
-    .flags={.disp_active_low=0,.relax_on_idle=0,.fb_in_psram=0}};
+#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=9000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=43,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=12,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.de_idle_high=0,.pclk_active_neg=1,.pclk_idle_high=0}},.data_width=16,.sram_trans_align=8,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums={8, 3, 46, 9, 1, 5, 6, 7, 15, 16, 4, 45, 48, 47, 21, 14},.disp_gpio_num=-1,.flags={.disp_active_low=0,.relax_on_idle=0,.fb_in_psram=0}}
 // Touch
 #ifdef ESP32_4827S043R
 #define USES_XPT2046
-#include <driver/spi_common.h>
-#include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI2_HOST
-const spi_bus_config_t xpt2046_spi_bus_config={
-    .mosi_io_num=11,
-    .miso_io_num=13,
-    .sclk_io_num=12,
-    .quadwp_io_num=-1,
-    .quadhd_io_num=-1};
-const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config={
-    .cs_gpio_num=38,
-    .dc_gpio_num=-1,
-    .spi_mode=SPI_MODE0,
-    .pclk_hz=2000000,
-    .trans_queue_depth=3,
-    .lcd_cmd_bits=8,
-    .lcd_param_bits=8};
-const esp_lcd_touch_config_t xpt2046_touch_config={
-    .x_max=TFT_WIDTH,
-    .y_max=TFT_HEIGHT,
-    .rst_gpio_num=GPIO_NUM_NC,
-    .int_gpio_num=GPIO_NUM_18};
+#define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=11,.miso_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}
+#define XPT2046_IO_SPI_CONFIG {.cs_gpio_num=38,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}
+#define XPT2046_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_18}
 #else
 #ifdef ESP32_4827S043C
 #define USES_GT911
-#include <driver/i2c.h>
 #include "esp_lcd_touch_gt911.h"
 #define GT911_I2C_HOST 0
-const i2c_config_t gt911_i2c_config={
-    .mode=I2C_MODE_MASTER,
-    .sda_io_num=19,
-    .scl_io_num=20,
-    .sda_pullup_en=GPIO_PULLUP_ENABLE,
-    .scl_pullup_en=GPIO_PULLUP_ENABLE,
-    .master={
-        .clk_speed=400000}};
-const esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config={
-    .dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
-    .control_phase_bytes=1,
-    .dc_bit_offset=0,
-    .lcd_cmd_bits=16,
-    .flags={
-        .disable_control_phase=1,
-    }};
-const esp_lcd_touch_config_t gt911_touch_config={
-    .x_max=TFT_WIDTH,
-    .y_max=TFT_HEIGHT,
-    .rst_gpio_num=GPIO_NUM_38,
-    .int_gpio_num=GPIO_NUM_NC};
+#define GT911_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=19,.scl_io_num=20,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
+#define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.dc_bit_offset=0,.lcd_cmd_bits=16,.flags={.disable_control_phase=1}}
+#define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_38,.int_gpio_num=GPIO_NUM_NC}
 #endif
 #endif
 #endif
@@ -344,87 +277,22 @@ const esp_lcd_touch_config_t gt911_touch_config={
 #define PWM_CHANNEL_BCKL 7
 // LCD 800x480
 #define USES_LCD_RGB
-#include <esp_lcd_panel_rgb.h>
-const esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config={
-    .clk_src=LCD_CLK_SRC_PLL160M,
-    .timings={
-        .pclk_hz=8000000,
-        .h_res=TFT_WIDTH,
-        .v_res=TFT_HEIGHT,
-        .hsync_pulse_width=4,
-        .hsync_back_porch=8,
-        .hsync_front_porch=8,
-        .vsync_pulse_width=4,
-        .vsync_back_porch=8,
-        .vsync_front_porch=8,
-        .flags={
-            .hsync_idle_low=1,
-            .vsync_idle_low=1,
-            .de_idle_high=0,
-            .pclk_active_neg=1,
-            .pclk_idle_high=0,
-        }},
-    .data_width=16, // R5G6B5
-    .sram_trans_align=8,
-    .hsync_gpio_num=39,
-    .vsync_gpio_num=41,
-    .de_gpio_num=40,
-    .pclk_gpio_num=42,
-    .data_gpio_nums={8, 3, 46, 9, 1, 5, 6, 7, 15, 16, 4, 45, 48, 47, 21, 14},
-    .disp_gpio_num=-1,
-    .flags={.disp_active_low=0,.relax_on_idle=0,.fb_in_psram=0}};
+#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=8000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=8,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=8,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.de_idle_high=0,.pclk_active_neg=1,.pclk_idle_high=0}},.data_width=16,.sram_trans_align=8,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums={8, 3, 46, 9, 1, 5, 6, 7, 15, 16, 4, 45, 48, 47, 21, 14},.disp_gpio_num=-1,.flags={.disp_active_low=0,.relax_on_idle=0,.fb_in_psram=0}}
 // Touch
 #ifdef ESP32_8048S043R
 #define USES_XPT2046
-#include <driver/spi_common.h>
-#include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI2_HOST
-const spi_bus_config_t xpt2046_spi_bus_config={
-    .mosi_io_num=11,
-    .miso_io_num=13,
-    .sclk_io_num=12,
-    .quadwp_io_num=-1,
-    .quadhd_io_num=-1};
-const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config={
-    .cs_gpio_num=38,
-    .dc_gpio_num=-1,
-    .spi_mode=SPI_MODE0,
-    .pclk_hz=2000000,
-    .trans_queue_depth=3,
-    .lcd_cmd_bits=8,
-    .lcd_param_bits=8};
-const esp_lcd_touch_config_t xpt2046_touch_config={
-    .x_max=TFT_WIDTH,
-    .y_max=TFT_HEIGHT,
-    .rst_gpio_num=GPIO_NUM_NC,
-    .int_gpio_num=GPIO_NUM_18};
+#define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=11,.miso_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}
+#define XPT2046_IO_SPI_CONFIG {.cs_gpio_num=38,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}
+#define XPT2046_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_18}
 #else
 #ifdef ESP32_8048S043C
 #define USES_GT911
-#include <driver/i2c.h>
 #include "esp_lcd_touch_gt911.h"
 #define GT911_I2C_HOST 0
-const i2c_config_t gt911_i2c_config={
-    .mode=I2C_MODE_MASTER,
-    .sda_io_num=19,
-    .scl_io_num=20,
-    .sda_pullup_en=GPIO_PULLUP_ENABLE,
-    .scl_pullup_en=GPIO_PULLUP_ENABLE,
-    .master={
-        .clk_speed=400000}};
-const esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config={
-    .dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
-    .control_phase_bytes=1,
-    .dc_bit_offset=0,
-    .lcd_cmd_bits=16,
-    .flags={
-        .disable_control_phase=1,
-    }};
-const esp_lcd_touch_config_t gt911_touch_config={
-    .x_max=TFT_WIDTH,
-    .y_max=TFT_HEIGHT,
-    .rst_gpio_num=GPIO_NUM_38,
-    .int_gpio_num=GPIO_NUM_NC};
+#define GT911_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=19,.scl_io_num=20,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
+#define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.dc_bit_offset=0,.lcd_cmd_bits=16,.flags={.disable_control_phase=1}}
+#define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_38,.int_gpio_num=GPIO_NUM_NC}
 #endif
 #endif
 #endif
@@ -438,87 +306,22 @@ const esp_lcd_touch_config_t gt911_touch_config={
 #define PWM_CHANNEL_BCKL 7
 // LCD 800x480
 #define USES_LCD_RGB
-#include <esp_lcd_panel_rgb.h>
-const esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config={
-    .clk_src=LCD_CLK_SRC_PLL160M,
-    .timings={
-        .pclk_hz=16000000,
-        .h_res=TFT_WIDTH,
-        .v_res=TFT_HEIGHT,
-        .hsync_pulse_width=4,
-        .hsync_back_porch=8,
-        .hsync_front_porch=8,
-        .vsync_pulse_width=4,
-        .vsync_back_porch=8,
-        .vsync_front_porch=8,
-        .flags={
-            .hsync_idle_low=1,
-            .vsync_idle_low=1,
-            .de_idle_high=0,
-            .pclk_active_neg=1,
-            .pclk_idle_high=0,
-        }},
-    .data_width=16, // R5G6B5
-    .sram_trans_align=8,
-    .hsync_gpio_num=39,
-    .vsync_gpio_num=41,
-    .de_gpio_num=40,
-    .pclk_gpio_num=42,
-    .data_gpio_nums={8, 3, 46, 9, 1, 5, 6, 7, 15, 16, 4, 45, 48, 47, 21, 14},
-    .disp_gpio_num=-1,
-    .flags={.disp_active_low=0,.relax_on_idle=0,.fb_in_psram=0}};
+#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=8,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=8,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.de_idle_high=0,.pclk_active_neg=1,.pclk_idle_high=0,}},.data_width=16,.sram_trans_align=8,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums={8, 3, 46, 9, 1, 5, 6, 7, 15, 16, 4, 45, 48, 47, 21, 14},.disp_gpio_num=-1,.flags={.disp_active_low=0,.relax_on_idle=0,.fb_in_psram=0}}
 // Touch
 #ifdef ESP32_8048S050R
 #define USES_XPT2046
-#include <driver/spi_common.h>
-#include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI2_HOST
-const spi_bus_config_t xpt2046_spi_bus_config={
-    .mosi_io_num=11,
-    .miso_io_num=13,
-    .sclk_io_num=12,
-    .quadwp_io_num=-1,
-    .quadhd_io_num=-1};
-const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config={
-    .cs_gpio_num=38,
-    .dc_gpio_num=-1,
-    .spi_mode=SPI_MODE0,
-    .pclk_hz=2000000,
-    .trans_queue_depth=3,
-    .lcd_cmd_bits=8,
-    .lcd_param_bits=8};
-const esp_lcd_touch_config_t xpt2046_touch_config={
-    .x_max=TFT_WIDTH,
-    .y_max=TFT_HEIGHT,
-    .rst_gpio_num=GPIO_NUM_NC,
-    .int_gpio_num=GPIO_NUM_18};
+#define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=11,.miso_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}
+#define XPT2046_IO_SPI_CONFIG {.cs_gpio_num=38,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}
+#define XPT2046_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_18}
 #else
 #ifdef ESP32_8048S050C
 #define USES_GT911
-#include <driver/i2c.h>
 #include "esp_lcd_touch_gt911.h"
 #define GT911_I2C_HOST 0
-const i2c_config_t gt911_i2c_config={
-    .mode=I2C_MODE_MASTER,
-    .sda_io_num=19,
-    .scl_io_num=20,
-    .sda_pullup_en=GPIO_PULLUP_ENABLE,
-    .scl_pullup_en=GPIO_PULLUP_ENABLE,
-    .master={
-        .clk_speed=400000}};
-const esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config={
-    .dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
-    .control_phase_bytes=1,
-    .dc_bit_offset=0,
-    .lcd_cmd_bits=16,
-    .flags={
-        .disable_control_phase=1,
-    }};
-const esp_lcd_touch_config_t gt911_touch_config={
-    .x_max=TFT_WIDTH,
-    .y_max=TFT_HEIGHT,
-    .rst_gpio_num=GPIO_NUM_38,
-    .int_gpio_num=GPIO_NUM_NC};
+#define GT911_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=19,.scl_io_num=20,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
+#define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.dc_bit_offset=0,.lcd_cmd_bits=16,.flags={.disable_control_phase=1}}
+#define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_38,.int_gpio_num=GPIO_NUM_NC}
 #endif
 #endif
 #endif
@@ -532,87 +335,22 @@ const esp_lcd_touch_config_t gt911_touch_config={
 #define PWM_CHANNEL_BCKL 7
 // LCD 800x480
 #define USES_LCD_RGB
-#include <esp_lcd_panel_rgb.h>
-const esp_lcd_rgb_panel_config_t esp_lcd_rgb_panel_config={
-    .clk_src=LCD_CLK_SRC_PLL160M,
-    .timings={
-        .pclk_hz=12000000,
-        .h_res=TFT_WIDTH,
-        .v_res=TFT_HEIGHT,
-        .hsync_pulse_width=30,
-        .hsync_back_porch=16,
-        .hsync_front_porch=210,
-        .vsync_pulse_width=13,
-        .vsync_back_porch=10,
-        .vsync_front_porch=22,
-        .flags={
-            .hsync_idle_low=1,
-            .vsync_idle_low=1,
-            .de_idle_high=0,
-            .pclk_active_neg=1,
-            .pclk_idle_high=0,
-        }},
-    .data_width=16, // R5G6B5
-    .sram_trans_align=8,
-    .hsync_gpio_num=39,
-    .vsync_gpio_num=40,
-    .de_gpio_num=41,
-    .pclk_gpio_num=42,
-    .data_gpio_nums={15, 7, 6, 5, 4, 9, 46, 3, 8, 16, 1, 14, 21, 47, 48, 45},
-    .disp_gpio_num=-1,
-    .flags={.disp_active_low=0,.relax_on_idle=0,.fb_in_psram=0}};
+#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=12000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=30,.hsync_back_porch=16,.hsync_front_porch=210,.vsync_pulse_width=13,.vsync_back_porch=10,.vsync_front_porch=22,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.de_idle_high=0,.pclk_active_neg=1,.pclk_idle_high=0,}},.data_width=16,.sram_trans_align=8,.hsync_gpio_num=39,.vsync_gpio_num=40,.de_gpio_num=41,.pclk_gpio_num=42,.data_gpio_nums={15, 7, 6, 5, 4, 9, 46, 3, 8, 16, 1, 14, 21, 47, 48, 45},.disp_gpio_num=-1,.flags={.disp_active_low=0,.relax_on_idle=0,.fb_in_psram=0}}
 // Touch
 #ifdef ESP32_8048S070R
 #define USES_XPT2046
-#include <driver/spi_common.h>
-#include <esp_lcd_touch.h>
 #define XPT2046_SPI_HOST SPI2_HOST
-const spi_bus_config_t xpt2046_spi_bus_config={
-    .mosi_io_num=11,
-    .miso_io_num=13,
-    .sclk_io_num=12,
-    .quadwp_io_num=-1,
-    .quadhd_io_num=-1};
-const esp_lcd_panel_io_spi_config_t xpt2046_io_spi_config={
-    .cs_gpio_num=38,
-    .dc_gpio_num=-1,
-    .spi_mode=SPI_MODE0,
-    .pclk_hz=2000000,
-    .trans_queue_depth=3,
-    .lcd_cmd_bits=8,
-    .lcd_param_bits=8};
-const esp_lcd_touch_config_t xpt2046_touch_config={
-    .x_max=TFT_WIDTH,
-    .y_max=TFT_HEIGHT,
-    .rst_gpio_num=GPIO_NUM_NC,
-    .int_gpio_num=GPIO_NUM_18};
+#define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=11,.miso_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}
+#define XPT2046_IO_SPI_CONFIG {.cs_gpio_num=38,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}
+#define XPT2046_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_18}
 #else
 #ifdef ESP32_8048S070C
 #define USES_GT911
-#include <driver/i2c.h>
 #include "esp_lcd_touch_gt911.h"
 #define GT911_I2C_HOST 0
-const i2c_config_t gt911_i2c_config={
-    .mode=I2C_MODE_MASTER,
-    .sda_io_num=19,
-    .scl_io_num=20,
-    .sda_pullup_en=GPIO_PULLUP_ENABLE,
-    .scl_pullup_en=GPIO_PULLUP_ENABLE,
-    .master={
-        .clk_speed=400000}};
-const esp_lcd_panel_io_i2c_config_t gt911_io_i2c_config={
-    .dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
-    .control_phase_bytes=1,
-    .dc_bit_offset=0,
-    .lcd_cmd_bits=16,
-    .flags={
-        .disable_control_phase=1,
-    }};
-const esp_lcd_touch_config_t gt911_touch_config={
-    .x_max=TFT_WIDTH,
-    .y_max=TFT_HEIGHT,
-    .rst_gpio_num=GPIO_NUM_38,
-    .int_gpio_num=GPIO_NUM_NC};
+#define GT911_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=19,.scl_io_num=20,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
+#define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.dc_bit_offset=0,.lcd_cmd_bits=16,.flags={.disable_control_phase=1}}
+#define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_38,.int_gpio_num=GPIO_NUM_NC}
 #endif
 #endif
 #endif
