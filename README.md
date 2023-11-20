@@ -10,12 +10,12 @@ This library supports these boards without any effort.
 
 With the boards, there is a link supplied and there are a lot of examples present and this looks fine.
 These examples for [LVGL](https://lvgl.io/) depend on external libraries ([TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)).
-However, when implementing the capacitive version, I found out that these libraries had their flaws using these boards:
+However, when working with these libraries, I found out that these libraries had their flaws using these boards:
 
+- A lot of configuring to do before it all works
 - A lot of not unnecessary code is included (for other boards)
 - No support for on the fly rotating
 - No auto of the box support for touch
-- A lot of configuring to do before it all works
 
 This library uses the "official" drivers from Espressif's component service. These drivers use the newly introduced esp_lcd_panel interfaces.
 This should provide some support in the future for updates and new boards.
@@ -29,8 +29,8 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 
 | Type            | CPU       | Display | Size  | Controller                                | Rotate support  | LV_COLOR_16_SWAP  | Touch                                     | Audio  | Flash  | RGB LED  | CDS    | Link|
 |---              |---        |---      |--     |---                                        |---              |---                |---                                        |---     |---     |---       |---     |--- |
-| ESP32-2424S012N | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  |                 | yes               | n/a                                       | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
-| ESP32-2424S012C | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  |                 | yes               | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
+| ESP32-2424S012N | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | yes             | yes               | n/a                                       | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
+| ESP32-2424S012C | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | yes             | yes               | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
 | ESP32-2432S024N | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | n/a                                       | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
 | ESP32-2432S024R | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
 | ESP32-2432S024C | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | [CST816S](assets/datasheets/CST816S.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
@@ -55,17 +55,6 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 This library depends on:
 
 - LVGL (version ^8.3.2)
-
-To use the LVGL library, a `lv_conf.h` file is required to define the settings for LVGL.
-This file needs to be provided by the application.
-As this file is referenced from the build of LVGL, the path must be known.
-Normally this file is included in the include directory of **your** project so the define must be
-
-```ini
-    -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
-```
-
-The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/libdeps/esp32dev/lvgl/lv_conf_template.h`.
 
 ## How to use
 
@@ -162,8 +151,30 @@ build_flags =
     #-D ESP32_8048S070C
 ```
 
-The path for the lv_conf.h above is `${PROJECT_INCLUDE_DIR}`.
-This needs to be specified because the LVGL library included this header file.
+## LVGL.h
+
+To use the LVGL library, a `lv_conf.h` file is required to define the settings for LVGL.
+This file needs to be provided by the application.
+As this file is referenced from the build of LVGL, the path must be known.
+Normally this file is included in the include directory of **your** project and used by the LVGL library.
+To include it globally, the define must be (for the include directory):
+
+```ini
+    -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
+```
+
+The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/libdeps/esp32dev/lvgl/lv_conf_template.h`.
+
+## LV_COLOR_16_SWAP
+
+The LVGL library has a define called **LV_COLOR_16_SWAP**. The value can be 1 (yes) or 0 (no).
+This variable will swap the byte order of the color16_t. This is required because the SPI is by default MSB first.
+Swapping these bytes will undo this. This is required for the GC9A01A, ILI9341 and ST7796 controllers.
+
+Additionally, when using the [SquareLine Studio](https://squareline.io/) for designing the user interface, the display properties (under the project settings) must match this variable.
+So, it needs to be set both in `lv_conf.h` and the corresponding display properties (16 bit swap or 16 bit).
+
+![SquareLine display properties](assets/images/Squareline-display-properties.png)
 
 ## Demo application
 
@@ -185,7 +196,7 @@ The resolution is 12 bit so valid values are from 0-1023.
 
 - November 2023
   - Major version update: 2.0.0
-  - Rewrote library to also support the new ESP32-S3 panels and new esp_lcd interface
+  - Rewrote library to also support the new ESP32-S3 panels and use new esp_lcd interface
 - October 2023
   - Added support for esp32_8048S034N/C
   - Added option for flipped/mirrored TFT's

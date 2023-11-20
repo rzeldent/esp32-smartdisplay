@@ -14,9 +14,9 @@ static void cst816s_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
     uint16_t touchpad_y[1] = {0};
     uint8_t touchpad_cnt = 0;
 
-    /* Read touch controller data */
+    // Read touch controller data
     ESP_ERROR_CHECK(esp_lcd_touch_read_data(touch_handle));
-    /* Get coordinates */
+    // Get coordinates
     bool pressed = esp_lcd_touch_get_coordinates(touch_handle, touchpad_x, touchpad_y, NULL, &touchpad_cnt, 1);
     if (pressed && touchpad_cnt > 0)
     {
