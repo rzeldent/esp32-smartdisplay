@@ -55,6 +55,7 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 This library depends on:
 
 - LVGL (version ^8.3.2)
+- Espressif registry
 
 ## How to use
 
@@ -196,7 +197,7 @@ The resolution is 12 bit so valid values are from 0-1023.
 
 - November 2023
   - Major version update: 2.0.0
-  - Rewrote library to also support the new ESP32-S3 panels and use new esp_lcd interface
+  - Rewrote library to support the new ESP32-S3 panels and use new esp_lcd interface. Use c instead of cpp.
 - October 2023
   - Added support for esp32_8048S034N/C
   - Added option for flipped/mirrored TFT's

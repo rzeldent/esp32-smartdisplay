@@ -55,7 +55,7 @@
 #define TFT_WIDTH 240
 #define TFT_HEIGHT 320
 // Backlight
-#define PIN_BCKL 21
+#define PIN_BCKL 27
 #define PWM_CHANNEL_BCKL 12
 // LCD
 #define USES_ILI9341
