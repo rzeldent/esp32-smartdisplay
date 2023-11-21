@@ -69,8 +69,8 @@
 // Touch
 #ifdef ESP32_2432S024R
 #define USES_XPT2046
-#define XPT2046_SPI_HOST SPI3_HOST
-#define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=32,.miso_io_num=39,.sclk_io_num=25,.quadwp_io_num=-1,.quadhd_io_num=-1}
+#define XPT2046_SPI_HOST SPI2_HOST
+#define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=13,.miso_io_num=12,.sclk_io_num=14,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define XPT2046_IO_SPI_CONFIG {.cs_gpio_num=33,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define XPT2046_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_36}
 #define TOUCH_ROT_NONE_SWAP_X true

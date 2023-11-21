@@ -193,6 +193,11 @@ It initializes the display controller and touch controller.
 Set the brightness of the backlight display.
 The resolution is 12 bit so valid values are from 0-1023.
 
+## 2424S012
+
+## 2432S024
+
+
 ## Version history
 
 - November 2023
