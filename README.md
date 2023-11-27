@@ -18,7 +18,7 @@ However, when working with these libraries, I found out that these libraries had
 - No auto of the box support for touch
 
 This library uses the "official" drivers from Espressif's component service. These drivers use the newly introduced esp_lcd_panel interfaces.
-This should provide some support in the future for updates and new boards.
+This should provide some support in the future for updates and new boards. These drivers are copied to this library.
 
 ## How to obtain these boards
 
@@ -27,35 +27,37 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 
 ## Supported boards
 
-| Type            | CPU       | Display | Size  | Controller                                | Rotate support  | LV_COLOR_16_SWAP  | Touch                                     | Audio  | Flash  | RGB LED  | CDS    | Link|
-|---              |---        |---      |--     |---                                        |---              |---                |---                                        |---     |---     |---       |---     |--- |
-| ESP32-2424S012N | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | yes             | yes               | n/a                                       | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
-| ESP32-2424S012C | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | yes             | yes               | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
-| ESP32-2432S024N | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | n/a                                       | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
-| ESP32-2432S024R | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
-| ESP32-2432S024C | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | [CST816S](assets/datasheets/CST816S.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
-| ESP32-2432S028R | ESP32     | 240x320 | 2.8"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes               | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html) |
-| ESP32-2432S032N | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes               | n/a                                       | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
-| ESP32-2432S032R | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes               | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
-| ESP32-2432S032C | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes               | [GT911](assets/datasheets//GT911.pdf)     | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
-| ESP32-3248S035R | ESP32     | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes               | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
-| ESP32-3248S035C | ESP32     | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes               | [GT911](assets/datasheets//GT911.pdf)     | yes    | yes    | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
-| ESP32-4827S043R | ESP32-S3  | 480x272 | 4.3"  | n/a                                       | no              | no                | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
-| ESP32-4827S043C | ESP32-S3  | 480x272 | 4.3"  | n/a                                       | no              | no                | [GT911](assets/datasheets//GT911.pdf)     | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
-| ESP32-8048S050N | ESP32-S3  | 800x480 | 5.0"  | n/a                                       | no              | no                | n/a                                       | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
-| ESP32-8048S050C | ESP32-S3  | 800x480 | 5.0"  | n/a                                       | no              | no                | [GT911](assets/datasheets//GT911.pdf)     | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
-| ESP32-8048S070N | ESP32-S3  | 800x480 | 7.0"  | n/a                                       | no              | no                | n/a                                       | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
-| ESP32-8048S070C | ESP32-S3  | 800x480 | 7.0"  | n/a                                       | no              | no                | [GT911](assets/datasheets//GT911.pdf)     | no     | no     | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
+| Type            | CPU       | Display | Size  | Controller                                | Rotate support  | Color16 swap  | Touch                                     | Audio  | Flash                                          | RGB LED  | CDS    | Link|
+|---              |---        |---      |--     |---                                        |---              |---            |---                                        |---     |---                                             |---       |---     |---  |
+| ESP32-2424S012N | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | yes             | yes           | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
+| ESP32-2424S012C | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | yes             | yes           | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
+| ESP32-2432S024N | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes           | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S024R | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes           | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S024C | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes           | [CST816S](assets/datasheets/CST816S.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S028R | ESP32     | 240x320 | 2.8"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes           | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html) |
+| ESP32-2432S032N | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes           | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-2432S032R | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes           | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-2432S032C | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes           | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-3248S035R | ESP32     | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes           | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
+| ESP32-3248S035C | ESP32     | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes           | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
+| ESP32-4827S043R | ESP32-S3  | 480x272 | 4.3"  | n/a                                       | no              | no            | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
+| ESP32-4827S043C | ESP32-S3  | 480x272 | 4.3"  | n/a                                       | no              | no            | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
+| ESP32-8048S050N | ESP32-S3  | 800x480 | 5.0"  | n/a                                       | no              | no            | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
+| ESP32-8048S050C | ESP32-S3  | 800x480 | 5.0"  | n/a                                       | no              | no            | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
+| ESP32-8048S070N | ESP32-S3  | 800x480 | 7.0"  | n/a                                       | no              | no            | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
+| ESP32-8048S070C | ESP32-S3  | 800x480 | 7.0"  | n/a                                       | no              | no            | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
 
-![ESP32-3248S035R front](assets/images/esp32-3248S035-front.png)
-![ESP32-3248S035R back](assets/images/esp32-3248S035-back.png)
+- N No touch
+- R Resistive touch
+- C Capacitive touch
+
+Note: the additional flash chip (W25Q32JV) is not always mounted on the board.
 
 ## Dependencies
 
 This library depends on:
 
 - LVGL (version ^8.3.2)
-- Espressif registry
 
 ## How to use
 
@@ -98,8 +100,8 @@ build_flags =
     -Ofast
     -Wall
     -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
-    # LVGL settings
-    #-D LV_CONF_PATH="${PROJECT_DIR}/example/lv_conf.h"
+    # LVGL settings. Point to your lv_conf.h file
+    -D LV_CONF_PATH="${PROJECT_DIR}/example/lv_conf.h"
     # EspressIf library defines
     -D ESP_LCD_ST7796_VER_MAJOR=1
     -D ESP_LCD_ST7796_VER_MINOR=2
@@ -169,40 +171,161 @@ The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/
 ## LV_COLOR_16_SWAP
 
 The LVGL library has a define called **LV_COLOR_16_SWAP**. The value can be 1 (yes) or 0 (no).
-This variable will swap the byte order of the color16_t. This is required because the SPI is by default MSB first.
-Swapping these bytes will undo this. This is required for the GC9A01A, ILI9341 and ST7796 controllers.
+This variable will swap the byte order of the lv_color16_t. This is required because the SPI is by default MSB first.
+Swapping these bytes will undo this.
+Setting this variable to true is required for the GC9A01A, ILI9341 and ST7796 controllers.
 
 Additionally, when using the [SquareLine Studio](https://squareline.io/) for designing the user interface, the display properties (under the project settings) must match this variable.
-So, it needs to be set both in `lv_conf.h` and the corresponding display properties (16 bit swap or 16 bit).
+It needs to be set both in `lv_conf.h` configuration file and the corresponding display properties (16 bit swap or 16 bit) in [SquareLine Studio](https://squareline.io/). When using squareline, the UI has to be regenerated.
 
 ![SquareLine display properties](assets/images/Squareline-display-properties.png)
 
-## Demo application
+## LVGL initialization Functions
 
-An bare minimum application to demonstrate the library can be found at [esp32-smartdisplay-demo](https://github.com/rzeldent/esp32-smartdisplay-demo).
-
-## Functions
+The library exposes the following functions:
 
 ### void smartdisplay_init()
 
 This is the first function that needs to be called.
-It initializes the display controller and touch controller.
+It initializes the display controller and touch controller and will turn on the display.
 
 ### void smartdisplay_tft_set_backlight(uint16_t duty)
 
 Set the brightness of the backlight display.
 The resolution is 12 bit so valid values are from 0-1023.
 
-## 2424S012
+## Controlling the RGB led
 
-## 2432S024
+If the board has an RGB led, the define ```HAS_RGB_LED``` is defined.
+Additionally, the following defines are present for the definition of the GPIO pins:
+
+- LED_PIN_R
+- LED_PIN_G
+- LED_PIN_B
+
+Before using the RGB LEDs, the GPIOs must be defined as output
+
+```c++
+  pinmode(LED_PIN_R, OUTPUT);
+  pinmode(LED_PIN_G, OUTPUT);
+  pinmode(LED_PIN_B, OUTPUT);
+```
+
+The LEDs are connected between the GPIO pin and the 3.3V. So the LED will light up if the GPIO is set to LOW.
+For example: set the RGB led to red is done by the following code:
+
+```c++
+  digitalWrite(LED_PIN_R, false);
+  digitalWrite(LED_PIN_G, true);
+  digitalWrite(LED_PIN_B, true);
+```
+
+To have more colors than the 8 RGB combinations, PWM can be used to mix the colors.
+To do this, attach a PWM channel to each GPIO pin to modulate the intensity.
+
+## Reading the light sensor (CDS)
+
+If the board has a light sensor, the define ```HAS_LIGHTSENSOR``` is defined.
+The light sensor is a light sensitive resistor. It is attached to the analogue input of the ESP32.
+
+To use the sensor, the define ```LIGHTSENSOR_IN``` indicates the analogue port to read.
+
+```c++
+  analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
+  pinMode(LIGHTSENSOR_IN, INPUT);
+```
+
+The value read is between 0 (light) - 1023 (dark). To read the value, use:
+
+```c++
+  auto value = analogRead(LIGHTSENSOR_IN);
+```
+
+## Controlling the speaker
+
+
+## Demo application
+
+An bare minimum application to demonstrate the library can be found at [esp32-smartdisplay-demo](https://github.com/rzeldent/esp32-smartdisplay-demo).
+This application uses this library and the SquareLine Studio GUI generator.
+
+# Reading
+
+
+## Board details
+
+### ESP32-2424S012 N/C
+
+- USB-C
+- I2C: 1 x SH1.0 4p
+- Power: JST1.25 2p
+
+![ESP32-2424S012 front](assets/images/esp32-2424S012-front.png)
+![ESP32-2424S012 back](assets/images/esp32-2424S012-back.png)
+
+### ESP32-2432S024 N/R/C
+
+- Micro USB
+- I2C: 2 x JST1.25 4p
+- Power + Serial: JST1.25 4p
+- Speaker: JST1.25 2p
+
+![ESP32-2432S024 front](assets/images/esp32-2432S024-front.png)
+
+### ESP32-2432S028 R
+
+- Micro USB
+- I2C: 2 x JST1.25 4p
+- Power + Serial: JST1.25 4p
+- Speaker: JST1.25 2p
+
+![ESP32-2432S028R back](assets/images/esp32-2432S028R-back.png)
+
+### ESP32-3248S035
+
+- Micro USB
+- I2C: 2 x JST1.25 4p
+- Power + Serial: JST1.25 4p
+- Speaker: JST1.25 2p
+
+![ESP32-3248S035 front](assets/images/esp32-3248S035-front.png)
+![ESP32-3248S035 back](assets/images/esp32-3248S035-back.png)
+
+### ESP32-4827S043
+
+- USB-C
+- I2C: JST1.25 4p
+- Power + Serial: JST1.25 4p
+
+![ESP32-4827S043 front](assets/images/esp32-4827S043-front.png)
+![ESP32-4827S043 back](assets/images/esp32-4827S043-back.png)
+
+### ESP32-8048S050
+
+- USB-C
+- I2C: JST1.25 4p
+- Power + Serial: JST1.25 4p
+
+![ESP32-8048S050 front](assets/images/esp32-8048S050-front.png)
+![ESP32-8048S050 back](assets/images/esp32-8048S050-back.png)
+
+### ESP32-8048S070
+
+- USB-C
+- I2C: JST1.25 4p
+- Power + Serial: JST1.25 4p
+
+![ESP32-8048S070 front](assets/images/esp32-8048S070-front.png)
+![ESP32-8048S070 back](assets/images/esp32-8048S070-back.png)
 
 
 ## Version history
 
 - November 2023
   - Major version update: 2.0.0
-  - Rewrote library to support the new ESP32-S3 panels and use new esp_lcd interface. Use c instead of cpp.
+  - Rewrite of the library to support the new ESP32-C3 and ESP32-S3 panels
+  - Use the new Espressif esp_lcd interface
+  - Use c instead of cpp
 - October 2023
   - Added support for esp32_8048S034N/C
   - Added option for flipped/mirrored TFT's
