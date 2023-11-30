@@ -240,7 +240,7 @@
 #endif
 
 // ESP32_4827S043 N/R/C
-#if defined(ESP32_4827S043R) || defined(ESP32_4827S043C)
+#if defined(ESP32_4827S043N) || defined(ESP32_4827S043R) || defined(ESP32_4827S043C)
 #define TFT_WIDTH 480
 #define TFT_HEIGHT 272
 // Backlight
