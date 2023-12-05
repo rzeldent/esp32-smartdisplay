@@ -21,6 +21,24 @@
 #define PWM_BITS_BCKL 8
 #define PWM_MAX_BCKL ((1 << PWM_BITS_BCKL) - 1)
 
+// ESP32_1732S019N
+#if defined(ESP32_1732S019N)
+#define TFT_WIDTH 170
+#define TFT_HEIGHT 320
+// Backlight
+#define PIN_BCKL 14
+#define PWM_CHANNEL_BCKL 7
+// LCD
+#define USES_ST7796
+#define ST7796_SPI_HOST SPI2_HOST
+#define ST7796_SPI_BUS_CONFIG {.mosi_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}
+#define ST7796_IO_SPI_CONFIG {.cs_gpio_num=10,.dc_gpio_num=11,.spi_mode=SPI_MODE0,.pclk_hz=24000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}
+#define ST7796_PANEL_DEV_CONFIG {.reset_gpio_num=-1,.color_space=ESP_LCD_COLOR_SPACE_BGR,.bits_per_pixel=16}
+#define PANEL_ROT_NONE_SWAP_XY false
+#define PANEL_ROT_NONE_MIRROR_X true
+#define PANEL_ROT_NONE_MIRROR_Y false
+#endif
+
 // ESP32_2424S012 N/C
 #if defined(ESP32_2424S012N) || defined(ESP32_2424S012C)
 #define TFT_WIDTH 240

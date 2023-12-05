@@ -5,7 +5,7 @@
 ## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards, alias CYD (Cheap Yellow Display)
 
 These boards have an LCD display and most of them have a touch interface; N = No touch, R = Resistive touch, C = Capacitive touch.
-Currently this library supports: 2424S012N/C, 2432S024R/C/N, 2432S028R, 2432S032N/R/C, 3248S035R/C, 4827S043R/C, 8048S050N/C and 8048S070N/C.
+Currently this library supports: ESP32_1732S019N, 2424S012N/C, 2432S024R/C/N, 2432S028R, 2432S032N/R/C, 3248S035R/C, 4827S043R/C, 8048S050N/C and 8048S070N/C.
 
 This library supports these boards without any effort.
 
@@ -32,6 +32,7 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 
 | Type            | CPU       | Display | Size  | Controller                                | Rotate support  | Color16 swap  | Touch                                     | Audio  | Flash                                          | RGB LED  | CDS    | Link|
 |---              |---        |---      |--     |---                                        |---              |---            |---                                        |---     |---                                             |---       |---     |---  |
+| ESP32_1732S019N | ESP32-S3  | 170x320 | 1.9"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes           | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html) |
 | ESP32-2424S012N | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | yes             | yes           | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
 | ESP32-2424S012C | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | yes             | yes           | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
 | ESP32-2432S024N | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes           | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
@@ -78,6 +79,7 @@ Be aware that the platform board must also match but this is a requirement for a
     - ESP32_2424S012C
 
   - esp32-s3-devkitc-1
+    - ESP32_1732S019N
     - ESP32_8048S043N
     - ESP32_8048S043R
     - ESP32_8048S043C
@@ -140,6 +142,7 @@ board = esp32-s3-devkitc-1
 build_flags =
     ${env.build_flags}
     # Smartdisplay selection
+    #-D ESP32_1732S019N
     #-D ESP32_4827S043R
     #-D ESP32_4827S043C
     #-D ESP32_8048S043N
@@ -255,7 +258,7 @@ tone(AUDIO_PIN, frequency, duration);
 To produce "real" audio connect the internal 8 bits D2A converter in the ESP32. Because the speaker is connected to GPIO26, this is the DAC2 (Left Channel).
 After that, audio can be streamed to the i2s.
 
-The audio is a bit distorted. HexeguitarDIY has a fix for that by changing the resistor values to prevent distortion.
+The audio is a bit distorted. [HexeguitarDIY](https://github.com/hexeguitar/ESP32_TFT_PIO) has a fix for that by changing the resistor values to prevent distortion.
 [![HexeguitarDIY Audio mod](https://img.youtube.com/vi/6JCLHIXXVus/0.jpg)](https://www.youtube.com/watch?v=6JCLHIXXVus)
 
 ## Demo application
@@ -264,6 +267,10 @@ An bare minimum application to demonstrate the library can be found at [esp32-sm
 This application uses this library and the SquareLine Studio GUI generator.
 
 ## Board details
+
+### ESP32_1732S019N
+
+ - USB-C
 
 ### ESP32-2424S012 N/C
 
@@ -345,11 +352,13 @@ The following libraries are used from the EspressIf registry:
 
 ## Version history
 
+- December 2023
+  - Added ESP32_1732S019N
 - November 2023
   - Major version update: 2.0.0
   - Rewrite of the library to support the new ESP32-C3 and ESP32-S3 panels
   - Use the new Espressif esp_lcd interface
-  - Use c instead of cpp
+  - Use C instead of cpp
 - October 2023
   - Added support for esp32_8048S034N/C
   - Added option for flipped/mirrored TFT's
