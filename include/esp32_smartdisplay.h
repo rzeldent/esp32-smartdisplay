@@ -24,7 +24,7 @@
 #define PWM_MAX_BCKL ((1 << PWM_BITS_BCKL) - 1)
 
 // ESP32_1732S019 N/C
-#if defined(ESP32_1732S019N)
+#if defined(ESP32_1732S019N) || defined(ESP32_1732S019C)
 #define TFT_WIDTH 170
 #define TFT_HEIGHT 320
 // Backlight
