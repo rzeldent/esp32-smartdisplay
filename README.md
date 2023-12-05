@@ -33,7 +33,7 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 | Type            | CPU       | Display | Size  | Controller                                | Rotate support  | Color16 swap  | Touch                                     | Audio  | Flash                                          | RGB LED  | CDS    | Link|
 |---              |---        |---      |--     |---                                        |---              |---            |---                                        |---     |---                                             |---       |---     |---  |
 | ESP32_1732S019N | ESP32-S3  | 170x320 | 1.9"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes           | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html) |
-| ESP32_1732S019N | ESP32-S3  | 170x320 | 1.9"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes           | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html) |
+| ESP32_1732S019C | ESP32-S3  | 170x320 | 1.9"  | [ST7796](assets/datasheets/ST7796.pdf)    | yes             | yes           | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html) |
 | ESP32-2424S012N | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | yes             | yes           | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
 | ESP32-2424S012C | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | yes             | yes           | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
 | ESP32-2432S024N | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | yes             | yes           | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
@@ -81,6 +81,7 @@ Be aware that the platform board must also match but this is a requirement for a
 
   - esp32-s3-devkitc-1
     - ESP32_1732S019N
+    - ESP32_1732S019C
     - ESP32_8048S043N
     - ESP32_8048S043R
     - ESP32_8048S043C
@@ -144,6 +145,7 @@ build_flags =
     ${env.build_flags}
     # Smartdisplay selection
     #-D ESP32_1732S019N
+    #-D ESP32_1732S019C
     #-D ESP32_4827S043R
     #-D ESP32_4827S043C
     #-D ESP32_8048S043N
@@ -269,9 +271,9 @@ This application uses this library and the SquareLine Studio GUI generator.
 
 ## Board details
 
-### ESP32_1732S019 NC
+### ESP32_1732S019 N/C
 
- - USB-C
+- USB-C
 
 ### ESP32-2424S012 N/C
 

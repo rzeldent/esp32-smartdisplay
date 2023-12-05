@@ -44,7 +44,7 @@
 #define GT911_I2C_HOST 0
 #define GT911_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=4,.scl_io_num=5,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
 #define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.lcd_cmd_bits=16,.flags={.disable_control_phase=1}}
-#define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_25,.int_gpio_num=GPIO_NUM_NC}
+#define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_26,.int_gpio_num=GPIO_NUM_25}
 #define TOUCH_ROT_NONE_SWAP_X false
 #define TOUCH_ROT_NONE_SWAP_Y false
 #endif
