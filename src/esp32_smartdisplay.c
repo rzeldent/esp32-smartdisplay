@@ -102,13 +102,13 @@ void smartdisplay_init()
   disp_drv.hor_res = TFT_WIDTH;
   disp_drv.ver_res = TFT_HEIGHT;
   // Create drawBuffer
-  disp_drv.draw_buf = (lv_disp_draw_buf_t*)malloc(sizeof(lv_disp_draw_buf_t));
+  disp_drv.draw_buf = (lv_disp_draw_buf_t *)malloc(sizeof(lv_disp_draw_buf_t));
   uint drawBufferPixels = TFT_WIDTH * LVGL_PIXEL_BUFFER_LINES;
-  void* drawBuffer = heap_caps_malloc(sizeof(lv_color_t) * drawBufferPixels, MALLOC_CAP_DMA);
+  void *drawBuffer = heap_caps_malloc(sizeof(lv_color_t) * drawBufferPixels, MALLOC_CAP_DMA);
   lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, drawBufferPixels);
   // Initialize specific driver
   lvgl_tft_init(&disp_drv);
-  lv_disp_t* display = lv_disp_drv_register(&disp_drv);
+  lv_disp_t *display = lv_disp_drv_register(&disp_drv);
   // Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on

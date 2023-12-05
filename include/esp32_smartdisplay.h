@@ -17,26 +17,37 @@
 #define LVGL_PIXEL_BUFFER_LINES 16
 
 // Backlight PWM
+// Use last PWM_CHANNEL
+#define PWM_CHANNEL_BCKL (SOC_LEDC_CHANNEL_NUM - 1)
 #define PWM_FREQ_BCKL 5000
 #define PWM_BITS_BCKL 8
 #define PWM_MAX_BCKL ((1 << PWM_BITS_BCKL) - 1)
 
-// ESP32_1732S019N
+// ESP32_1732S019 N/C
 #if defined(ESP32_1732S019N)
 #define TFT_WIDTH 170
 #define TFT_HEIGHT 320
 // Backlight
 #define PIN_BCKL 14
-#define PWM_CHANNEL_BCKL 7
 // LCD
-#define USES_ST7796
-#define ST7796_SPI_HOST SPI2_HOST
-#define ST7796_SPI_BUS_CONFIG {.mosi_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}
-#define ST7796_IO_SPI_CONFIG {.cs_gpio_num=10,.dc_gpio_num=11,.spi_mode=SPI_MODE0,.pclk_hz=24000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}
-#define ST7796_PANEL_DEV_CONFIG {.reset_gpio_num=-1,.color_space=ESP_LCD_COLOR_SPACE_BGR,.bits_per_pixel=16}
+#define USES_ST7789
+#define ST7789_SPI_HOST SPI2_HOST
+#define ST7789_SPI_BUS_CONFIG {.mosi_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}
+#define ST7789_IO_SPI_CONFIG {.cs_gpio_num=10,.dc_gpio_num=11,.spi_mode=SPI_MODE0,.pclk_hz=24000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}
+#define ST7789_PANEL_DEV_CONFIG {.reset_gpio_num=1,.color_space=ESP_LCD_COLOR_SPACE_RGB,.bits_per_pixel=16}
 #define PANEL_ROT_NONE_SWAP_XY false
-#define PANEL_ROT_NONE_MIRROR_X true
+#define PANEL_ROT_NONE_MIRROR_X false
 #define PANEL_ROT_NONE_MIRROR_Y false
+#ifdef ESP32_1732S019C
+#define USES_GT911
+#include "esp_lcd_touch_gt911.h"
+#define GT911_I2C_HOST 0
+#define GT911_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=4,.scl_io_num=5,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
+#define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.lcd_cmd_bits=16,.flags={.disable_control_phase=1}}
+#define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_25,.int_gpio_num=GPIO_NUM_NC}
+#define TOUCH_ROT_NONE_SWAP_X false
+#define TOUCH_ROT_NONE_SWAP_Y false
+#endif
 #endif
 
 // ESP32_2424S012 N/C
@@ -45,7 +56,6 @@
 #define TFT_HEIGHT 240
 // Backlight
 #define PIN_BCKL 3
-#define PWM_CHANNEL_BCKL 5
 // LCD
 #define USES_GC9A01
 #define GC9A01_SPI_HOST SPI2_HOST
@@ -74,7 +84,6 @@
 #define TFT_HEIGHT 320
 // Backlight
 #define PIN_BCKL 27
-#define PWM_CHANNEL_BCKL 12
 // LCD
 #define USES_ILI9341
 #define ILI9341_SPI_HOST SPI2_HOST
@@ -124,7 +133,6 @@
 #define TFT_HEIGHT 320
 // Backlight
 #define PIN_BCKL 21
-#define PWM_CHANNEL_BCKL 12
 // LCD
 #define USES_ILI9341
 #define ILI9341_SPI_HOST SPI2_HOST
@@ -161,7 +169,6 @@
 #define TFT_HEIGHT 320
 // Backlight
 #define PIN_BCKL 27
-#define PWM_CHANNEL_BCKL 12
 // LCD
 #define USES_ST7796
 #define ST7796_SPI_HOST SPI2_HOST
@@ -212,7 +219,6 @@
 #define TFT_HEIGHT 480
 // Backlight
 #define PIN_BCKL 27
-#define PWM_CHANNEL_BCKL 12
 // LCD
 #define USES_ST7796
 #define ST7796_SPI_HOST SPI2_HOST
@@ -263,7 +269,6 @@
 #define TFT_HEIGHT 272
 // Backlight
 #define PIN_BCKL 2
-#define PWM_CHANNEL_BCKL 7
 // LCD ILI6485 480x272
 #define USES_LCD_RGB
 #define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=9000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=43,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=12,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1}},.data_width=16,.sram_trans_align=8,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums={8, 3, 46, 9, 1, 5, 6, 7, 15, 16, 4, 45, 48, 47, 21, 14},.disp_gpio_num=-1}
@@ -292,7 +297,6 @@
 #define TFT_HEIGHT 480
 // Backlight
 #define PIN_BCKL 2
-#define PWM_CHANNEL_BCKL 7
 // LCD 800x480
 #define USES_LCD_RGB
 #define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=8000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=8,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=8,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1}},.data_width=16,.sram_trans_align=8,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums={8, 3, 46, 9, 1, 5, 6, 7, 15, 16, 4, 45, 48, 47, 21, 14},.disp_gpio_num=-1}
@@ -321,7 +325,6 @@
 #define TFT_HEIGHT 480
 // Backlight
 #define PIN_BCKL 2
-#define PWM_CHANNEL_BCKL 7
 // LCD 800x480
 #define USES_LCD_RGB
 #define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=8,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=8,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1,}},.data_width=16,.sram_trans_align=8,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums={8, 3, 46, 9, 1, 5, 6, 7, 15, 16, 4, 45, 48, 47, 21, 14},.disp_gpio_num=-1}
@@ -350,7 +353,6 @@
 #define TFT_HEIGHT 480
 // Backlight
 #define PIN_BCKL 2
-#define PWM_CHANNEL_BCKL 7
 // LCD 800x480
 #define USES_LCD_RGB
 #define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=12000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=30,.hsync_back_porch=16,.hsync_front_porch=210,.vsync_pulse_width=13,.vsync_back_porch=10,.vsync_front_porch=22,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1,}},.data_width=16,.sram_trans_align=8,.hsync_gpio_num=39,.vsync_gpio_num=40,.de_gpio_num=41,.pclk_gpio_num=42,.data_gpio_nums={15, 7, 6, 5, 4, 9, 46, 3, 8, 16, 1, 14, 21, 47, 48, 45},.disp_gpio_num=-1}

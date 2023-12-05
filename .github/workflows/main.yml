@@ -38,6 +38,9 @@ jobs:
             smartboard: "ESP32_1732S019N"
             color16swap: 1
           - board: "esp32-s3-devkitc-1"
+            smartboard: "ESP32_1732S019C"
+            color16swap: 1
+          - board: "esp32-s3-devkitc-1"
             smartboard: "ESP32_4827S043R"
             color16swap: 0
           - board: "esp32-s3-devkitc-1"
