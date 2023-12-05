@@ -2,6 +2,7 @@
 #define ESP32_SMARTDISPLAY_H
 
 #include <Arduino.h>
+#include <esp32-hal-gpio.h>
 #include <lvgl.h>
 
 // Push button
