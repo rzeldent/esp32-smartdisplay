@@ -35,9 +35,9 @@
 #define ST7789_SPI_BUS_CONFIG {.mosi_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define ST7789_IO_SPI_CONFIG {.cs_gpio_num=10,.dc_gpio_num=11,.spi_mode=SPI_MODE0,.pclk_hz=24000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define ST7789_PANEL_DEV_CONFIG {.reset_gpio_num=1,.color_space=ESP_LCD_COLOR_SPACE_RGB,.bits_per_pixel=16}
-#define PANEL_ROT_NONE_SWAP_XY false
-#define PANEL_ROT_NONE_MIRROR_X false
-#define PANEL_ROT_NONE_MIRROR_Y false
+#define PANEL_SWAP_XY false
+#define PANEL_MIRROR_X false
+#define PANEL_MIRROR_Y false
 #ifdef ESP32_1732S019C
 #define USES_GT911
 #include "esp_lcd_touch_gt911.h"
@@ -45,8 +45,8 @@
 #define GT911_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=9,.scl_io_num=46,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
 #define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.lcd_cmd_bits=16,.flags={.disable_control_phase=1}}
 #define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_3,.int_gpio_num=GPIO_NUM_8}
-#define TOUCH_ROT_NONE_SWAP_X false
-#define TOUCH_ROT_NONE_SWAP_Y false
+#define TOUCH_ROT_SWAP_X false
+#define TOUCH_ROT_SWAP_Y false
 #endif
 #endif
 
@@ -62,9 +62,9 @@
 #define GC9A01_SPI_BUS_CONFIG {.mosi_io_num=7,.miso_io_num=-1,.sclk_io_num=6,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define GC9A01_IO_SPI_CONFIG {.cs_gpio_num=10,.dc_gpio_num=2,.spi_mode=SPI_MODE0,.pclk_hz=80000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define GC9A01_PANEL_DEV_CONFIG {.reset_gpio_num=-1,.color_space=ESP_LCD_COLOR_SPACE_BGR,.bits_per_pixel=16}
-#define PANEL_ROT_NONE_SWAP_XY false
-#define PANEL_ROT_NONE_MIRROR_X true
-#define PANEL_ROT_NONE_MIRROR_Y false
+#define PANEL_SWAP_XY false
+#define PANEL_MIRROR_X true
+#define PANEL_MIRROR_Y false
 // Touch
 #ifdef ESP32_2424S012C
 #define USES_CST816S
@@ -73,8 +73,8 @@
 #define CST816S_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=4,.scl_io_num=5,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={ .clk_speed=400000}}
 #define CST816S_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_CST816S_ADDRESS,.control_phase_bytes=1,.lcd_cmd_bits=8,.flags={.disable_control_phase=1}}
 #define CST816S_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_1,.int_gpio_num=GPIO_NUM_0}
-#define TOUCH_ROT_NONE_SWAP_X false
-#define TOUCH_ROT_NONE_SWAP_Y false
+#define TOUCH_ROT_SWAP_X false
+#define TOUCH_ROT_SWAP_Y false
 #endif
 #endif
 
@@ -90,9 +90,9 @@
 #define ILI9341_SPI_BUS_CONFIG {.mosi_io_num=13,.miso_io_num=12,.sclk_io_num=14,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define ILI9341_IO_SPI_CONFIG  {.cs_gpio_num=15,.dc_gpio_num=2,.spi_mode=SPI_MODE0,.pclk_hz=24000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define ILI9341_PANEL_DEV_CONFIG {.reset_gpio_num=-1,.color_space=ESP_LCD_COLOR_SPACE_BGR,.bits_per_pixel=16}
-#define PANEL_ROT_NONE_SWAP_XY false
-#define PANEL_ROT_NONE_MIRROR_X true
-#define PANEL_ROT_NONE_MIRROR_Y false
+#define PANEL_SWAP_XY false
+#define PANEL_MIRROR_X true
+#define PANEL_MIRROR_Y false
 // Touch
 #ifdef ESP32_2432S024R
 #define USES_XPT2046
@@ -100,8 +100,8 @@
 #define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=13,.miso_io_num=12,.sclk_io_num=14,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define XPT2046_IO_SPI_CONFIG {.cs_gpio_num=33,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define XPT2046_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_36}
-#define TOUCH_ROT_NONE_SWAP_X true
-#define TOUCH_ROT_NONE_SWAP_Y false
+#define TOUCH_ROT_SWAP_X true
+#define TOUCH_ROT_SWAP_Y false
 #else
 #ifdef ESP32_2432S024C
 #define USES_CST816S
@@ -110,8 +110,8 @@
 #define CST816S_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=33,.scl_io_num=32,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
 #define CST816S_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_CST816S_ADDRESS,.control_phase_bytes=1,.lcd_cmd_bits=8,.flags={.disable_control_phase=1}}
 #define CST816S_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_25,.int_gpio_num=GPIO_NUM_NC}
-#define TOUCH_ROT_NONE_SWAP_X false
-#define TOUCH_ROT_NONE_SWAP_Y false
+#define TOUCH_ROT_SWAP_X false
+#define TOUCH_ROT_SWAP_Y false
 #endif
 #endif
 // Build in RGB LED
@@ -139,17 +139,17 @@
 #define ILI9341_SPI_BUS_CONFIG {.mosi_io_num=13,.miso_io_num=12,.sclk_io_num=14,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define ILI9341_IO_SPI_CONFIG {.cs_gpio_num=15,.dc_gpio_num=2,.spi_mode=SPI_MODE0,.pclk_hz=24000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define ILI9341_PANEL_DEV_CONFIG {.reset_gpio_num=-1,.color_space=ESP_LCD_COLOR_SPACE_BGR,.bits_per_pixel=16}
-#define PANEL_ROT_NONE_SWAP_XY false
-#define PANEL_ROT_NONE_MIRROR_X true
-#define PANEL_ROT_NONE_MIRROR_Y false
+#define PANEL_SWAP_XY false
+#define PANEL_MIRROR_X true
+#define PANEL_MIRROR_Y false
 // Touch
 #define USES_XPT2046
 #define XPT2046_SPI_HOST SPI3_HOST
 #define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=32,.miso_io_num=39,.sclk_io_num=25,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define XPT2046_IO_SPI_CONFIG {.cs_gpio_num=33,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define XPT2046_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_36}
-#define TOUCH_ROT_NONE_SWAP_X true
-#define TOUCH_ROT_NONE_SWAP_Y false
+#define TOUCH_ROT_SWAP_X true
+#define TOUCH_ROT_SWAP_Y false
 // Build in RGB LED
 #define HAS_RGB_LED
 #define LED_PIN_R 4
@@ -175,9 +175,9 @@
 #define ST7796_SPI_BUS_CONFIG {.mosi_io_num=13,.miso_io_num=12,.sclk_io_num=14,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define ST7796_IO_SPI_CONFIG {.cs_gpio_num=15,.dc_gpio_num=2,.spi_mode=SPI_MODE0,.pclk_hz=24000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define ST7796_PANEL_DEV_CONFIG {.reset_gpio_num=-1,.color_space=ESP_LCD_COLOR_SPACE_BGR,.bits_per_pixel=16}
-#define PANEL_ROT_NONE_SWAP_XY false
-#define PANEL_ROT_NONE_MIRROR_X true
-#define PANEL_ROT_NONE_MIRROR_Y false
+#define PANEL_SWAP_XY false
+#define PANEL_MIRROR_X true
+#define PANEL_MIRROR_Y false
 // Touch
 #ifdef ESP32_2432S032R
 #define USES_XPT2046
@@ -186,8 +186,8 @@
 #define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=13,.miso_io_num=12,.sclk_io_num=14,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define XPT2046_IO_SPI_CONFIG {.cs_gpio_num=33,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define XPT2046_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_36}
-#define TOUCH_ROT_NONE_SWAP_X true
-#define TOUCH_ROT_NONE_SWAP_Y false
+#define TOUCH_ROT_SWAP_X true
+#define TOUCH_ROT_SWAP_Y false
 #else
 #ifdef ESP32_2432S032C
 #define USES_GT911
@@ -196,8 +196,8 @@
 #define GT911_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=33,.scl_io_num=32,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
 #define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.lcd_cmd_bits=16,.flags={.disable_control_phase=1}}
 #define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_25,.int_gpio_num=GPIO_NUM_NC}
-#define TOUCH_ROT_NONE_SWAP_X false
-#define TOUCH_ROT_NONE_SWAP_Y false
+#define TOUCH_ROT_SWAP_X false
+#define TOUCH_ROT_SWAP_Y false
 #endif
 #endif
 // Build in RGB LED
@@ -225,9 +225,9 @@
 #define ST7796_SPI_BUS_CONFIG {.mosi_io_num=13,.miso_io_num=12,.sclk_io_num=14,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define ST7796_IO_SPI_CONFIG {.cs_gpio_num=15,.dc_gpio_num=2,.spi_mode=SPI_MODE0,.pclk_hz=24000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define ST7796_PANEL_DEV_CONFIG {.reset_gpio_num=-1,.color_space=ESP_LCD_COLOR_SPACE_BGR,.bits_per_pixel=16}
-#define PANEL_ROT_NONE_SWAP_XY false
-#define PANEL_ROT_NONE_MIRROR_X true
-#define PANEL_ROT_NONE_MIRROR_Y false
+#define PANEL_SWAP_XY false
+#define PANEL_MIRROR_X true
+#define PANEL_MIRROR_Y false
 // Touch
 #ifdef ESP32_3248S035R
 #define USES_XPT2046
@@ -236,8 +236,8 @@
 #define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=13,.miso_io_num=12,.sclk_io_num=14,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define XPT2046_IO_SPI_CONFIG {.cs_gpio_num=33,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define XPT2046_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_36}
-#define TOUCH_ROT_NONE_SWAP_X true
-#define TOUCH_ROT_NONE_SWAP_Y false
+#define TOUCH_ROT_SWAP_X true
+#define TOUCH_ROT_SWAP_Y false
 #else
 #ifdef ESP32_3248S035C
 #define USES_GT911
@@ -246,8 +246,8 @@
 #define GT911_I2C_CONFIG {.mode=I2C_MODE_MASTER,.sda_io_num=33,.scl_io_num=32,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}
 #define GT911_IO_I2C_CONFIG {.dev_addr=ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,.control_phase_bytes=1,.lcd_cmd_bits=16,.flags={.disable_control_phase=1}}
 #define GT911_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_25,.int_gpio_num=GPIO_NUM_NC}
-#define TOUCH_ROT_NONE_SWAP_X false
-#define TOUCH_ROT_NONE_SWAP_Y false
+#define TOUCH_ROT_SWAP_X false
+#define TOUCH_ROT_SWAP_Y false
 #endif
 #endif
 // Build in RGB LED
