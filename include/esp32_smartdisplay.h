@@ -38,6 +38,8 @@
 #define PANEL_SWAP_XY false
 #define PANEL_MIRROR_X false
 #define PANEL_MIRROR_Y false
+#define PANEL_GAP_X 35
+#define PANEL_GAP_Y 0
 #ifdef ESP32_1732S019C
 #define USES_GT911
 #include "esp_lcd_touch_gt911.h"

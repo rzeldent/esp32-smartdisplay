@@ -30,6 +30,9 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
   case LV_DISP_ROT_NONE:
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, PANEL_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, PANEL_MIRROR_X, PANEL_MIRROR_Y));
+#if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_X, PANEL_GAP_Y));
+#endif
 #ifdef USES_TOUCH
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_ROT_SWAP_X));
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_ROT_SWAP_Y));
@@ -38,6 +41,9 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
   case LV_DISP_ROT_90:
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !PANEL_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !PANEL_MIRROR_X, PANEL_MIRROR_Y));
+#if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_Y, PANEL_GAP_X));
+#endif
 #ifdef USES_TOUCH
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_ROT_SWAP_X));
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_ROT_SWAP_Y));
@@ -46,6 +52,9 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
   case LV_DISP_ROT_180:
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, PANEL_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !PANEL_MIRROR_X, !PANEL_MIRROR_Y));
+#if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_X, PANEL_GAP_Y));
+#endif
 #ifdef USES_TOUCH
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_ROT_SWAP_X));
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_ROT_SWAP_Y));
@@ -54,6 +63,9 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
   case LV_DISP_ROT_270:
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !PANEL_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, PANEL_MIRROR_X, !PANEL_MIRROR_Y));
+#if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_Y, PANEL_GAP_X));
+#endif
 #ifdef USES_TOUCH
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_ROT_SWAP_X));
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_ROT_SWAP_Y));
