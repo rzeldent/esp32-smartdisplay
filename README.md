@@ -2,6 +2,14 @@
 
 [![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
 
+
+> [!warning]  
+> The master of this library will soon be replaced by a newwer version [https://github.com/rzeldent/esp32-smartdisplay/tree/feature/esp32s3](https://github.com/rzeldent/esp32-smartdisplay/tree/feature/esp32s3).
+> This new version supports more boards and uses "official" EspressIf libraries but has unfortunatly some breaking changes.
+> 
+> This branch is currently in maintenance mode
+
+
 ## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards 2432S024R/C/N, 2432S028R, 3248S035R/C and 8048S070N/C
 
 This library supports these boards without any effort.
