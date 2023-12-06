@@ -5,18 +5,18 @@
 ## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards, alias CYD (Cheap Yellow Display)
 
 These boards have an LCD display and most of them have a touch interface; N = No touch, R = Resistive touch, C = Capacitive touch.
-Currently this library supports: ESP32_1732S019N, 2424S012N/C, 2432S024R/C/N, 2432S028R, 2432S032N/R/C, 3248S035R/C, 4827S043R/C, 8048S050N/C and 8048S070N/C.
+Currently this library supports: ESP32_1732S019N/C, 2424S012N/C, 2432S024R/C/N, 2432S028R, 2432S032N/R/C, 3248S035R/C, 4827S043R/C, 8048S050N/C and 8048S070N/C.
 
 This library supports these boards without any effort.
 
 ## Why this library
 
-With the boards, there is a link supplied and there are a lot of examples present and this looks fine.
+With the boards, there is a link supplied and there are a lot of examples present and this looks fine.... If you know your way around....
 These examples for [LVGL](https://lvgl.io/) depend on external libraries ([TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)).
 However, when working with these libraries, I found out that these libraries had their flaws using these boards:
 
-- A lot of configuring to do before it all works
-- A lot of not unnecessary code is included (for other boards)
+- Lots of configuring to do before it all works
+- Using a third party livbrary there is unnecessary code included (for other boards)
 - No support for on the fly rotating
 - No auto of the box support for touch
 
@@ -92,9 +92,15 @@ Be aware that the platform board must also match but this is a requirement for a
     - ESP32_8048S070R
     - ESP32_8048S070C
 
-These can be defined in the `platformio.ini` file defining the settings. There also additional settings present for the EspressIf libraries. They should also be present.
+These can be defined in the `platformio.ini` file defining the settings. There also additional settings present for the EspressIf libraries. These defined should also be present.
+Because multiple boards/cpu's are used, the configuration is split up in three (platform io) boards with the supported displays
 
 ```ini
+[platformio]
+#default_envs = esp32dev
+#default_envs = esp32-c3-devkitm-1
+#default_envs = esp32-s3-devkitc-1
+
 [env]
 platform = espressif32
 framework = arduino
@@ -177,8 +183,9 @@ The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/
 
 The LVGL library has a define called **LV_COLOR_16_SWAP**. The value can be 1 (yes) or 0 (no).
 This variable will swap the byte order of the lv_color16_t. This is required because the SPI is by default MSB first.
-Swapping these bytes will undo this.
-Setting this variable to true is required for the GC9A01A, ILI9341 and ST7796 controllers.
+Swapping these bytes will undo this and creates a normal image.
+
+Setting this variable to true is required for the SPI interfaces: ST7789, GC9A01A, ILI9341 and ST7796 controllers but should be false for the oher interfaces.
 
 Additionally, when using the [SquareLine Studio](https://squareline.io/) for designing the user interface, the display properties (under the project settings) must match this variable.
 It needs to be set both in `lv_conf.h` configuration file and the corresponding display properties (16 bit swap or 16 bit) in [SquareLine Studio](https://squareline.io/). When using squareline, the UI has to be regenerated.
@@ -187,7 +194,7 @@ It needs to be set both in `lv_conf.h` configuration file and the corresponding 
 
 ## LVGL initialization Functions
 
-The library exposes the following functions:
+The library exposes the following functions.
 
 ### void smartdisplay_init()
 
@@ -198,6 +205,16 @@ It initializes the display controller and touch controller and will turn on the 
 
 Set the brightness of the backlight display.
 The resolution is 12 bit so valid values are from 0-1023.
+
+## Rotation
+
+The library supports rotating for most of the controllers. Unfortunately at the time of writing there is no support for the direct rgb panels.
+Rotating is done calling the appropriate function in the LVGL library:
+
+```c++
+  auto disp = lv_disp_get_default();
+  lv_disp_set_rotation(disp, LV_DISP_ROT_90);
+```
 
 ## Controlling the RGB led
 
@@ -216,7 +233,7 @@ Before using the RGB LEDs, the GPIOs must be defined as output
   pinmode(LED_PIN_B, OUTPUT);
 ```
 
-The LEDs are connected between the GPIO pin and the 3.3V. So the LED will light up if the GPIO is set to LOW.
+The LEDs are connected between the GPIO pin and the 3.3V. So the LED will light up if the GPIO is set to LOW (inverted).
 For example: set the RGB led to red is done by the following code:
 
 ```c++
@@ -226,7 +243,17 @@ For example: set the RGB led to red is done by the following code:
 ```
 
 To have more colors than the 8 RGB combinations, PWM can be used to mix the colors.
-To do this, attach a PWM channel to each GPIO pin to modulate the intensity.
+To do this, attach a PWM channel to each GPIO pin to modulate the intensity. The number of PWM channels is limited!
+
+Example:
+Set PWM channel 0 to 5000Hz with a resolution of 8 bits (256 levels) and attach it to the red LED.
+Next, set the level to 25%. This is 192 (256 - 25%) because of the inverted output.
+
+```c++
+  ledcSetup(0, 5000, 8);
+  ledcAttachPin(LED_PIN_R, 0);
+  ledcWrite(0, 192);
+```
 
 ## Reading the light sensor (CDS)
 
@@ -269,7 +296,7 @@ The audio is a bit distorted. [HexeguitarDIY](https://github.com/hexeguitar/ESP3
 An bare minimum application to demonstrate the library can be found at [esp32-smartdisplay-demo](https://github.com/rzeldent/esp32-smartdisplay-demo).
 This application uses this library and the SquareLine Studio GUI generator.
 
-## Board details
+## Appendix: Board details
 
 ### ESP32_1732S019 N/C
 
@@ -339,7 +366,7 @@ This application uses this library and the SquareLine Studio GUI generator.
 ![ESP32-8048S070 front](assets/images/esp32-8048S070-front.png)
 ![ESP32-8048S070 back](assets/images/esp32-8048S070-back.png)
 
-## External dependencies
+## Appendix: External dependencies
 
 The following libraries are used from the EspressIf registry:
 
@@ -356,7 +383,7 @@ The following libraries are used from the EspressIf registry:
 ## Version history
 
 - December 2023
-  - Added ESP32_1732S019N
+  - Added ESP32_1732S019N/C
 - November 2023
   - Major version update: 2.0.0
   - Rewrite of the library to support the new ESP32-C3 and ESP32-S3 panels
