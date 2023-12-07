@@ -132,8 +132,13 @@ void lvgl_tft_init()
   digitalWrite(ST7796_PIN_CS, HIGH);
 
   pinMode(ST7796_PIN_BL, OUTPUT); // Backlight
-  ledcSetup(ST7796_PWM_CHANNEL_BL, ST7796_PWM_FREQ_BL, ST7796_PWM_BITS_BL);
-  ledcAttachPin(ST7796_PIN_BL, ST7796_PWM_CHANNEL_BL);
+
+    #if ESP_ARDUINO_VERSION_MAJOR  >=3
+    ledcAttach(ST7796_PIN_BL, ST7796_PWM_FREQ_BL, ST7796_PWM_BITS_BL);
+  #else 
+    ledcSetup(ST7796_PWM_CHANNEL_BL, ST7796_PWM_FREQ_BL, ST7796_PWM_BITS_BL);
+    ledcAttachPin(ST7796_PIN_BL, ST7796_PWM_CHANNEL_BL);
+  #endif
 
   st7796_send_init_commands();
 
@@ -164,7 +169,11 @@ void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color
 
 void smartdisplay_tft_set_backlight(uint16_t duty)
 {
-  ledcWrite(ST7796_PWM_CHANNEL_BL, duty);
+  #if ESP_ARDUINO_VERSION_MAJOR  >=3
+    ledcWrite(ST7796_PIN_BL, duty);
+  #else 
+    ledcWrite(ST7796_PWM_CHANNEL_BL, duty);
+  #endif
 }
 
 void smartdisplay_tft_sleep()

@@ -177,8 +177,12 @@ void lvgl_tft_init()
   digitalWrite(ILI9341_PIN_CS, HIGH);
 
   pinMode(ILI9341_PIN_BL, OUTPUT); // Backlight
-  ledcSetup(ILI9341_PWM_CHANNEL_BL, ILI9341_PWM_FREQ_BL, ILI9341_PWM_BITS_BL);
-  ledcAttachPin(ILI9341_PIN_BL, ILI9341_PWM_CHANNEL_BL);
+  #if ESP_ARDUINO_VERSION_MAJOR  >=3
+    ledcAttach(ILI9341_PIN_BL, ILI9341_PWM_FREQ_BL, ILI9341_PWM_BITS_BL);
+  #else 
+    ledcSetup(ILI9341_PWM_CHANNEL_BL, ILI9341_PWM_FREQ_BL, ILI9341_PWM_BITS_BL);
+    ledcAttachPin(ILI9341_PIN_BL, ILI9341_PWM_CHANNEL_BL);
+  #endif
 
   ili9341_send_init_commands();
 
@@ -209,7 +213,12 @@ void lvgl_tft_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color
 
 void smartdisplay_tft_set_backlight(uint16_t duty)
 {
-  ledcWrite(ILI9341_PWM_CHANNEL_BL, duty);
+  #if ESP_ARDUINO_VERSION_MAJOR  >=3
+    ledcWrite(ILI9341_PIN_BL, duty);
+  #else 
+    ledcWrite(ILI9341_PWM_CHANNEL_BL, duty);
+  #endif
+  
 }
 
 void smartdisplay_tft_sleep()

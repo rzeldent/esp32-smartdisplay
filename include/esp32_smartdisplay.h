@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <lvgl.h>
+#include <esp_arduino_version.h>
 #if defined(ESP32_2432S024C) || defined(ESP32_3248S035C) || defined(ESP32_8048S070C)
 #include <Wire.h>
 #endif
