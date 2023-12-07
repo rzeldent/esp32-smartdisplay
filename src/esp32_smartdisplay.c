@@ -1,5 +1,5 @@
 #include <esp32_smartdisplay.h>
-
+#include <esp_arduino_version.h>
 #include <esp_lcd_types.h>
 #include <esp_lcd_touch.h>
 #include <esp_lcd_panel_ops.h>
@@ -106,8 +106,12 @@ void smartdisplay_init()
   lv_init();
   // Setup backlight
   pinMode(PIN_BCKL, OUTPUT);
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
+  ledcAttach(PIN_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
+#else
   ledcSetup(PWM_CHANNEL_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
   ledcAttachPin(PIN_BCKL, PWM_CHANNEL_BCKL);
+#endif
   digitalWrite(PIN_BCKL, LOW);
   // Setup TFT display
   lv_disp_drv_init(&disp_drv);
@@ -143,5 +147,9 @@ void smartdisplay_init()
 
 void smartdisplay_tft_set_backlight(uint16_t duty)
 {
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
+  ledcWrite(PIN_BCKL, duty);
+#else
   ledcWrite(PWM_CHANNEL_BCKL, duty);
+#endif
 }
