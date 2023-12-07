@@ -249,10 +249,19 @@ Example:
 Set PWM channel 0 to 5000Hz with a resolution of 8 bits (256 levels) and attach it to the red LED.
 Next, set the level to 25%. This is 192 (256 - 25%) because of the inverted output.
 
+ESP_ARDUINO_VERSION_MAJOR < 3:
+
 ```c++
   ledcSetup(0, 5000, 8);
   ledcAttachPin(LED_PIN_R, 0);
   ledcWrite(0, 192);
+```
+
+ESP_ARDUINO_VERSION_MAJOR >= 3
+
+```c++
+  ledcAttach(LED_PIN_R, 0, 8);
+  ledcWrite(LED_PIN_R, 192);
 ```
 
 ## Reading the light sensor (CDS)
