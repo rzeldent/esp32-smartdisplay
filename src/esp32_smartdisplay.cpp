@@ -66,6 +66,20 @@ void smartdisplay_init()
   const std::lock_guard<std::recursive_mutex> lock(lvgl_mutex);
   // Setup RGB LED.  High is off
   // Use channel 0=R, 1=G, 2=B, 5kHz,  8 bit resolution
+
+#if ESP_ARDUINO_VERSION_MAJOR  >=3
+  pinMode(LED_PIN_R, OUTPUT);
+  digitalWrite(LED_PIN_R, true);
+  ledcAttach(LED_PIN_R, LED_PWM_FREQ, LED_PWM_BITS);
+
+  pinMode(LED_PIN_G, OUTPUT);
+  digitalWrite(LED_PIN_G, true);
+  ledcAttach(LED_PIN_G, LED_PWM_FREQ, LED_PWM_BITS);
+
+  pinMode(LED_PIN_B, OUTPUT);
+  digitalWrite(LED_PIN_B, true);
+  ledcAttach(LED_PIN_B, LED_PWM_FREQ, LED_PWM_BITS);
+#else
   pinMode(LED_PIN_R, OUTPUT);
   digitalWrite(LED_PIN_R, true);
   ledcSetup(LED_PWM_CHANNEL_R, LED_PWM_FREQ, LED_PWM_BITS);
@@ -80,6 +94,7 @@ void smartdisplay_init()
   digitalWrite(LED_PIN_B, true);
   ledcSetup(LED_PWM_CHANNEL_B, LED_PWM_FREQ, LED_PWM_BITS);
   ledcAttachPin(LED_PIN_B, LED_PWM_CHANNEL_B);
+#endif
 
   // Setup CDS Light sensor
   analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
@@ -172,9 +187,15 @@ void smartdisplay_init()
 
 void smartdisplay_set_led_color(lv_color32_t rgb)
 {
-  ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - rgb.ch.red);
-  ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - rgb.ch.green);
-  ledcWrite(LED_PWM_CHANNEL_B, LED_PWM_MAX - rgb.ch.blue);
+  #if ESP_ARDUINO_VERSION_MAJOR  >=3
+    ledcWrite(LED_PIN_R, LED_PWM_MAX - rgb.ch.red);
+    ledcWrite(LED_PIN_G, LED_PWM_MAX - rgb.ch.green);
+    ledcWrite(LED_PIN_B, LED_PWM_MAX - rgb.ch.blue);
+  #else 
+    ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - rgb.ch.red);
+    ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - rgb.ch.green);
+    ledcWrite(LED_PWM_CHANNEL_B, LED_PWM_MAX - rgb.ch.blue);
+  #endif
 }
 
 int smartdisplay_get_light_intensity()
