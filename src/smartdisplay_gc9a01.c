@@ -22,7 +22,7 @@ void gc9a01_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *colo
 #if LV_COLOR_16_SWAP != 1
 #warning "LV_COLOR_16_SWAP should be 1 for max performance"
     ushort pixels = lv_area_get_size(area);
-    lv_color16_t* p = color_map;
+    lv_color16_t *p = color_map;
     while (pixels--)
         p++->full = (uint16_t)((p->full >> 8) | (p->full << 8));
 #endif
@@ -51,9 +51,9 @@ void lvgl_tft_init(lv_disp_drv_t *drv)
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
     drv->user_data = panel_handle;
     drv->flush_cb = gc9a01_lv_flush;
-    
+
     // Colors are inverted
-    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle,  true));
+    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
 
     // Turn display on
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));

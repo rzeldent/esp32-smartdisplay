@@ -20,7 +20,7 @@ static void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_
 #if LV_COLOR_16_SWAP != 1
 #warning "LV_COLOR_16_SWAP should be 1 for max performance"
     ushort pixels = lv_area_get_size(area);
-    lv_color16_t* p = color_map;
+    lv_color16_t *p = color_map;
     while (pixels--)
         p++->full = (uint16_t)((p->full >> 8) | (p->full << 8));
 #endif
