@@ -120,15 +120,15 @@ void smartdisplay_init()
   // Create drawBuffer
   disp_drv.draw_buf = (lv_disp_draw_buf_t *)malloc(sizeof(lv_disp_draw_buf_t));
   uint drawBufferPixels = TFT_WIDTH * LVGL_PIXEL_BUFFER_LINES;
-  void *drawBuffer = heap_caps_malloc(sizeof(lv_color_t) * drawBufferPixels, MALLOC_CAP_DMA);
+  void *drawBuffer = heap_caps_malloc(sizeof(lv_color16_t) * drawBufferPixels, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
   lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, drawBufferPixels);
   // Initialize specific driver
   lvgl_tft_init(&disp_drv);
   lv_disp_t *display = lv_disp_drv_register(&disp_drv);
   // Clear screen
   lv_obj_clean(lv_scr_act());
-  // Turn backlight on
-  ledcWrite(PWM_CHANNEL_BCKL, PWM_MAX_BCKL);
+  // Turn backlight on (50%)
+  smartdisplay_tft_set_backlight(0.5f);
 
 // If there is a touch controller defined
 #ifdef USES_TOUCH
@@ -145,11 +145,11 @@ void smartdisplay_init()
   lvgl_update_callback(&disp_drv);
 }
 
-void smartdisplay_tft_set_backlight(uint16_t duty)
+void smartdisplay_tft_set_backlight(float duty)
 {
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcWrite(PIN_BCKL, duty);
+  ledcWrite(PIN_BCKL, dut * PWM_MAX_BCKL);
 #else
-  ledcWrite(PWM_CHANNEL_BCKL, duty);
+  ledcWrite(PWM_CHANNEL_BCKL, duty * PWM_MAX_BCKL);
 #endif
 }

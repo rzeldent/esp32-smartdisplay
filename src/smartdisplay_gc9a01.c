@@ -16,7 +16,7 @@ bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_i
     return false;
 }
 
-void gc9a01_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
+void gc9a01_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *color_map)
 {
     esp_lcd_panel_handle_t panel_handle = drv->user_data;
 #if LV_COLOR_16_SWAP != 1
