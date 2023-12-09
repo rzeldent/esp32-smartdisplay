@@ -19,6 +19,13 @@ static bool st7796_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_
 static void st7796_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
 {
     esp_lcd_panel_handle_t panel_handle = drv->user_data;
+#if LV_COLOR_16_SWAP != 1
+#warning "LV_COLOR_16_SWAP should be 1 for max performance"
+    ushort pixels = lv_area_get_size(area);
+    lv_color16_t* p = color_map;
+    while (pixels--)
+        p++->full = (uint16_t)((p->full >> 8) | (p->full << 8));
+#endif
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, color_map));
 };
 
