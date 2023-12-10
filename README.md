@@ -1,8 +1,6 @@
-# ESP32-SmartDisplay
+# LVGL drivers for Chinese Sunton Smart display boards, aka CYD (Cheap Yellow Display)
 
 [![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
-
-## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards, alias CYD (Cheap Yellow Display) for PlatformIO Arduino
 
 These boards have an LCD display and most of them have a touch interface.
 
