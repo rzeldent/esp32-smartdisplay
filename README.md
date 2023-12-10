@@ -3,7 +3,7 @@
 [![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
 
 
-> [!warning]  
+> [!CAUTION]  
 > The master of this library will soon be replaced by a newwer version [https://github.com/rzeldent/esp32-smartdisplay/tree/feature/esp32s3](https://github.com/rzeldent/esp32-smartdisplay/tree/feature/esp32s3).
 > This new version supports more boards and uses "official" EspressIf libraries but has unfortunatly some breaking changes.
 > 
