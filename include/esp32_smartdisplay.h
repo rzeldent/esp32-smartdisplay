@@ -396,6 +396,8 @@
 #define XPT2046_SPI_BUS_CONFIG {.mosi_io_num=11,.miso_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}
 #define XPT2046_IO_SPI_CONFIG {.cs_gpio_num=38,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}
 #define XPT2046_TOUCH_CONFIG {.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_18}
+#define TOUCH_ROT_SWAP_X false
+#define TOUCH_ROT_SWAP_Y false
 #else
 #ifdef ESP32_8048S070C
 #define USES_GT911
