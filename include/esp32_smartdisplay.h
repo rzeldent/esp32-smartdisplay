@@ -278,7 +278,7 @@
 #else
 #define RBG_PANEL_GPIO {8,3,46,9,1,5,6,7,15,16,4,45,48,47,21,14}
 #endif
-#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=32000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=43,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=12,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1}},.data_width=16,.sram_trans_align=8,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums=RBG_PANEL_GPIO,.disp_gpio_num=-1,.flags={.fb_in_psram=1}}
+#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=43,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=12,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1}},.data_width=16,.sram_trans_align=8,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums=RBG_PANEL_GPIO,.disp_gpio_num=-1,.flags={.fb_in_psram=1}}
 // Touch
 #ifdef ESP32_4827S043R
 #define USES_XPT2046
@@ -311,7 +311,7 @@
 #else
 #define RBG_PANEL_GPIO {8,3,46,9,1,5,6,7,15,16,4,45,48,47,21,14}
 #endif
-#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=32000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=8,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=8,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1}},.data_width=16,.sram_trans_align=8,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums=RBG_PANEL_GPIO,.disp_gpio_num=-1,.flags={.fb_in_psram=1}}
+#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=8,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=8,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1}},.data_width=16,.sram_trans_align=8,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums=RBG_PANEL_GPIO,.disp_gpio_num=-1,.flags={.fb_in_psram=1}}
 
 // Touch
 #ifdef ESP32_8048S043R
@@ -345,7 +345,7 @@
 #else
 #define RBG_PANEL_GPIO {8,3,46,9,1,5,6,7,15,16,4,45,48,47,21,14}
 #endif
-#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=32000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=8,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=8,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1,}},.data_width=16,.sram_trans_align=8,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums=RBG_PANEL_GPIO,.disp_gpio_num=-1,.flags={.fb_in_psram=1}}
+#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=8,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=8,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1,}},.data_width=16,.sram_trans_align=8,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums=RBG_PANEL_GPIO,.disp_gpio_num=-1,.flags={.fb_in_psram=1}}
 // Touch
 #ifdef ESP32_8048S050R
 #define USES_XPT2046
@@ -378,7 +378,7 @@
 #else
 #define RBG_PANEL_GPIO {8,16,1,14,21,47,48,45,15,7,6,5,4,9,46,3}
 #endif
-#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=32000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=30,.hsync_back_porch=16,.hsync_front_porch=210,.vsync_pulse_width=13,.vsync_back_porch=10,.vsync_front_porch=22,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1,}},.data_width=16,.sram_trans_align=8,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=40,.de_gpio_num=41,.pclk_gpio_num=42,.data_gpio_nums={8, 16, 1, 14, 21, 47, 48, 45, 15, 7, 6, 5, 4, 9, 46, 3},.disp_gpio_num=-1,.flags={.fb_in_psram=1}}
+#define RBG_PANEL_CONFIG {.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=30,.hsync_back_porch=16,.hsync_front_porch=210,.vsync_pulse_width=13,.vsync_back_porch=10,.vsync_front_porch=22,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1,}},.data_width=16,.sram_trans_align=8,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=40,.de_gpio_num=41,.pclk_gpio_num=42,.data_gpio_nums={8, 16, 1, 14, 21, 47, 48, 45, 15, 7, 6, 5, 4, 9, 46, 3},.disp_gpio_num=-1,.flags={.fb_in_psram=1}}
 // Touch
 #ifdef ESP32_8048S070R
 #define USES_XPT2046
