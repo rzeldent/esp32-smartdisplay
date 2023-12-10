@@ -2,12 +2,27 @@
 
 [![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
 
-## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards, alias CYD (Cheap Yellow Display)
+## LVGL drivers and peripheral interface for Chinese Sunton Smart display boards, alias CYD (Cheap Yellow Display) for PlatformIO Arduino
 
-These boards have an LCD display and most of them have a touch interface; N = No touch, R = Resistive touch, C = Capacitive touch.
-Currently this library supports: ESP32_1732S019N/C, 2424S012N/C, 2432S024R/C/N, 2432S028R, 2432S032N/R/C, 3248S035R/C, 4827S043R/C, 8048S050N/C and 8048S070N/C.
+These boards have an LCD display and most of them have a touch interface.
 
-This library supports these boards without any effort.
+- N = No touch
+- R = Resistive touch
+- C = Capacitive touch
+
+Currently this library supports:
+
+- ESP32_1732S019N/C
+- ESP32_2424S012N/C
+- ESP32_2432S024R/C/N
+- ESP32_2432S028R
+- ESP32_2432S032N/R/C
+- ESP32_3248S035R/C
+- ESP32_4827S043R/C
+- ESP32_8048S050N/C
+- ESP32_8048S070N/C
+
+This library integrates seamlessy in [PlatformIO](https://platformio.org/) and supports these boards with litte effort and provides a jump start!
 
 ## Why this library
 
@@ -15,100 +30,182 @@ With the boards, there is a link supplied and there are a lot of examples presen
 These examples for [LVGL](https://lvgl.io/) depend on external libraries ([TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)).
 However, when working with these libraries, I found out that these libraries had their flaws using these boards:
 
-- Lots of configuring to do before it all works
-- Using a third party livbrary there is unnecessary code included (for other boards)
-- No support for on the fly rotating
-- No auto of the box support for touch
-
-This library uses the "official" drivers from Espressif's component service. These drivers use the newly introduced esp_lcd_panel interfaces.
-This should provide some support in the future for updates and new boards. These drivers are copied to this library.
+- Lots of configuring to do before it all works,
+- Using a third party library there is unnecessary code included (for other boards),
+- No support for on the fly rotating,
+- No support for touch,
+- No LVGL integration,
+- Not adapted for use in PlatformIO
 
 ## How to obtain these boards
 
 These boards are available on AliExpress for decent prices and offer a lot.
-They can be bought in the [Sunton Store](https://www.aliexpress.com/store/1100192306) on AliExpress but saw them also from other sellers.
+They can be bought in the [Sunton Store](https://www.aliexpress.com/store/1100192306) on AliExpress but are also available from other sellers. In general these boards are well packed, swiftly shipped and... really worth their money!
 
 ## Supported boards
 
-| Type            | CPU       | Display | Size  | Controller                                | PSRAM | Rotate support  | Touch                                     | Audio  | Flash                                          | RGB LED  | CDS    | Link|
-|---              |---        |---      |--     |---                                        | n/a   |---              |---                                        |---     |---                                             |---       |---     |---  |
-| ESP32_1732S019N | ESP32-S3  | 170x320 | 1.9"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | yes             | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html) |
-| ESP32_1732S019C | ESP32-S3  | 170x320 | 1.9"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | yes             | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html) |
-| ESP32-2424S012N | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | n/a   | yes             | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
-| ESP32-2424S012C | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | n/a   | yes             | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
-| ESP32-2432S024N | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | n/a   | yes             | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
-| ESP32-2432S024R | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | n/a   | yes             | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
-| ESP32-2432S024C | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | n/a   | yes             | [CST816S](assets/datasheets/CST816S.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
-| ESP32-2432S028R | ESP32     | 240x320 | 2.8"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | n/a   | yes             | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html) |
-| ESP32-2432S032N | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | yes             | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
-| ESP32-2432S032R | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | yes             | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
-| ESP32-2432S032C | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | yes             | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
-| ESP32-3248S035R | ESP32     | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | yes             | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
-| ESP32-3248S035C | ESP32     | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | yes             | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
-| ESP32-4827S043R | ESP32-S3  | 480x272 | 4.3"  | Direct 16 bits parallel gpio              | n/a   | no              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
-| ESP32-4827S043C | ESP32-S3  | 480x272 | 4.3"  | Direct 16 bits parallel gpio              | n/a   | no              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
-| ESP32-8048S050N | ESP32-S3  | 800x480 | 5.0"  | Direct 16 bits parallel gpio              | 8Mb   | no              | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
-| ESP32-8048S050C | ESP32-S3  | 800x480 | 5.0"  | Direct 16 bits parallel gpio              | 8Mb   | no              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
-| ESP32-8048S070N | ESP32-S3  | 800x480 | 7.0"  | Direct 16 bits parallel gpio              | 8Mb   | no              | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
-| ESP32-8048S070C | ESP32-S3  | 800x480 | 7.0"  | Direct 16 bits parallel gpio              | 8Mb   | no              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
+| Type            | CPU       | Display | Size  | Controller                                | PSRAM | Touch                                     | Audio  | Flash                                          | RGB LED  | CDS    | Link|
+|---              |---        |---      |--     |---                                        |---    |---                                        |---     |---                                             |---       |---     |---  |
+| ESP32_1732S019N | ESP32-S3  | 170x320 | 1.9"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html) |
+| ESP32_1732S019C | ESP32-S3  | 170x320 | 1.9"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html) |
+| ESP32-2424S012N | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | n/a   | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
+| ESP32-2424S012C | ESP32-C3  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | n/a   | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html) |
+| ESP32-2432S024N | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | n/a   | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S024R | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | n/a   | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S024C | ESP32     | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | n/a   | [CST816S](assets/datasheets/CST816S.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html) |
+| ESP32-2432S028R | ESP32     | 240x320 | 2.8"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | n/a   | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html) |
+| ESP32-2432S032N | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-2432S032R | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-2432S032C | ESP32     | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html) |
+| ESP32-3248S035R | ESP32     | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
+| ESP32-3248S035C | ESP32     | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a   | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes    | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html) |
+| ESP32-4827S043R | ESP32-S3  | 480x272 | 4.3"  | Direct 16 bits parallel GPIO              | n/a   | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
+| ESP32-4827S043C | ESP32-S3  | 480x272 | 4.3"  | Direct 16 bits parallel GPIO              | n/a   | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html) |
+| ESP32-8048S050N | ESP32-S3  | 800x480 | 5.0"  | Direct 16 bits parallel GPIO              | 8Mb   | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
+| ESP32-8048S050C | ESP32-S3  | 800x480 | 5.0"  | Direct 16 bits parallel GPIO              | 8Mb   | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html) |
+| ESP32-8048S070N | ESP32-S3  | 800x480 | 7.0"  | Direct 16 bits parallel GPIO              | 8Mb   | n/a                                       | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
+| ESP32-8048S070C | ESP32-S3  | 800x480 | 7.0"  | Direct 16 bits parallel GPIO              | 8Mb   | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no     | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html) |
 
-Note: the additional flash chip (W25Q32JV) is not always mounted on the board.
+>[!IMPORTANT]
+> The additional flash chip (W25Q32JV) is not always mounted on the board.
 
 ## Dependencies
 
 This library depends on:
 
-- LVGL (version ^8.3.2)
+- [LVGL](https://registry.platformio.org/libraries/lvgl/lvgl), currently version 8.3.9
+
+>[!NOTE]
+> This library uses the "official" drivers from Espressif's component service. These drivers use  the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers have been copied and included to this library.
 
 ## How to use
 
-Basically there is only **ONE** define that need to be defined: The type of board assuming everything is default.
-Be aware that the platform board must also match but this is a requirement for a platform io project.
+Get started by following te steps below. It is also highly recommended to look at the demo application [esp32-smartdisplay-demo](https://github.com/rzeldent/esp32-smartdisplay-demo/tree/feature/esp32s3) to quickly see the possibilities of this library.
 
-- Type of board
+![Demo screen](assets/images/PXL_20231130_225143662.jpg)
 
-  - esp32dev
-    - ESP32_2432S024R
-    - ESP32_2432S024C
-    - ESP32_2432S024N
-    - ESP32_2432S028R
-    - ESP32_3248S035R
-    - ESP32_3248S035C
+Additionally this demo provides:
 
-  - esp32-c3-devkitm-1
-    - ESP32_2424S012N
-    - ESP32_2424S012C
+- Sound over I2S and internal DAC
+- Read the lightsensor
+- Control of the LEDs
 
-  - esp32-s3-devkitc-1
-    - ESP32_1732S019N
-    - ESP32_1732S019C
-    - ESP32_8048S043N
-    - ESP32_8048S043R
-    - ESP32_8048S043C
-    - ESP32_8048S050N
-    - ESP32_8048S050R
-    - ESP32_8048S050C
-    - ESP32_8048S070N
-    - ESP32_8048S070R
-    - ESP32_8048S070C
+The next sections will guide you though the process of creating an application. However, knowledge of C/C++, LVGL is required!
 
-These can be defined in the `platformio.ini` file defining the settings. There also additional settings present for the EspressIf libraries. These defined should also be present.
-Because multiple boards/cpu's are used, the configuration is split up in three (platform io) boards with the supported displays
+### Step 1: Download (or open) PlatformIO
+
+[![PlatformIO](assets/images/platformio.png)](https://platformio.org/)
+This library is made for usage in PlatformIO. If not familiar with PlatformIO please take a look at their site and micro controller boards they support. However these boards only use the Arduino platform and ESP32 boards.
+
+Make sure you have PlatformIO installed and functional. Follow the documentation on their site:
+[https://docs.platformio.org/en/latest/](https://docs.platformio.org/en/latest/)
+
+### Step 2: Create a new project
+
+Use the standard PlatformIO create project to start a new project.
+Because depending on the type of board used, the type of ESP32 can be different, choose the right board for your project. The CPU for your board can be looked up in the table of the [supported boards](#supported-boards).
+
+Then, choose the right board for your CPU:
+
+| CPU       | board |
+|---        |---                  |
+| ESP32     | esp32dev            |
+| ESP32-C3  | esp32-c3-devkitm-1  |
+| ESP32-S3  | esp32-s3-devkitc-1  |
+
+### Step 3: Add this library to your project
+
+To add this library (and its dependencies) add the line:
 
 ```ini
-[platformio]
-#default_envs = esp32dev
-#default_envs = esp32-c3-devkitm-1
-#default_envs = esp32-s3-devkitc-1
+lib_deps = https://github.com/rzeldent/esp32-smartdisplay.git#feature/esp32s3
+```
 
-[env]
-platform = espressif32
-framework = arduino
+This will automatically download the library and also the LVGL library (as this is a dependency).
 
+### Step 4: Create a settings file for LVGL
+
+LVGL needs a configuration file. This file contains information about the fonts, color depths, default background, styles, etc...
+The default LVGL template can be found in the LVGL library at the location: ```lvgl/lv_conf_template.h```.
+This file must be copied to the include directory and renamed to ```lvgl_conf.h```. Also the ``#if 0`` must be removed to enable the file to be included.
+
+>[!TIP]
+> Only after downloading the library, this file is present in the ```.pio/libdeps/<board>/lvgl/lv_conf_template.h``` directory.
+
+Important settings are:
+
+- Only the R5G6B5 format is supported on these panels.
+
+  ```h
+  /*Color depth: 1 (1 byte per pixel), 8 (RGB332), 16 (RGB565), 32 (ARGB8888)*/
+  #define LV_COLOR_DEPTH 16
+  ```
+
+- Because of the SPI interface, the bytes are sent in big endian format so this must be corrected.
+  The RGB panel interface takes care of this by swapping the GPIO lines. More information about this [below](#more-on-lv_color_16_swap).
+
+  ```h
+  /*Swap the 2 bytes of RGB565 color. Useful if the display has an 8-bit interface (e.g. SPI)*/
+  #define LV_COLOR_16_SWAP 1
+  ```
+
+- To have a time reference use the milliseconds reference for the Arduino
+
+  ```h
+  /*Use a custom tick source that tells the elapsed time in milliseconds and enables this code.*/
+  /*It removes the need to manually update the tick with `lv_tick_inc()`)*/
+  #define LV_TICK_CUSTOM 1
+  ```
+
+- For debugging, enable CPU usage, FPS (Frames per Second) and memory defragmentation
+
+  ```h
+  #define LV_USE_PERF_MONITOR 1
+  #define LV_USE_MEM_MONITOR 1
+  ```
+
+- Include (some) fonts that are bigger smaller but at lease 22pt.
+
+  ```h
+  #define LV_FONT_MONTSERRAT_22 1
+  ```
+
+- Optionally, only enable widgets that are used to save on code
+
+  ```h
+  #define LV_USE_ARC        1
+  #define LV_USE_BAR        1
+  #define LV_USE_BTN        1
+  #define LV_USE_BTNMATRIX  1
+  ...
+  ```
+
+For debugging it is possible to enable logging from LVGL. The library will output logging debugging output (using ```lv_log_register_print_cb```). To enable logging, set the define:
+
+```h
+/*Enable the log module*/
+#define LV_USE_LOG 1
+```
+
+By default the logging is only ```LV_LOG_LEVEL_WARN``` but can be ajusted in the ```lv_conf.h```.
+
+More information about the LVGL configuration can be found in the [LVGL documentation](https://docs.lvgl.io/8.3/index.html).
+
+### Step 5: Copy the defines below in your project
+
+There are some defines that are required for the libraries and use of PSRAM.
+These must be added to the ```platformio.ini``` build flags.
+
+Especially the definition of the LV_CONF_PATH is critical. More about this in the [section below](#more-on-lvglh).
+
+```ini
 build_flags =
     -Ofast
     -Wall
     -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
+    # PSRAM settings
+    -D BOARD_HAS_PSRAM
+    -mfix-esp32-psram-cache-issue
     # LVGL settings. Point to your lv_conf.h file
     -D LV_CONF_PATH="${PROJECT_DIR}/example/lv_conf.h"
     # EspressIf library defines
@@ -121,53 +218,53 @@ build_flags =
     -D CONFIG_ESP_LCD_TOUCH_MAX_POINTS=1
     -D CONFIG_XPT2046_CONVERT_ADC_TO_COORDS
     -D CONFIG_XPT2046_Z_THRESHOLD=600
-
-[env:esp32dev]
-board = esp32dev
-build_flags =
-    ${env.build_flags}
-    # Smartdisplay selection
-    #-D ESP32_2432S024N
-    #-D ESP32_2432S024R
-    #-D ESP32_2432S024C
-    #-D ESP32_2432S028R
-    #-D ESP32_3248S032N
-    #-D ESP32_3248S032R
-    #-D ESP32_3248S032C
-    #-D ESP32_3248S035R
-    #-D ESP32_3248S035C
-
-[env:esp32-c3-devkitm-1]
-board = esp32-c3-devkitm-1
-build_flags =
-    ${env.build_flags}
-    # Smartdisplay selection
-    #-D ESP32_2424S012N
-    #-D ESP32_2424S012C
-
-[env:esp32-s3-devkitc-1]
-board = esp32-s3-devkitc-1
-build_flags =
-    ${env.build_flags}
-    -D BOARD_HAS_PSRAM
-    -mfix-esp32-psram-cache-issue
-    # Smartdisplay selection
-    #-D ESP32_1732S019N
-    #-D ESP32_1732S019C
-    #-D ESP32_4827S043R
-    #-D ESP32_4827S043C
-    #-D ESP32_8048S043N
-    #-D ESP32_8048S043R
-    #-D ESP32_8048S043C
-    #-D ESP32_8048S050N
-    #-D ESP32_8048S050R
-    #-D ESP32_8048S050C
-    #-D ESP32_8048S070N
-    #-D ESP32_8048S070R
-    #-D ESP32_8048S070C
 ```
 
-## LVGL.h
+The line in the settings logs to the serial console but can be omitted for production builds:
+
+```ini
+-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
+```
+
+
+
+### Step 6: Initialize the display (and touch) in your project
+
+To enable to display in your project call the initialization at startup and set the orientation:
+
+```cpp
+void setup()
+{
+  smartdisplay_init();
+
+  auto disp = lv_disp_get_default();
+  // lv_disp_set_rotation(disp, LV_DISP_ROT_90);
+  // lv_disp_set_rotation(disp, LV_DISP_ROT_180);
+  // lv_disp_set_rotation(disp, LV_DISP_ROT_270);
+}
+```
+
+and update the timer (and drawing) in the loop:
+
+```cpp
+void loop()
+{
+  lv_timer_handler();
+}
+```
+
+## Step 7: Create your LVGL file or use SquareLine Studio to make a design
+
+There is a good GUI designer available for LVGL and free (but some limitations) for personal use:
+[SquareLine Studio](https://squareline.io/):
+
+[![SquareLine Studio](assets/images/SquareLineStudio.png)](https://squareline.io/)
+
+## Step 8: Compile, upload and enjoy
+
+These steps should make it possible to run your application on the display!
+
+## More on LVGL.h
 
 To use the LVGL library, a `lv_conf.h` file is required to define the settings for LVGL.
 This file needs to be provided by the application.
@@ -179,9 +276,10 @@ To include it globally, the define must be (for the include directory):
     -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
 ```
 
-The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/libdeps/esp32dev/lvgl/lv_conf_template.h`.
+>[!TIP]
+> The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/libdeps/<board>/lvgl/lv_conf_template.h`.
 
-## PSRAM
+## More on PSRAM
 
 At boot the ESP32 has approx 315Kb free memory. For displays wit a controller, no internal buffer to save the state of the display is required.
 However, if the display is using the direct 16bits parallel connection, there is no controller and the contents of the RAM is copied to the display at a fast rate.
@@ -189,9 +287,9 @@ This buffer is allocated from the memory of the ESP32.
 
 For the ESP32_4827S043 this snoops away 480x270x2 = 261120 bytes, leaving only 54140 bytes for the application!
 For a resolution of 800x480, 800x480x2 = 768000 bytes are required. This is more than the available RAM.
-That is the reason that for these higher resolutions PSRAM is available and used to store this buffer.
+That is the reason that for these higher resolutions PSRAM is available and is used to store this buffer.
 
-## LV_COLOR_16_SWAP
+## More on LV_COLOR_16_SWAP
 
 The LVGL library has a define called **LV_COLOR_16_SWAP**. The value can be 1 (yes) or 0 (no).
 This variable will swap the byte order of the lv_color16_t. This is required because the SPI is by default LSB first.
@@ -201,7 +299,8 @@ The choice has been made to also change the pin definition for the panel (rgb) i
 This makes it easier to have only one definition for lv_conf.h and SquareLine.
 
 If this is not done, the code will run but swapping will be done runtime (and degrading the performance).
-So for this library, **always set the LV_COLOR_16_SWAP to 1**.
+> [!IMPORTANT]
+> So it is recommended to always set the LV_COLOR_16_SWAP to 1.
 
 Additionally, when using the [SquareLine Studio](https://squareline.io/) for designing the user interface, the display properties (under the project settings) must match this variable.
 It needs to be set both in `lv_conf.h` configuration file and the corresponding display properties (16 bit swap) in [SquareLine Studio](https://squareline.io/).
@@ -224,8 +323,7 @@ The range is from [0, 1] so 0 is off, 0.5 is half and 1 is full brightness.
 
 ## Rotation
 
-The library supports rotating for most of the controllers. Unfortunately at the time of writing there is no support for the direct rgb panels.
-Rotating is done calling the appropriate function in the LVGL library:
+The library supports rotating for most of the controllers. Support for the parallel RGB interface is done using software emulation (in LVGL). Rotating is done calling the appropriate function in the LVGL library:
 
 ```c++
   auto disp = lv_disp_get_default();
@@ -233,6 +331,9 @@ Rotating is done calling the appropriate function in the LVGL library:
 ```
 
 ## Controlling the RGB led
+
+>[!NOTE]
+> Not all boards have a LED. Refer to the [supported boards](#supported-boards) to see if this is available.
 
 If the board has an RGB led, the define ```HAS_RGB_LED``` is defined.
 Additionally, the following defines are present for the definition of the GPIO pins:
@@ -259,11 +360,18 @@ For example: set the RGB led to red is done by the following code:
 ```
 
 To have more colors than the 8 RGB combinations, PWM can be used to mix the colors.
-To do this, attach a PWM channel to each GPIO pin to modulate the intensity. The number of PWM channels is limited!
+To do this, attach a PWM channel to each GPIO pin to modulate the intensity.
+
+>[!WARNING]
+>The number of PWM channels is limited and some channels are reserved for some functions
+>e.g. channel 0 is used by the tone() function but can be used if this function is not called.
 
 Example:
 Set PWM channel 0 to 5000Hz with a resolution of 8 bits (256 levels) and attach it to the red LED.
 Next, set the level to 25%. This is 192 (256 - 25%) because of the inverted output.
+
+>[!CAUTION]
+> The functions for using PWM will change in the upcoming release of the IDF and will break the usage of the PWM functions!
 
 ESP_ARDUINO_VERSION_MAJOR < 3:
 
@@ -282,6 +390,9 @@ ESP_ARDUINO_VERSION_MAJOR >= 3
 
 ## Reading the light sensor (CDS)
 
+>[!NOTE]
+> Not all boards have a light sensor. Refer to the [supported boards](#supported-boards) to see if this is available.
+
 If the board has a light sensor, the define ```HAS_LIGHTSENSOR``` is defined.
 The light sensor is a light sensitive resistor. It is attached to the analogue input of the ESP32.
 
@@ -295,14 +406,13 @@ To use the sensor, the define ```LIGHTSENSOR_IN``` indicates the analogue port t
 The value read is between 0 (light) - 1023 (dark). To read the value, use:
 
 ```c++
-  auto value = analogRead(LIGHTSENSOR_IN);
+  auto value = analogReadMilliVolts(LIGHTSENSOR_IN);
 ```
 
 ## Controlling the speaker
 
-An 8 Ohm speaker can be connected to the Speak pin. This is a 1.25 JST connector.
-
-Beeps can be generated by a PWM signal on the Speaker pin:
+An 8 Ohm speaker can be connected to the SPEAK pin. This is a 1.25 JST connector.
+Beeps can be generated by generating a PWM signal on the SPEAK pin:
 
 ```c++
 pinmode(SPEAKER_PIN, OUTPUT)
@@ -310,8 +420,7 @@ pinmode(SPEAKER_PIN, OUTPUT)
 tone(AUDIO_PIN, frequency, duration);
 ```
 
-To produce "real" audio connect the internal 8 bits D2A converter in the ESP32. Because the speaker is connected to GPIO26, this is the DAC2 (Left Channel).
-After that, audio can be streamed to the i2s.
+To produce "real" audio connect the internal 8 bits D2A converter in the ESP32. Because the speaker is connected to GPIO26, this is the DAC2 (Left Channel). After that, audio can be streamed to the i2s.
 
 The audio is a bit distorted. [HexeguitarDIY](https://github.com/hexeguitar/ESP32_TFT_PIO) has a fix for that by changing the resistor values to prevent distortion.
 [![HexeguitarDIY Audio mod](https://img.youtube.com/vi/6JCLHIXXVus/0.jpg)](https://www.youtube.com/watch?v=6JCLHIXXVus)
@@ -391,6 +500,850 @@ This application uses this library and the SquareLine Studio GUI generator.
 ![ESP32-8048S070 front](assets/images/esp32-8048S070-front.png)
 ![ESP32-8048S070 back](assets/images/esp32-8048S070-back.png)
 
+## Appendix: Template to support ALL the boards
+
+The platformio.ini file below supports all the boards. This is useful when running your application on multiple boards.
+
+>[!TIP]
+>When building using a pipeline (github action), the board can be defined and automatically create builds for all the boards.
+
+```ini
+[platformio]
+#default_envs = esp32dev
+#default_envs = esp32-c3-devkitm-1
+#default_envs = esp32-s3-devkitc-1
+
+[env]
+platform = espressif32
+framework = arduino
+
+build_flags =
+    -Ofast
+    -Wall
+    -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
+    # PSRAM settings
+    -D BOARD_HAS_PSRAM
+    -mfix-esp32-psram-cache-issue
+    # LVGL settings. Point to your lv_conf.h file
+    -D LV_CONF_PATH="${PROJECT_DIR}/example/lv_conf.h"
+    # EspressIf library defines
+    -D ESP_LCD_ST7796_VER_MAJOR=1
+    -D ESP_LCD_ST7796_VER_MINOR=2
+    -D ESP_LCD_ST7796_VER_PATCH=0
+    -D ESP_LCD_ILI9341_VER_MAJOR=1
+    -D ESP_LCD_ILI9341_VER_MINOR=2
+    -D ESP_LCD_ILI9341_VER_PATCH=0
+    -D CONFIG_ESP_LCD_TOUCH_MAX_POINTS=1
+    -D CONFIG_XPT2046_CONVERT_ADC_TO_COORDS
+    -D CONFIG_XPT2046_Z_THRESHOLD=600
+
+[env:esp32dev]
+board = esp32dev
+build_flags =
+    ${env.build_flags}
+    # Smartdisplay selection
+    #-D ESP32_2432S024N
+    #-D ESP32_2432S024R
+    #-D ESP32_2432S024C
+    #-D ESP32_2432S028R
+    #-D ESP32_3248S032N
+    #-D ESP32_3248S032R
+    #-D ESP32_3248S032C
+    #-D ESP32_3248S035R
+    #-D ESP32_3248S035C
+
+[env:esp32-c3-devkitm-1]
+board = esp32-c3-devkitm-1
+build_flags =
+    ${env.build_flags}
+    # Smartdisplay selection
+    #-D ESP32_2424S012N
+    #-D ESP32_2424S012C
+
+[env:esp32-s3-devkitc-1]
+board = esp32-s3-devkitc-1
+build_flags =
+    ${env.build_flags}
+    # Smartdisplay selection
+    #-D ESP32_1732S019N
+    #-D ESP32_1732S019C
+    #-D ESP32_4827S043R
+    #-D ESP32_4827S043C
+    #-D ESP32_8048S043N
+    #-D ESP32_8048S043R
+    #-D ESP32_8048S043C
+    #-D ESP32_8048S050N
+    #-D ESP32_8048S050R
+    #-D ESP32_8048S050C
+    #-D ESP32_8048S070N
+    #-D ESP32_8048S070R
+    #-D ESP32_8048S070C
+```
+
+## Appendix: lvgl_conf.h example
+
+```cpp
+/**
+ * @file lv_conf.h
+ * Configuration file for v8.3.2
+ */
+
+/*
+ * Copy this file as `lv_conf.h`
+ * 1. simply next to the `lvgl` folder
+ * 2. or any other places and
+ *    - define `LV_CONF_INCLUDE_SIMPLE`
+ *    - add the path as include path
+ */
+
+/* clang-format off */
+#if 1 /*Set it to "1" to enable content*/
+
+#ifndef LV_CONF_H
+#define LV_CONF_H
+
+#include <stdint.h>
+
+/*====================
+   COLOR SETTINGS
+ *====================*/
+
+/*Color depth: 1 (1 byte per pixel), 8 (RGB332), 16 (RGB565), 32 (ARGB8888)*/
+#define LV_COLOR_DEPTH 16
+
+/*Swap the 2 bytes of RGB565 color. Useful if the display has an 8-bit interface (e.g. SPI)*/
+#define LV_COLOR_16_SWAP 1
+
+/*Enable features to draw on transparent background.
+ *It's required if opa, and transform_* style properties are used.
+ *Can be also used if the UI is above another layer, e.g. an OSD menu or video player.*/
+#define LV_COLOR_SCREEN_TRANSP 0
+
+/* Adjust color mix functions rounding. GPUs might calculate color mix (blending) differently.
+ * 0: round down, 64: round up from x.75, 128: round up from half, 192: round up from x.25, 254: round up */
+#define LV_COLOR_MIX_ROUND_OFS 0
+
+/*Images pixels with this color will not be drawn if they are chroma keyed)*/
+#define LV_COLOR_CHROMA_KEY lv_color_hex(0x00ff00)         /*pure green*/
+
+/*=========================
+   MEMORY SETTINGS
+ *=========================*/
+
+/*1: use custom malloc/free, 0: use the built-in `lv_mem_alloc()` and `lv_mem_free()`*/
+#define LV_MEM_CUSTOM 0
+#if LV_MEM_CUSTOM == 0
+    /*Size of the memory available for `lv_mem_alloc()` in bytes (>= 2kB)*/
+    #define LV_MEM_SIZE (48U * 1024U)          /*[bytes]*/
+
+    /*Set an address for the memory pool instead of allocating it as a normal array. Can be in external SRAM too.*/
+    #define LV_MEM_ADR 0     /*0: unused*/
+    /*Instead of an address give a memory allocator that will be called to get a memory pool for LVGL. E.g. my_malloc*/
+    #if LV_MEM_ADR == 0
+        #undef LV_MEM_POOL_INCLUDE
+        #undef LV_MEM_POOL_ALLOC
+    #endif
+
+#else       /*LV_MEM_CUSTOM*/
+    #define LV_MEM_CUSTOM_INCLUDE <stdlib.h>   /*Header for the dynamic memory function*/
+    #define LV_MEM_CUSTOM_ALLOC   malloc
+    #define LV_MEM_CUSTOM_FREE    free
+    #define LV_MEM_CUSTOM_REALLOC realloc
+#endif     /*LV_MEM_CUSTOM*/
+
+/*Number of the intermediate memory buffer used during rendering and other internal processing mechanisms.
+ *You will see an error log message if there wasn't enough buffers. */
+#define LV_MEM_BUF_MAX_NUM 16
+
+/*Use the standard `memcpy` and `memset` instead of LVGL's own functions. (Might or might not be faster).*/
+#define LV_MEMCPY_MEMSET_STD 0
+
+/*====================
+   HAL SETTINGS
+ *====================*/
+
+/*Default display refresh period. LVG will redraw changed areas with this period time*/
+#define LV_DISP_DEF_REFR_PERIOD 30      /*[ms]*/
+
+/*Input device read period in milliseconds*/
+#define LV_INDEV_DEF_READ_PERIOD 30     /*[ms]*/
+
+/*Use a custom tick source that tells the elapsed time in milliseconds.
+ *It removes the need to manually update the tick with `lv_tick_inc()`)*/
+#define LV_TICK_CUSTOM 1
+#if LV_TICK_CUSTOM
+    #define LV_TICK_CUSTOM_INCLUDE "Arduino.h"         /*Header for the system time function*/
+    #define LV_TICK_CUSTOM_SYS_TIME_EXPR (millis())    /*Expression evaluating to current system time in ms*/
+#endif   /*LV_TICK_CUSTOM*/
+
+/*Default Dot Per Inch. Used to initialize default sizes such as widgets sized, style paddings.
+ *(Not so important, you can adjust it to modify default sizes and spaces)*/
+#define LV_DPI_DEF 130     /*[px/inch]*/
+
+/*=======================
+ * FEATURE CONFIGURATION
+ *=======================*/
+
+/*-------------
+ * Drawing
+ *-----------*/
+
+/*Enable complex draw engine.
+ *Required to draw shadow, gradient, rounded corners, circles, arc, skew lines, image transformations or any masks*/
+#define LV_DRAW_COMPLEX 1
+#if LV_DRAW_COMPLEX != 0
+
+    /*Allow buffering some shadow calculation.
+    *LV_SHADOW_CACHE_SIZE is the max. shadow size to buffer, where shadow size is `shadow_width + radius`
+    *Caching has LV_SHADOW_CACHE_SIZE^2 RAM cost*/
+    #define LV_SHADOW_CACHE_SIZE 0
+
+    /* Set number of maximally cached circle data.
+    * The circumference of 1/4 circle are saved for anti-aliasing
+    * radius * 4 bytes are used per circle (the most often used radiuses are saved)
+    * 0: to disable caching */
+    #define LV_CIRCLE_CACHE_SIZE 4
+#endif /*LV_DRAW_COMPLEX*/
+
+/**
+ * "Simple layers" are used when a widget has `style_opa < 255` to buffer the widget into a layer
+ * and blend it as an image with the given opacity.
+ * Note that `bg_opa`, `text_opa` etc don't require buffering into layer)
+ * The widget can be buffered in smaller chunks to avoid using large buffers.
+ *
+ * - LV_LAYER_SIMPLE_BUF_SIZE: [bytes] the optimal target buffer size. LVGL will try to allocate it
+ * - LV_LAYER_SIMPLE_FALLBACK_BUF_SIZE: [bytes]  used if `LV_LAYER_SIMPLE_BUF_SIZE` couldn't be allocated.
+ *
+ * Both buffer sizes are in bytes.
+ * "Transformed layers" (where transform_angle/zoom properties are used) use larger buffers
+ * and can't be drawn in chunks. So these settings affects only widgets with opacity.
+ */
+#define LV_LAYER_SIMPLE_BUF_SIZE          (24 * 1024)
+#define LV_LAYER_SIMPLE_FALLBACK_BUF_SIZE (3 * 1024)
+
+/*Default image cache size. Image caching keeps the images opened.
+ *If only the built-in image formats are used there is no real advantage of caching. (I.e. if no new image decoder is added)
+ *With complex image decoders (e.g. PNG or JPG) caching can save the continuous open/decode of images.
+ *However the opened images might consume additional RAM.
+ *0: to disable caching*/
+#define LV_IMG_CACHE_DEF_SIZE 0
+
+/*Number of stops allowed per gradient. Increase this to allow more stops.
+ *This adds (sizeof(lv_color_t) + 1) bytes per additional stop*/
+#define LV_GRADIENT_MAX_STOPS 2
+
+/*Default gradient buffer size.
+ *When LVGL calculates the gradient "maps" it can save them into a cache to avoid calculating them again.
+ *LV_GRAD_CACHE_DEF_SIZE sets the size of this cache in bytes.
+ *If the cache is too small the map will be allocated only while it's required for the drawing.
+ *0 mean no caching.*/
+#define LV_GRAD_CACHE_DEF_SIZE 0
+
+/*Allow dithering the gradients (to achieve visual smooth color gradients on limited color depth display)
+ *LV_DITHER_GRADIENT implies allocating one or two more lines of the object's rendering surface
+ *The increase in memory consumption is (32 bits * object width) plus 24 bits * object width if using error diffusion */
+#define LV_DITHER_GRADIENT 0
+#if LV_DITHER_GRADIENT
+    /*Add support for error diffusion dithering.
+     *Error diffusion dithering gets a much better visual result, but implies more CPU consumption and memory when drawing.
+     *The increase in memory consumption is (24 bits * object's width)*/
+    #define LV_DITHER_ERROR_DIFFUSION 0
+#endif
+
+/*Maximum buffer size to allocate for rotation.
+ *Only used if software rotation is enabled in the display driver.*/
+#define LV_DISP_ROT_MAX_BUF (10*1024)
+
+/*-------------
+ * GPU
+ *-----------*/
+
+/*Use Arm's 2D acceleration library Arm-2D */
+#define LV_USE_GPU_ARM2D 0
+
+/*Use STM32's DMA2D (aka Chrom Art) GPU*/
+#define LV_USE_GPU_STM32_DMA2D 0
+#if LV_USE_GPU_STM32_DMA2D
+    /*Must be defined to include path of CMSIS header of target processor
+    e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
+    #define LV_GPU_DMA2D_CMSIS_INCLUDE
+#endif
+
+/*Use SWM341's DMA2D GPU*/
+#define LV_USE_GPU_SWM341_DMA2D 0
+#if LV_USE_GPU_SWM341_DMA2D
+    #define LV_GPU_SWM341_DMA2D_INCLUDE "SWM341.h"
+#endif
+
+/*Use NXP's PXP GPU iMX RTxxx platforms*/
+#define LV_USE_GPU_NXP_PXP 0
+#if LV_USE_GPU_NXP_PXP
+    /*1: Add default bare metal and FreeRTOS interrupt handling routines for PXP (lv_gpu_nxp_pxp_osa.c)
+    *   and call lv_gpu_nxp_pxp_init() automatically during lv_init(). Note that symbol SDK_OS_FREE_RTOS
+    *   has to be defined in order to use FreeRTOS OSA, otherwise bare-metal implementation is selected.
+    *0: lv_gpu_nxp_pxp_init() has to be called manually before lv_init()
+    */
+    #define LV_USE_GPU_NXP_PXP_AUTO_INIT 0
+#endif
+
+/*Use NXP's VG-Lite GPU iMX RTxxx platforms*/
+#define LV_USE_GPU_NXP_VG_LITE 0
+
+/*Use SDL renderer API*/
+#define LV_USE_GPU_SDL 0
+#if LV_USE_GPU_SDL
+    #define LV_GPU_SDL_INCLUDE_PATH <SDL2/SDL.h>
+    /*Texture cache size, 8MB by default*/
+    #define LV_GPU_SDL_LRU_SIZE (1024 * 1024 * 8)
+    /*Custom blend mode for mask drawing, disable if you need to link with older SDL2 lib*/
+    #define LV_GPU_SDL_CUSTOM_BLEND_MODE (SDL_VERSION_ATLEAST(2, 0, 6))
+#endif
+
+/*-------------
+ * Logging
+ *-----------*/
+
+/*Enable the log module*/
+#define LV_USE_LOG 1
+#if LV_USE_LOG
+
+    /*How important log should be added:
+    *LV_LOG_LEVEL_TRACE       A lot of logs to give detailed information
+    *LV_LOG_LEVEL_INFO        Log important events
+    *LV_LOG_LEVEL_WARN        Log if something unwanted happened but didn't cause a problem
+    *LV_LOG_LEVEL_ERROR       Only critical issue, when the system may fail
+    *LV_LOG_LEVEL_USER        Only logs added by the user
+    *LV_LOG_LEVEL_NONE        Do not log anything*/
+    #define LV_LOG_LEVEL LV_LOG_LEVEL_WARN
+
+    /*1: Print the log with 'printf';
+    *0: User need to register a callback with `lv_log_register_print_cb()`*/
+    #define LV_LOG_PRINTF 0
+
+    /*Enable/disable LV_LOG_TRACE in modules that produces a huge number of logs*/
+    #define LV_LOG_TRACE_MEM        1
+    #define LV_LOG_TRACE_TIMER      1
+    #define LV_LOG_TRACE_INDEV      1
+    #define LV_LOG_TRACE_DISP_REFR  1
+    #define LV_LOG_TRACE_EVENT      1
+    #define LV_LOG_TRACE_OBJ_CREATE 1
+    #define LV_LOG_TRACE_LAYOUT     1
+    #define LV_LOG_TRACE_ANIM       1
+
+#endif  /*LV_USE_LOG*/
+
+/*-------------
+ * Asserts
+ *-----------*/
+
+/*Enable asserts if an operation is failed or an invalid data is found.
+ *If LV_USE_LOG is enabled an error message will be printed on failure*/
+#define LV_USE_ASSERT_NULL          1   /*Check if the parameter is NULL. (Very fast, recommended)*/
+#define LV_USE_ASSERT_MALLOC        1   /*Checks is the memory is successfully allocated or no. (Very fast, recommended)*/
+#define LV_USE_ASSERT_STYLE         0   /*Check if the styles are properly initialized. (Very fast, recommended)*/
+#define LV_USE_ASSERT_MEM_INTEGRITY 0   /*Check the integrity of `lv_mem` after critical operations. (Slow)*/
+#define LV_USE_ASSERT_OBJ           0   /*Check the object's type and existence (e.g. not deleted). (Slow)*/
+
+/*Add a custom handler when assert happens e.g. to restart the MCU*/
+#define LV_ASSERT_HANDLER_INCLUDE <stdint.h>
+#define LV_ASSERT_HANDLER while(1);   /*Halt by default*/
+
+/*-------------
+ * Others
+ *-----------*/
+
+/*1: Show CPU usage and FPS count*/
+#define LV_USE_PERF_MONITOR 1
+#if LV_USE_PERF_MONITOR
+    #define LV_USE_PERF_MONITOR_POS LV_ALIGN_BOTTOM_RIGHT
+#endif
+
+/*1: Show the used memory and the memory fragmentation
+ * Requires LV_MEM_CUSTOM = 0*/
+#define LV_USE_MEM_MONITOR 1
+#if LV_USE_MEM_MONITOR
+    #define LV_USE_MEM_MONITOR_POS LV_ALIGN_BOTTOM_LEFT
+#endif
+
+/*1: Draw random colored rectangles over the redrawn areas*/
+#define LV_USE_REFR_DEBUG 0
+
+/*Change the built in (v)snprintf functions*/
+#define LV_SPRINTF_CUSTOM 0
+#if LV_SPRINTF_CUSTOM
+    #define LV_SPRINTF_INCLUDE <stdio.h>
+    #define lv_snprintf  snprintf
+    #define lv_vsnprintf vsnprintf
+#else   /*LV_SPRINTF_CUSTOM*/
+    #define LV_SPRINTF_USE_FLOAT 0
+#endif  /*LV_SPRINTF_CUSTOM*/
+
+#define LV_USE_USER_DATA 1
+
+/*Garbage Collector settings
+ *Used if lvgl is bound to higher level language and the memory is managed by that language*/
+#define LV_ENABLE_GC 0
+#if LV_ENABLE_GC != 0
+    #define LV_GC_INCLUDE "gc.h"                           /*Include Garbage Collector related things*/
+#endif /*LV_ENABLE_GC*/
+
+/*=====================
+ *  COMPILER SETTINGS
+ *====================*/
+
+/*For big endian systems set to 1*/
+#define LV_BIG_ENDIAN_SYSTEM 0
+
+/*Define a custom attribute to `lv_tick_inc` function*/
+#define LV_ATTRIBUTE_TICK_INC
+
+/*Define a custom attribute to `lv_timer_handler` function*/
+#define LV_ATTRIBUTE_TIMER_HANDLER
+
+/*Define a custom attribute to `lv_disp_flush_ready` function*/
+#define LV_ATTRIBUTE_FLUSH_READY
+
+/*Required alignment size for buffers*/
+#define LV_ATTRIBUTE_MEM_ALIGN_SIZE 1
+
+/*Will be added where memories needs to be aligned (with -Os data might not be aligned to boundary by default).
+ * E.g. __attribute__((aligned(4)))*/
+#define LV_ATTRIBUTE_MEM_ALIGN
+
+/*Attribute to mark large constant arrays for example font's bitmaps*/
+#define LV_ATTRIBUTE_LARGE_CONST
+
+/*Compiler prefix for a big array declaration in RAM*/
+#define LV_ATTRIBUTE_LARGE_RAM_ARRAY
+
+/*Place performance critical functions into a faster memory (e.g RAM)*/
+#define LV_ATTRIBUTE_FAST_MEM
+
+/*Prefix variables that are used in GPU accelerated operations, often these need to be placed in RAM sections that are DMA accessible*/
+#define LV_ATTRIBUTE_DMA
+
+/*Export integer constant to binding. This macro is used with constants in the form of LV_<CONST> that
+ *should also appear on LVGL binding API such as Micropython.*/
+#define LV_EXPORT_CONST_INT(int_value) struct _silence_gcc_warning /*The default value just prevents GCC warning*/
+
+/*Extend the default -32k..32k coordinate range to -4M..4M by using int32_t for coordinates instead of int16_t*/
+#define LV_USE_LARGE_COORD 0
+
+/*==================
+ *   FONT USAGE
+ *===================*/
+
+/*Montserrat fonts with ASCII range and some symbols using bpp = 4
+ *https://fonts.google.com/specimen/Montserrat*/
+#define LV_FONT_MONTSERRAT_8  0
+#define LV_FONT_MONTSERRAT_10 0
+#define LV_FONT_MONTSERRAT_12 0
+#define LV_FONT_MONTSERRAT_14 1
+#define LV_FONT_MONTSERRAT_16 0
+#define LV_FONT_MONTSERRAT_18 0
+#define LV_FONT_MONTSERRAT_20 0
+#define LV_FONT_MONTSERRAT_22 1
+#define LV_FONT_MONTSERRAT_24 0
+#define LV_FONT_MONTSERRAT_26 0
+#define LV_FONT_MONTSERRAT_28 0
+#define LV_FONT_MONTSERRAT_30 0
+#define LV_FONT_MONTSERRAT_32 0
+#define LV_FONT_MONTSERRAT_34 0
+#define LV_FONT_MONTSERRAT_36 0
+#define LV_FONT_MONTSERRAT_38 0
+#define LV_FONT_MONTSERRAT_40 0
+#define LV_FONT_MONTSERRAT_42 0
+#define LV_FONT_MONTSERRAT_44 0
+#define LV_FONT_MONTSERRAT_46 0
+#define LV_FONT_MONTSERRAT_48 0
+
+/*Demonstrate special features*/
+#define LV_FONT_MONTSERRAT_12_SUBPX      0
+#define LV_FONT_MONTSERRAT_28_COMPRESSED 0  /*bpp = 3*/
+#define LV_FONT_DEJAVU_16_PERSIAN_HEBREW 0  /*Hebrew, Arabic, Persian letters and all their forms*/
+#define LV_FONT_SIMSUN_16_CJK            0  /*1000 most common CJK radicals*/
+
+/*Pixel perfect monospace fonts*/
+#define LV_FONT_UNSCII_8  0
+#define LV_FONT_UNSCII_16 0
+
+/*Optionally declare custom fonts here.
+ *You can use these fonts as default font too and they will be available globally.
+ *E.g. #define LV_FONT_CUSTOM_DECLARE   LV_FONT_DECLARE(my_font_1) LV_FONT_DECLARE(my_font_2)*/
+#define LV_FONT_CUSTOM_DECLARE
+
+/*Always set a default font*/
+#define LV_FONT_DEFAULT &lv_font_montserrat_14
+
+/*Enable handling large font and/or fonts with a lot of characters.
+ *The limit depends on the font size, font face and bpp.
+ *Compiler error will be triggered if a font needs it.*/
+#define LV_FONT_FMT_TXT_LARGE 0
+
+/*Enables/disables support for compressed fonts.*/
+#define LV_USE_FONT_COMPRESSED 0
+
+/*Enable subpixel rendering*/
+#define LV_USE_FONT_SUBPX 0
+#if LV_USE_FONT_SUBPX
+    /*Set the pixel order of the display. Physical order of RGB channels. Doesn't matter with "normal" fonts.*/
+    #define LV_FONT_SUBPX_BGR 0  /*0: RGB; 1:BGR order*/
+#endif
+
+/*Enable drawing placeholders when glyph dsc is not found*/
+#define LV_USE_FONT_PLACEHOLDER 1
+
+/*=================
+ *  TEXT SETTINGS
+ *=================*/
+
+/**
+ * Select a character encoding for strings.
+ * Your IDE or editor should have the same character encoding
+ * - LV_TXT_ENC_UTF8
+ * - LV_TXT_ENC_ASCII
+ */
+#define LV_TXT_ENC LV_TXT_ENC_UTF8
+
+/*Can break (wrap) texts on these chars*/
+#define LV_TXT_BREAK_CHARS " ,.;:-_"
+
+/*If a word is at least this long, will break wherever "prettiest"
+ *To disable, set to a value <= 0*/
+#define LV_TXT_LINE_BREAK_LONG_LEN 0
+
+/*Minimum number of characters in a long word to put on a line before a break.
+ *Depends on LV_TXT_LINE_BREAK_LONG_LEN.*/
+#define LV_TXT_LINE_BREAK_LONG_PRE_MIN_LEN 3
+
+/*Minimum number of characters in a long word to put on a line after a break.
+ *Depends on LV_TXT_LINE_BREAK_LONG_LEN.*/
+#define LV_TXT_LINE_BREAK_LONG_POST_MIN_LEN 3
+
+/*The control character to use for signalling text recoloring.*/
+#define LV_TXT_COLOR_CMD "#"
+
+/*Support bidirectional texts. Allows mixing Left-to-Right and Right-to-Left texts.
+ *The direction will be processed according to the Unicode Bidirectional Algorithm:
+ *https://www.w3.org/International/articles/inline-bidi-markup/uba-basics*/
+#define LV_USE_BIDI 0
+#if LV_USE_BIDI
+    /*Set the default direction. Supported values:
+    *`LV_BASE_DIR_LTR` Left-to-Right
+    *`LV_BASE_DIR_RTL` Right-to-Left
+    *`LV_BASE_DIR_AUTO` detect texts base direction*/
+    #define LV_BIDI_BASE_DIR_DEF LV_BASE_DIR_AUTO
+#endif
+
+/*Enable Arabic/Persian processing
+ *In these languages characters should be replaced with an other form based on their position in the text*/
+#define LV_USE_ARABIC_PERSIAN_CHARS 0
+
+/*==================
+ *  WIDGET USAGE
+ *================*/
+
+/*Documentation of the widgets: https://docs.lvgl.io/latest/en/html/widgets/index.html*/
+
+#define LV_USE_ARC        1
+
+#define LV_USE_BAR        1
+
+#define LV_USE_BTN        1
+
+#define LV_USE_BTNMATRIX  1
+
+#define LV_USE_CANVAS     1
+
+#define LV_USE_CHECKBOX   1
+
+#define LV_USE_DROPDOWN   1   /*Requires: lv_label*/
+
+#define LV_USE_IMG        1   /*Requires: lv_label*/
+
+#define LV_USE_LABEL      1
+#if LV_USE_LABEL
+    #define LV_LABEL_TEXT_SELECTION 1 /*Enable selecting text of the label*/
+    #define LV_LABEL_LONG_TXT_HINT 1  /*Store some extra info in labels to speed up drawing of very long texts*/
+#endif
+
+#define LV_USE_LINE       1
+
+#define LV_USE_ROLLER     1   /*Requires: lv_label*/
+#if LV_USE_ROLLER
+    #define LV_ROLLER_INF_PAGES 7 /*Number of extra "pages" when the roller is infinite*/
+#endif
+
+#define LV_USE_SLIDER     1   /*Requires: lv_bar*/
+
+#define LV_USE_SWITCH     1
+
+#define LV_USE_TEXTAREA   1   /*Requires: lv_label*/
+#if LV_USE_TEXTAREA != 0
+    #define LV_TEXTAREA_DEF_PWD_SHOW_TIME 1500    /*ms*/
+#endif
+
+#define LV_USE_TABLE      1
+
+/*==================
+ * EXTRA COMPONENTS
+ *==================*/
+
+/*-----------
+ * Widgets
+ *----------*/
+#define LV_USE_ANIMIMG    1
+
+#define LV_USE_CALENDAR   1
+#if LV_USE_CALENDAR
+    #define LV_CALENDAR_WEEK_STARTS_MONDAY 0
+    #if LV_CALENDAR_WEEK_STARTS_MONDAY
+        #define LV_CALENDAR_DEFAULT_DAY_NAMES {"Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"}
+    #else
+        #define LV_CALENDAR_DEFAULT_DAY_NAMES {"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"}
+    #endif
+
+    #define LV_CALENDAR_DEFAULT_MONTH_NAMES {"January", "February", "March",  "April", "May",  "June", "July", "August", "September", "October", "November", "December"}
+    #define LV_USE_CALENDAR_HEADER_ARROW 1
+    #define LV_USE_CALENDAR_HEADER_DROPDOWN 1
+#endif  /*LV_USE_CALENDAR*/
+
+#define LV_USE_CHART      1
+
+#define LV_USE_COLORWHEEL 1
+
+#define LV_USE_IMGBTN     1
+
+#define LV_USE_KEYBOARD   1
+
+#define LV_USE_LED        1
+
+#define LV_USE_LIST       1
+
+#define LV_USE_MENU       1
+
+#define LV_USE_METER      1
+
+#define LV_USE_MSGBOX     1
+
+#define LV_USE_SPAN       1
+#if LV_USE_SPAN
+    /*A line text can contain maximum num of span descriptor */
+    #define LV_SPAN_SNIPPET_STACK_SIZE 64
+#endif
+
+#define LV_USE_SPINBOX    1
+
+#define LV_USE_SPINNER    1
+
+#define LV_USE_TABVIEW    1
+
+#define LV_USE_TILEVIEW   1
+
+#define LV_USE_WIN        1
+
+/*-----------
+ * Themes
+ *----------*/
+
+/*A simple, impressive and very complete theme*/
+#define LV_USE_THEME_DEFAULT 1
+#if LV_USE_THEME_DEFAULT
+
+    /*0: Light mode; 1: Dark mode*/
+    #define LV_THEME_DEFAULT_DARK 0
+
+    /*1: Enable grow on press*/
+    #define LV_THEME_DEFAULT_GROW 0
+
+    /*Default transition time in [ms]*/
+    #define LV_THEME_DEFAULT_TRANSITION_TIME 80
+#endif /*LV_USE_THEME_DEFAULT*/
+
+/*A very simple theme that is a good starting point for a custom theme*/
+#define LV_USE_THEME_BASIC 1
+
+/*A theme designed for monochrome displays*/
+#define LV_USE_THEME_MONO 1
+
+/*-----------
+ * Layouts
+ *----------*/
+
+/*A layout similar to Flexbox in CSS.*/
+#define LV_USE_FLEX 1
+
+/*A layout similar to Grid in CSS.*/
+#define LV_USE_GRID 1
+
+/*---------------------
+ * 3rd party libraries
+ *--------------------*/
+
+/*File system interfaces for common APIs */
+
+/*API for fopen, fread, etc*/
+#define LV_USE_FS_STDIO 0
+#if LV_USE_FS_STDIO
+    #define LV_FS_STDIO_LETTER '\0'     /*Set an upper cased letter on which the drive will accessible (e.g. 'A')*/
+    #define LV_FS_STDIO_PATH ""         /*Set the working directory. File/directory paths will be appended to it.*/
+    #define LV_FS_STDIO_CACHE_SIZE 0    /*>0 to cache this number of bytes in lv_fs_read()*/
+#endif
+
+/*API for open, read, etc*/
+#define LV_USE_FS_POSIX 0
+#if LV_USE_FS_POSIX
+    #define LV_FS_POSIX_LETTER '\0'     /*Set an upper cased letter on which the drive will accessible (e.g. 'A')*/
+    #define LV_FS_POSIX_PATH ""         /*Set the working directory. File/directory paths will be appended to it.*/
+    #define LV_FS_POSIX_CACHE_SIZE 0    /*>0 to cache this number of bytes in lv_fs_read()*/
+#endif
+
+/*API for CreateFile, ReadFile, etc*/
+#define LV_USE_FS_WIN32 0
+#if LV_USE_FS_WIN32
+    #define LV_FS_WIN32_LETTER '\0'     /*Set an upper cased letter on which the drive will accessible (e.g. 'A')*/
+    #define LV_FS_WIN32_PATH ""         /*Set the working directory. File/directory paths will be appended to it.*/
+    #define LV_FS_WIN32_CACHE_SIZE 0    /*>0 to cache this number of bytes in lv_fs_read()*/
+#endif
+
+/*API for FATFS (needs to be added separately). Uses f_open, f_read, etc*/
+#define LV_USE_FS_FATFS 0
+#if LV_USE_FS_FATFS
+    #define LV_FS_FATFS_LETTER '\0'     /*Set an upper cased letter on which the drive will accessible (e.g. 'A')*/
+    #define LV_FS_FATFS_CACHE_SIZE 0    /*>0 to cache this number of bytes in lv_fs_read()*/
+#endif
+
+/*PNG decoder library*/
+#define LV_USE_PNG 0
+
+/*BMP decoder library*/
+#define LV_USE_BMP 0
+
+/* JPG + split JPG decoder library.
+ * Split JPG is a custom format optimized for embedded systems. */
+#define LV_USE_SJPG 0
+
+/*GIF decoder library*/
+#define LV_USE_GIF 0
+
+/*QR code library*/
+#define LV_USE_QRCODE 0
+
+/*FreeType library*/
+#define LV_USE_FREETYPE 0
+#if LV_USE_FREETYPE
+    /*Memory used by FreeType to cache characters [bytes] (-1: no caching)*/
+    #define LV_FREETYPE_CACHE_SIZE (16 * 1024)
+    #if LV_FREETYPE_CACHE_SIZE >= 0
+        /* 1: bitmap cache use the sbit cache, 0:bitmap cache use the image cache. */
+        /* sbit cache:it is much more memory efficient for small bitmaps(font size < 256) */
+        /* if font size >= 256, must be configured as image cache */
+        #define LV_FREETYPE_SBIT_CACHE 0
+        /* Maximum number of opened FT_Face/FT_Size objects managed by this cache instance. */
+        /* (0:use system defaults) */
+        #define LV_FREETYPE_CACHE_FT_FACES 0
+        #define LV_FREETYPE_CACHE_FT_SIZES 0
+    #endif
+#endif
+
+/*Rlottie library*/
+#define LV_USE_RLOTTIE 0
+
+/*FFmpeg library for image decoding and playing videos
+ *Supports all major image formats so do not enable other image decoder with it*/
+#define LV_USE_FFMPEG 0
+#if LV_USE_FFMPEG
+    /*Dump input information to stderr*/
+    #define LV_FFMPEG_DUMP_FORMAT 0
+#endif
+
+/*-----------
+ * Others
+ *----------*/
+
+/*1: Enable API to take snapshot for object*/
+#define LV_USE_SNAPSHOT 0
+
+/*1: Enable Monkey test*/
+#define LV_USE_MONKEY 0
+
+/*1: Enable grid navigation*/
+#define LV_USE_GRIDNAV 0
+
+/*1: Enable lv_obj fragment*/
+#define LV_USE_FRAGMENT 0
+
+/*1: Support using images as font in label or span widgets */
+#define LV_USE_IMGFONT 0
+
+/*1: Enable a published subscriber based messaging system */
+#define LV_USE_MSG 0
+
+/*1: Enable Pinyin input method*/
+/*Requires: lv_keyboard*/
+#define LV_USE_IME_PINYIN 0
+#if LV_USE_IME_PINYIN
+    /*1: Use default thesaurus*/
+    /*If you do not use the default thesaurus, be sure to use `lv_ime_pinyin` after setting the thesauruss*/
+    #define LV_IME_PINYIN_USE_DEFAULT_DICT 1
+    /*Set the maximum number of candidate panels that can be displayed*/
+    /*This needs to be adjusted according to the size of the screen*/
+    #define LV_IME_PINYIN_CAND_TEXT_NUM 6
+
+    /*Use 9 key input(k9)*/
+    #define LV_IME_PINYIN_USE_K9_MODE      1
+    #if LV_IME_PINYIN_USE_K9_MODE == 1
+        #define LV_IME_PINYIN_K9_CAND_TEXT_NUM 3
+    #endif // LV_IME_PINYIN_USE_K9_MODE
+#endif
+
+/*==================
+* EXAMPLES
+*==================*/
+
+/*Enable the examples to be built with the library*/
+#define LV_BUILD_EXAMPLES 1
+
+/*===================
+ * DEMO USAGE
+ ====================*/
+
+/*Show some widget. It might be required to increase `LV_MEM_SIZE` */
+#define LV_USE_DEMO_WIDGETS 0
+#if LV_USE_DEMO_WIDGETS
+#define LV_DEMO_WIDGETS_SLIDESHOW 0
+#endif
+
+/*Demonstrate the usage of encoder and keyboard*/
+#define LV_USE_DEMO_KEYPAD_AND_ENCODER 0
+
+/*Benchmark your system*/
+#define LV_USE_DEMO_BENCHMARK 0
+#if LV_USE_DEMO_BENCHMARK
+/*Use RGB565A8 images with 16 bit color depth instead of ARGB8565*/
+#define LV_DEMO_BENCHMARK_RGB565A8 0
+#endif
+
+/*Stress test for LVGL*/
+#define LV_USE_DEMO_STRESS 0
+
+/*Music player demo*/
+#define LV_USE_DEMO_MUSIC 0
+#if LV_USE_DEMO_MUSIC
+    #define LV_DEMO_MUSIC_SQUARE    0
+    #define LV_DEMO_MUSIC_LANDSCAPE 0
+    #define LV_DEMO_MUSIC_ROUND     0
+    #define LV_DEMO_MUSIC_LARGE     0
+    #define LV_DEMO_MUSIC_AUTO_PLAY 0
+#endif
+
+/*--END OF LV_CONF_H--*/
+
+#endif /*LV_CONF_H*/
+
+#endif /*End of "Content enable"*/
+```
+
 ## Appendix: External dependencies
 
 The following libraries are used from the EspressIf registry:
@@ -408,6 +1361,8 @@ The following libraries are used from the EspressIf registry:
 ## Version history
 
 - December 2023
+  - Updated documentation
+  - Added rotation
   - Added ESP32_1732S019N/C
 - November 2023
   - Major version update: 2.0.0
