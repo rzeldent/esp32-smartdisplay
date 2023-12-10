@@ -31,6 +31,10 @@ static void ili9341_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color
 
 void lvgl_tft_init(lv_disp_drv_t *drv)
 {
+    // Hardware rotation is supported
+    drv->sw_rotate = 0;
+    drv->rotated = LV_DISP_ROT_NONE;
+
     // Create SPI bus
     const spi_bus_config_t spi_bus_config = ILI9341_SPI_BUS_CONFIG;
     ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(ILI9341_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));

@@ -24,12 +24,13 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 {
   esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
   esp_lcd_touch_handle_t touch_handle = indev_drv.user_data;
-#ifdef PANEL_SWAP_XY
   switch (drv->rotated)
   {
   case LV_DISP_ROT_NONE:
+#if defined(PANEL_SWAP_XY) && defined(PANEL_MIRROR_X) && defined(PANEL_MIRROR_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, PANEL_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, PANEL_MIRROR_X, PANEL_MIRROR_Y));
+#endif    
 #if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_X, PANEL_GAP_Y));
 #endif
@@ -39,8 +40,10 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #endif
     break;
   case LV_DISP_ROT_90:
+#if defined(PANEL_SWAP_XY) && defined(PANEL_MIRROR_X) && defined(PANEL_MIRROR_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !PANEL_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !PANEL_MIRROR_X, PANEL_MIRROR_Y));
+#endif    
 #if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_Y, PANEL_GAP_X));
 #endif
@@ -50,8 +53,10 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #endif
     break;
   case LV_DISP_ROT_180:
+#if defined(PANEL_SWAP_XY) && defined(PANEL_MIRROR_X) && defined(PANEL_MIRROR_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, PANEL_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !PANEL_MIRROR_X, !PANEL_MIRROR_Y));
+#endif    
 #if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_X, PANEL_GAP_Y));
 #endif
@@ -61,8 +66,10 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #endif
     break;
   case LV_DISP_ROT_270:
+#if defined(PANEL_SWAP_XY) && defined(PANEL_MIRROR_X) && defined(PANEL_MIRROR_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !PANEL_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, PANEL_MIRROR_X, !PANEL_MIRROR_Y));
+#endif    
 #if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_Y, PANEL_GAP_X));
 #endif
@@ -72,7 +79,6 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #endif
     break;
   }
-#endif
 }
 
 void smartdisplay_init()
