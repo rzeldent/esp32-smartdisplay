@@ -86,15 +86,19 @@ Get started by following te steps below. It is also highly recommended to look a
 
 Additionally this demo provides:
 
+- UI created using the SquareLine Studio GUI generator.
 - Sound over I2S and internal DAC
 - Read the lightsensor
 - Control of the LEDs
+- Full source code
 
-The next sections will guide you though the process of creating an application. However, knowledge of C/C++, LVGL is required!
+The next sections will guide you though the process of creating an application. However, knowledge of PlatformIO, C/C++ and LVGL is required!
+
+If you run into problems, first try to open a discussion on the [github esp32-smartdisplay discussion board](https://github.com/rzeldent/esp32-smartdisplay/discussions)
 
 ### Step 1: Download (or open) PlatformIO
 
-[![PlatformIO](assets/images/platformio.png)](https://platformio.org/)
+[![PlatformIO](assets/images/PlatformIO.png)](https://platformio.org/)
 This library is made for usage in PlatformIO. If not familiar with PlatformIO please take a look at their site and micro controller boards they support. However these boards only use the Arduino platform and ESP32 boards.
 
 Make sure you have PlatformIO installed and functional. Follow the documentation on their site:
@@ -115,7 +119,7 @@ Then, choose the right board for your CPU:
 
 ### Step 3: Add this library to your project
 
-To add this library (and its dependencies) add the line:
+To add this library (and its dependencies) add the following line to the ```platformio.ini``` file:
 
 ```ini
 lib_deps = https://github.com/rzeldent/esp32-smartdisplay.git#feature/esp32s3
@@ -189,7 +193,7 @@ For debugging it is possible to enable logging from LVGL. The library will outpu
 
 By default the logging is only ```LV_LOG_LEVEL_WARN``` but can be ajusted in the ```lv_conf.h```.
 
-More information about the LVGL configuration can be found in the [LVGL documentation](https://docs.lvgl.io/8.3/index.html).
+More information about the LVGL configuration can be found in the excellent [LVGL documentation](https://docs.lvgl.io/8.3/index.html).
 
 ### Step 5: Copy the defines below in your project
 
@@ -226,8 +230,6 @@ The line in the settings logs to the serial console but can be omitted for produ
 -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
 ```
 
-
-
 ### Step 6: Initialize the display (and touch) in your project
 
 To enable to display in your project call the initialization at startup and set the orientation:
@@ -255,10 +257,13 @@ void loop()
 
 ## Step 7: Create your LVGL file or use SquareLine Studio to make a design
 
-There is a good GUI designer available for LVGL and free (but some limitations) for personal use:
+There is a good UI designer available for LVGL and free (but some limitations) for personal use:
 [SquareLine Studio](https://squareline.io/):
 
 [![SquareLine Studio](assets/images/SquareLineStudio.png)](https://squareline.io/)
+
+This tool makes it easy to create transitions, insert images, work with round screens etc..
+A big advantage is that the UI C-code is generated!
 
 ## Step 8: Compile, upload and enjoy
 
@@ -270,10 +275,11 @@ To use the LVGL library, a `lv_conf.h` file is required to define the settings f
 This file needs to be provided by the application.
 As this file is referenced from the build of LVGL, the path must be known.
 Normally this file is included in the include directory of **your** project and used by the LVGL library.
+
 To include it globally, the define must be (for the include directory):
 
 ```ini
-    -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
+  -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
 ```
 
 >[!TIP]
@@ -291,15 +297,15 @@ That is the reason that for these higher resolutions PSRAM is available and is u
 
 ## More on LV_COLOR_16_SWAP
 
-The LVGL library has a define called **LV_COLOR_16_SWAP**. The value can be 1 (yes) or 0 (no).
+The LVGL library has a define called **LV_COLOR_16_SWAP** in the ```lvgl_conf.h```. The value can be 1 or 0.
 This variable will swap the byte order of the lv_color16_t. This is required because the SPI is by default LSB first.
 
-Setting this variable to true is required for the SPI interfaces: ST7789, GC9A01A, ILI9341 and ST7796.
-The choice has been made to also change the pin definition for the panel (rgb) interface so also here the bytes are swapped and behaves like SPI.
+Setting this variable to true is recommended for the SPI interfaces: ST7789, GC9A01A, ILI9341 and ST7796. If not, a warning will be issued but the code should work. The parallel 16 bits panels without interface are not affected by this; the GPIO pin layout will change accordingly.
+
 This makes it easier to have only one definition for lv_conf.h and SquareLine.
 
-If this is not done, the code will run but swapping will be done runtime (and degrading the performance).
 > [!IMPORTANT]
+> If this is not done, the code will run but swapping will be done runtime (and degrading the performance).
 > So it is recommended to always set the LV_COLOR_16_SWAP to 1.
 
 Additionally, when using the [SquareLine Studio](https://squareline.io/) for designing the user interface, the display properties (under the project settings) must match this variable.
@@ -403,13 +409,19 @@ To use the sensor, the define ```LIGHTSENSOR_IN``` indicates the analogue port t
   pinMode(LIGHTSENSOR_IN, INPUT);
 ```
 
-The value read is between 0 (light) - 1023 (dark). To read the value, use:
+Next, read the value using:
 
 ```c++
   auto value = analogReadMilliVolts(LIGHTSENSOR_IN);
 ```
 
+The value ranges from 75 (not covered) to 400 (completely covered).
+
+
 ## Controlling the speaker
+
+>[!NOTE]
+> Not all boards have a LED. Refer to the [supported boards](#supported-boards) to see if this is available.
 
 An 8 Ohm speaker can be connected to the SPEAK pin. This is a 1.25 JST connector.
 Beeps can be generated by generating a PWM signal on the SPEAK pin:
@@ -424,11 +436,6 @@ To produce "real" audio connect the internal 8 bits D2A converter in the ESP32. 
 
 The audio is a bit distorted. [HexeguitarDIY](https://github.com/hexeguitar/ESP32_TFT_PIO) has a fix for that by changing the resistor values to prevent distortion.
 [![HexeguitarDIY Audio mod](https://img.youtube.com/vi/6JCLHIXXVus/0.jpg)](https://www.youtube.com/watch?v=6JCLHIXXVus)
-
-## Demo application
-
-An bare minimum application to demonstrate the library can be found at [esp32-smartdisplay-demo](https://github.com/rzeldent/esp32-smartdisplay-demo).
-This application uses this library and the SquareLine Studio GUI generator.
 
 ## Appendix: Board details
 
