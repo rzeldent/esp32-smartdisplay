@@ -13,6 +13,8 @@ jobs:
           architecture: "x64"
       - name: Install PlatformIO
         run: python -m pip install platformio
+      - name: Copy board definitions
+        run: cp -r "boards/" "example/"
       - name: Build firmware
         run: pio ci --lib="." --project-conf "example/platformio.ini" "example/main.cpp"
         env:
