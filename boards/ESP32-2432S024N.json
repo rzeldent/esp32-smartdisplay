@@ -1,0 +1,65 @@
+{
+  "build": {
+    "arduino": {
+      "ldscript": "esp32_out.ld"
+    },
+    "core": "esp32",
+    "extra_flags": [
+      "-DARDUINO_ESP32_DEV",
+      "-DESP32_2432S024N",
+      "-DTFT_WIDTH=240",
+      "-DTFT_HEIGHT=320",
+      "-DPIN_BCKL=27",
+      "-DUSES_ILI9341",
+      "-DILI9341_SPI_HOST=SPI2_HOST",
+      "-DILI9341_SPI_BUS_CONFIG={.mosi_io_num=13,.miso_io_num=12,.sclk_io_num=14,.quadwp_io_num=-1,.quadhd_io_num=-1}",
+      "-DILI9341_IO_SPI_CONFIG={.cs_gpio_num=15,.dc_gpio_num=2,.spi_mode=SPI_MODE0,.pclk_hz=24000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}",
+      "-DILI9341_PANEL_DEV_CONFIG={.reset_gpio_num=-1,.color_space=ESP_LCD_COLOR_SPACE_BGR,.bits_per_pixel=16}",
+      "-DPANEL_SWAP_XY=false",
+      "-DPANEL_MIRROR_X=true",
+      "-DPANEL_MIRROR_Y=false",
+      "-DPUSHBUTTON_BOOT=0",
+      "-DHAS_TF",
+      "-DTF_PIN_CS=5",
+      "-DTF_PIN_MOSI=23",
+      "-DTF_PIN_SCLK=18",
+      "-DTF_PIN_MISO=19",
+      "-DHAS_RGB_LED",
+      "-DLED_PIN_R=4",
+      "-DLED_PIN_G=16",
+      "-DLED_PIN_B=17",
+      "-DHAS_CDR",
+      "-DCDR_IN=34",
+      "-DHAS_SPEAKER",
+      "-DSPEAKER_PIN=26"
+    ],
+    "f_cpu": "240000000L",
+    "f_flash": "40000000L",
+    "flash_mode": "dio",
+    "mcu": "esp32",
+    "variant": "esp32"
+  },
+  "connectivity": [
+    "wifi",
+    "bluetooth",
+    "ethernet",
+    "can"
+  ],
+  "debug": {
+    "openocd_board": "esp-wroom-32.cfg"
+  },
+  "frameworks": [
+    "arduino",
+    "espidf"
+  ],
+  "name": "ESP32_2432S024N",
+  "upload": {
+    "flash_size": "4MB",
+    "maximum_ram_size": 327680,
+    "maximum_size": 4194304,
+    "require_upload_port": true,
+    "speed": 460800
+  },
+  "url": "https://www.aliexpress.com/item/1005005865107357.html",
+  "vendor": "Sunton"
+}

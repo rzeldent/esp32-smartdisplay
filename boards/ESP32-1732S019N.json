@@ -12,7 +12,22 @@
       "-DARDUINO_USB_MODE=1",
       "-DARDUINO_RUNNING_CORE=1",
       "-DARDUINO_EVENT_RUNNING_CORE=1",
-      "-DARDUINO_USB_CDC_ON_BOOT=0"
+      "-DARDUINO_USB_CDC_ON_BOOT=0",
+      "-DESP32_1732S019N",
+      "-DTFT_WIDTH=170",
+      "-DTFT_HEIGHT=320",
+      "-DPIN_BCKL=14",
+      "-DUSES_ST7789",
+      "-DST7789_SPI_HOST=SPI2_HOST",
+      "-DST7789_SPI_BUS_CONFIG={.mosi_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}",
+      "-DST7789_IO_SPI_CONFIG={.cs_gpio_num=10,.dc_gpio_num=11,.spi_mode=SPI_MODE0,.pclk_hz=24000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}",
+      "-DST7789_PANEL_DEV_CONFIG={.reset_gpio_num=1,.color_space=ESP_LCD_COLOR_SPACE_RGB,.bits_per_pixel=16}",
+      "-DPANEL_SWAP_XY=false",
+      "-DPANEL_MIRROR_X=false",
+      "-DPANEL_MIRROR_Y=false",
+      "-DPANEL_GAP_X=35",
+      "-DPANEL_GAP_Y=0",
+      "-DPUSHBUTTON_BOOT=0"
     ],
     "f_cpu": "240000000L",
     "f_flash": "80000000L",
@@ -36,7 +51,7 @@
     "arduino",
     "espidf"
   ],
-  "name": "Espressif ESP32-S3-DevKitC-1-N16R8V (16 MB QD, With PSRAM)",
+  "name": "ESP32-1732S019N",
   "upload": {
     "flash_size": "16MB",
     "maximum_ram_size": 327680,
@@ -46,6 +61,6 @@
     "require_upload_port": true,
     "speed": 460800
   },
-  "url": "https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/hw-reference/esp32s3/user-guide-devkitc-1.html",
-  "vendor": "Espressif"
+  "url": "https://www.aliexpress.com/item/1005005059421229.html",
+  "vendor": "Sunton"
 }

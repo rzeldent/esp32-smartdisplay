@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <lvgl.h>
 
+#if 0
 // Push button
 #define PUSHBUTTON_BOOT 0
 // TF Card
@@ -12,6 +13,7 @@
 #define TF_PIN_MOSI 23
 #define TF_PIN_SCLK 18
 #define TF_PIN_MISO 19
+#endif
 
 // LVGL lines buffered
 #define LVGL_PIXEL_BUFFER_LINES 16
@@ -23,6 +25,7 @@
 #define PWM_BITS_BCKL 8
 #define PWM_MAX_BCKL ((1 << PWM_BITS_BCKL) - 1)
 
+#if 0
 // ESP32_1732S019 N/C
 #if defined(ESP32_1732S019N) || defined(ESP32_1732S019C)
 #define TFT_WIDTH 170
@@ -51,7 +54,9 @@
 #define TOUCH_ROT_SWAP_Y false
 #endif
 #endif
+#endif
 
+#if 0
 // ESP32_2424S012 N/C
 #if defined(ESP32_2424S012N) || defined(ESP32_2424S012C)
 #define TFT_WIDTH 240
@@ -79,7 +84,9 @@
 #define TOUCH_ROT_SWAP_Y false
 #endif
 #endif
+#endif
 
+#if 0
 // ESP32_2432S024 N/R/C
 #if defined(ESP32_2432S024N) || defined(ESP32_2432S024R) || defined(ESP32_2432S024C)
 #define TFT_WIDTH 240
@@ -128,7 +135,9 @@
 #define HAS_SPEAKER
 #define SPEAKER_PIN 26
 #endif
+#endif
 
+#if 0
 // ESP32_2432S028 R
 #ifdef ESP32_2432S028R
 #define TFT_WIDTH 240
@@ -164,7 +173,9 @@
 #define HAS_SPEAKER
 #define SPEAKER_PIN 26
 #endif
+#endif
 
+#if 0
 // ESP32_2432S032 N/R/C
 #if defined(ESP32_2432S032N) || defined(ESP32_2432S032R) || defined(ESP32_2432S032C)
 #define TFT_WIDTH 240
@@ -214,7 +225,9 @@
 #define HAS_SPEAKER
 #define SPEAKER_PIN 26
 #endif
+#endif
 
+#if 0
 // ESP32_3248S035 R/C
 #if defined(ESP32_3248S035R) || defined(ESP32_3248S035C)
 #define TFT_WIDTH 320
@@ -264,7 +277,9 @@
 #define HAS_SPEAKER
 #define SPEAKER_PIN 26
 #endif
+#endif
 
+#if 0
 // ESP32_4827S043 N/R/C
 #if defined(ESP32_4827S043N) || defined(ESP32_4827S043R) || defined(ESP32_4827S043C)
 #define TFT_WIDTH 480
@@ -301,7 +316,9 @@
 #endif
 #endif
 #endif
+#endif
 
+#if 0
 // ESP32_8048S043 N/R/C
 #if defined(ESP32_8048S043N) || defined(ESP32_8048S043R) || defined(ESP32_8048S043C)
 #define TFT_WIDTH 800
@@ -339,7 +356,9 @@
 #endif
 #endif
 #endif
+#endif
 
+#if 0
 // ESP32_8048S050 N/R/C
 #if defined(ESP32_8048S050N) || defined(ESP32_8048S050R) || defined(ESP32_8048S050C)
 #define TFT_WIDTH 800
@@ -376,7 +395,9 @@
 #endif
 #endif
 #endif
+#endif
 
+#if 0
 // ESP32_8048S070 N/R/C
 #if defined(ESP32_8048S070N) || defined(ESP32_8048S070R) || defined(ESP32_8048S070C)
 #define TFT_WIDTH 800
@@ -413,6 +434,8 @@
 #endif
 #endif
 #endif
+#endif
+
 
 #if defined(USES_CST816S) || defined(USES_XPT2046) || defined(USES_GT911)
 #define USES_TOUCH
