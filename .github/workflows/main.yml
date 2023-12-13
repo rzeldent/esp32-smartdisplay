@@ -14,13 +14,13 @@ jobs:
       - name: Install PlatformIO
         run: python -m pip install platformio
       - name: List
-        run: ls -laR ~/.platformio/
+        run: ls -laR .platformio/
       - name: Install Espressif32
         run: pio platform install espressif32
       - name: Copy boards
         run: |
-          mkdir -p ~/platformio/platforms/espressif32/boards
-          cp -v ./boards/*.json ~/platformio/platforms/espressif32/boards
+          mkdir -p .platformio/platforms/espressif32/boards
+          cp -v ./boards/*.json .platformio/platforms/espressif32/boards
       - name: Build firmware
         run: pio ci --lib="."  --project-conf "example/platformio.ini" "example/main.cpp"
         env:
