@@ -26,7 +26,11 @@ void lvgl_tft_init(lv_disp_drv_t *drv)
     drv->rotated = LV_DISP_ROT_NONE;
 
     // Create direct_io panel handle
-    esp_lcd_rgb_panel_config_t tft_panel_config = LV_COLOR_16_SWAP != 0 ? TFT_RGB_CONFIG_COLOR_16_SWAP : TFT_RGB_CONFIG;
+#if LV_COLOR_16_SWAP != 0
+    esp_lcd_rgb_panel_config_t tft_panel_config = TFT_RGB_CONFIG_COLOR_16_SWAP;
+#else
+    esp_lcd_rgb_panel_config_t tft_panel_config = TFT_RGB_CONFIG;
+#endif
     tft_panel_config.on_frame_trans_done = direct_io_frame_trans_done;
     tft_panel_config.user_ctx = drv;
 
