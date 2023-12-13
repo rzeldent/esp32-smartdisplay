@@ -15,6 +15,7 @@ jobs:
         run: |
           python -m pip install platformio
           pio platform install espressif32
+          pio platform install https://github.com/rzeldent/platformio-espressif32-sunton.git
       - name: Build firmware
         run: pio ci --lib="." --project-conf "example/platformio.ini" "example/main.cpp"
         env:
