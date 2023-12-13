@@ -56,7 +56,7 @@
     "arduino",
     "espidf"
   ],
-  "name": "esp32-8048s050r",
+  "name": "esp32-8048S050R",
   "upload": {
     "flash_size": "16MB",
     "maximum_ram_size": 327680,

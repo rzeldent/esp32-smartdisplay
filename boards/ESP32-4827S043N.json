@@ -49,7 +49,7 @@
     "arduino",
     "espidf"
   ],
-  "name": "esp32-4827s043n",
+  "name": "esp32-4827S043N",
   "upload": {
     "flash_size": "16MB",
     "maximum_ram_size": 327680,
