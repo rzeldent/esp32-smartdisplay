@@ -16,7 +16,7 @@ jobs:
       - name: Copy boards
         run: |
           mkdir -p ~/platformio/platforms/espressif32/boards
-          cp -v ./boards/*.json ./platformio/platforms/espressif32/boards
+          cp -v ./boards/*.json ~/platformio/platforms/espressif32/boards
       - name: Build firmware
         run: pio ci --lib="."  --project-conf "example/platformio.ini" "example/main.cpp"
         env:
