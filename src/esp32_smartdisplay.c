@@ -85,12 +85,12 @@ void smartdisplay_init()
 {
 #ifdef HAS_RGB_LED
   // Setup RGB LED.  High is off
-  pinMode(LED_PIN_R, OUTPUT);
-  digitalWrite(LED_PIN_R, true);
-  pinMode(LED_PIN_G, OUTPUT);
-  digitalWrite(LED_PIN_G, true);
-  pinMode(LED_PIN_B, OUTPUT);
-  digitalWrite(LED_PIN_B, true);
+  pinMode(LED_R, OUTPUT);
+  digitalWrite(LED_R, true);
+  pinMode(LED_G, OUTPUT);
+  digitalWrite(LED_G, true);
+  pinMode(LED_B, OUTPUT);
+  digitalWrite(LED_B, true);
 #endif
 
 #ifdef HAS_LIGHTSENSOR
@@ -99,10 +99,10 @@ void smartdisplay_init()
   pinMode(LIGHTSENSOR_IN, INPUT);
 #endif
 
-#ifdef HAS_SPEAKER
+#ifdef HAS_SPEAK
   // Speaker
   // Note: tone function uses PWM channel 0
-  pinMode(SPEAKER_PIN, INPUT); // Set high impedance
+  pinMode(SPEAKER, INPUT); // Set high impedance
 #endif
 
 #if LV_USE_LOG

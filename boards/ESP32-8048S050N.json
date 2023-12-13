@@ -13,19 +13,19 @@
       "-DARDUINO_RUNNING_CORE=1",
       "-DARDUINO_EVENT_RUNNING_CORE=1",
       "-DARDUINO_USB_CDC_ON_BOOT=0",
-      "-DESP32_8048S070N",
+      "-DESP32_8048S050N",
       "-DTFT_WIDTH=800",
       "-DTFT_HEIGHT=480",
       "-DPIN_BCKL=2",
       "-DUSES_LCD_RGB",
-      "-DRBG_PANEL_GPIO=(LV_COLOR_16_SWAP!=0?{15,7,6,5,4,9,46,3,8,16,1,14,21,47,48,45}:{8,16,1,14,21,47,48,45,15,7,6,5,4,9,46,3})",
-      "-DRBG_PANEL_CONFIG={.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=30,.hsync_back_porch=16,.hsync_front_porch=210,.vsync_pulse_width=13,.vsync_back_porch=10,.vsync_front_porch=22,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1,}},.data_width=16,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=40,.de_gpio_num=41,.pclk_gpio_num=42,.data_gpio_nums={8,=16,=1,=14,=21,=47,=48,=45,=15,=7,=6,=5,=4,=9,=46,=3},.disp_gpio_num=-1,.flags={.fb_in_psram=1}}",
-      "-DPUSHBUTTON_BOOT=0",
+      "-DTFT_RGB_GPIO=(LV_COLOR_16_SWAP!=0?{15,16,4,45,48,47,21,14,8,3,46,9,1,5,6,7}?{8,3,46,9,1,5,6,7,15,16,4,45,48,47,21,14})",
+      "-DTFT_RGB_CONFIG={.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=8,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=8,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1,}},.data_width=16,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.disp_gpio_num=-1,.flags={.fb_in_psram=1}}",
+      "-DBUTTON_BOOT=0",
       "-DHAS_TF",
-      "-DTF_PIN_CS=5",
-      "-DTF_PIN_MOSI=23",
-      "-DTF_PIN_SCLK=18",
-      "-DTF_PIN_MISO=19"
+      "-DTF_CS=5",
+      "-DTF_MOSI=23",
+      "-DTF_SCLK=18",
+      "-DTF_MISO=19"
     ],
     "f_cpu": "240000000L",
     "f_flash": "80000000L",
@@ -49,7 +49,7 @@
     "arduino",
     "espidf"
   ],
-  "name": "ESP32-8048S070N",
+  "name": "ESP32-8048S050N",
   "upload": {
     "flash_size": "16MB",
     "maximum_ram_size": 327680,
@@ -59,6 +59,6 @@
     "require_upload_port": true,
     "speed": 460800
   },
-  "url": "https://www.aliexpress.com/item/1005005928865239.html",
+  "url": "https://www.aliexpress.com/item/1005005938915207.html",
   "vendor": "Sunton"
 }

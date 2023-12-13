@@ -27,7 +27,7 @@
       "-DPANEL_MIRROR_Y=false",
       "-DPANEL_GAP_X=35",
       "-DPANEL_GAP_Y=0",
-      "-DPUSHBUTTON_BOOT=0"
+      "-DBUTTON_BOOT=0"
     ],
     "f_cpu": "240000000L",
     "f_flash": "80000000L",
