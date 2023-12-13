@@ -35,8 +35,8 @@
       "-DLED_PIN_R=4",
       "-DLED_PIN_G=16",
       "-DLED_PIN_B=17",
-      "-DHAS_LIGHTSENSOR",
-      "-DCDR_IN=34",
+      "-DHAS_CDS",
+      "-DCDS_IN=34",
       "-DHAS_SPEAKER",
       "-DSPEAKER_PIN=26"
           ],

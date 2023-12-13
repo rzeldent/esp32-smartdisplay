@@ -19,7 +19,7 @@
       "-DPIN_BCKL=2",
       "-DUSES_LCD_RGB",
       "-DRBG_PANEL_GPIO=(LV_COLOR_16_SWAP!=0?{15,16,4,45,48,47,21,14,8,3,46,9,1,5,6,7}:{8,3,46,9,1,5,6,7,15,16,4,45,48,47,21,14})",
-      "-DRBG_PANEL_CONFIG={.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=43,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=12,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1}},.data_width=16,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.data_gpio_nums=RBG_PANEL_GPIO,.disp_gpio_num=-1,.flags={.fb_in_psram=1}}",
+      "-DRBG_PANEL_CONFIG={.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=43,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=12,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1}},.data_width=16,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.disp_gpio_num=-1,.flags={.fb_in_psram=1}}",
       "-DUSES_GT911",
       "-DGT911_I2C_HOST=0",
       "-DGT911_I2C_CONFIG={.mode=I2C_MODE_MASTER,.sda_io_num=19,.scl_io_num=20,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}",
