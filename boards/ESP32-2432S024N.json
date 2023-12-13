@@ -52,7 +52,7 @@
     "arduino",
     "espidf"
   ],
-  "name": "ESP32_2432S024N",
+  "name": "esp32-2432s024n",
   "upload": {
     "flash_size": "4MB",
     "maximum_ram_size": 327680,

@@ -59,7 +59,7 @@
     "arduino",
     "espidf"
   ],
-  "name": "ESP32_3248S035C",
+  "name": "esp32-3248s035c",
   "upload": {
     "flash_size": "4MB",
     "maximum_ram_size": 327680,

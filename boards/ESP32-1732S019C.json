@@ -58,7 +58,7 @@
     "arduino",
     "espidf"
   ],
-  "name": "ESP32-1732S019C",
+  "name": "esp32-1732s019c",
   "upload": {
     "flash_size": "16MB",
     "maximum_ram_size": 327680,

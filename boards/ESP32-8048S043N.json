@@ -49,7 +49,7 @@
     "arduino",
     "espidf"
   ],
-  "name": "ESP32-8048S043N",
+  "name": "esp32-8048s043n",
   "upload": {
     "flash_size": "16MB",
     "maximum_ram_size": 327680,
