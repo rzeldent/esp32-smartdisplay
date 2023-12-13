@@ -287,7 +287,7 @@
 // Backlight
 #define PIN_BCKL 2
 // LCD ILI6485 480x272
-#define USES_LCD_RGB
+#define USES_PARALLEL_16
 #if LV_COLOR_16_SWAP != 0
 #define TFT_RGB_GPIO {15,16,4,45,48,47,21,14,8,3,46,9,1,5,6,7}
 #else
@@ -326,7 +326,7 @@
 // Backlight
 #define PIN_BCKL 2
 // LCD 800x480
-#define USES_LCD_RGB
+#define USES_PARALLEL_16
 #if LV_COLOR_16_SWAP != 0
 #define TFT_RGB_GPIO {15,16,4,45,48,47,21,14,8,3,46,9,1,5,6,7}
 #else
@@ -366,7 +366,7 @@
 // Backlight
 #define PIN_BCKL 2
 // LCD 800x480
-#define USES_LCD_RGB
+#define USES_PARALLEL_16
 #if LV_COLOR_16_SWAP != 0
 #define TFT_RGB_GPIO {15,16,4,45,48,47,21,14,8,3,46,9,1,5,6,7}
 #else
@@ -405,7 +405,7 @@
 // Backlight
 #define PIN_BCKL 2
 // LCD 800x480
-#define USES_LCD_RGB
+#define USES_PARALLEL_16
 #if LV_COLOR_16_SWAP != 0
 #define TFT_RGB_GPIO {15,7,6,5,4,9,46,3,8,16,1,14,21,47,48,45}
 #else
