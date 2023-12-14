@@ -18,6 +18,7 @@
       "-DPANEL_SWAP_XY=false",
       "-DPANEL_MIRROR_X=true",
       "-DPANEL_MIRROR_Y=false",
+      "-DHAS_TOUCH",
       "-DUSES_GT911",
       "-DGT911_I2C_HOST=0",
       "-DGT911_I2C_CONFIG={.mode=I2C_MODE_MASTER,.sda_io_num=33,.scl_io_num=32,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}",

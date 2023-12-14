@@ -27,6 +27,7 @@
       "-DXPT2046_TOUCH_CONFIG={.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_18}",
       "-DTOUCH_ROT_SWAP_X=false",
       "-DTOUCH_ROT_SWAP_Y=false",
+      "-DHAS_TOUCH",
       "-DUSES_GT911",
       "-DGT911_I2C_HOST=0",
       "-DGT911_I2C_CONFIG={.mode=I2C_MODE_MASTER,.sda_io_num=19,.scl_io_num=20,.sda_pullup_en=GPIO_PULLUP_ENABLE,.scl_pullup_en=GPIO_PULLUP_ENABLE,.master={.clk_speed=400000}}",

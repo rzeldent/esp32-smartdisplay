@@ -18,6 +18,7 @@
       "-DPANEL_SWAP_XY=false",
       "-DPANEL_MIRROR_X=true",
       "-DPANEL_MIRROR_Y=false",
+      "-DHAS_TOUCH",
       "-DUSES_XPT2046",
       "-DXPT2046_SPI_HOST=SPI2_HOST",
       "-DXPT2046_SPI_BUS_CONFIG={.mosi_io_num=13,.miso_io_num=12,.sclk_io_num=14,.quadwp_io_num=-1,.quadhd_io_num=-1}",

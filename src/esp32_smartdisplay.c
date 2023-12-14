@@ -137,7 +137,7 @@ void smartdisplay_init()
   smartdisplay_tft_set_backlight(0.5f);
 
 // If there is a touch controller defined
-#ifdef USES_TOUCH
+#ifdef HAS_TOUCH
   // Setup touch
   lv_indev_drv_init(&indev_drv);
   indev_drv.disp = display;
