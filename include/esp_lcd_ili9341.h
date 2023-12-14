@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "hal/spi_ll.h"
 #include "esp_lcd_panel_vendor.h"
 
 #ifdef __cplusplus
