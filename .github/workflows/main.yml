@@ -18,7 +18,7 @@ jobs:
           python -m pip install platformio
           pio platform install espressif32
       - name: list directory
-        run: ls -laR
+        run: ls -R
       - name: Build firmware
         run: pio ci --lib="." --project-conf "example/platformio.ini" "example/main.cpp"
         env:
