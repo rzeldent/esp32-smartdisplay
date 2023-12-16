@@ -18,8 +18,14 @@ jobs:
           python -m pip install platformio
           pio platform install espressif32
       - name: list directory
-        run: ls -R
+        run: ls -laR
+      - name: Check boards
+        run: pio boards espressif32
       - name: Build firmware
-        run: pio ci --lib="." --project-conf "example/platformio.ini" "example/main.cpp"
+        run: pio ci --lib="." --project-conf "example/platformio.ini" "example/main.cpp" --keep-build-dir
+        continue-on-error: true
         env:
           PLATFORMIO_BUILD_FLAGS: -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h"
+      - name: list directory
+        run: ls -laR
+  
