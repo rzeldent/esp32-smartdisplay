@@ -34,7 +34,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_X, PANEL_GAP_Y));
 #endif
-#ifdef USES_TOUCH
+#ifdef HAS_TOUCH
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_ROT_SWAP_X));
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_ROT_SWAP_Y));
 #endif
@@ -47,7 +47,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_Y, PANEL_GAP_X));
 #endif
-#ifdef USES_TOUCH
+#ifdef HAS_TOUCH
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_ROT_SWAP_X));
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_ROT_SWAP_Y));
 #endif
@@ -60,7 +60,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_X, PANEL_GAP_Y));
 #endif
-#ifdef USES_TOUCH
+#ifdef HAS_TOUCH
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_ROT_SWAP_X));
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_ROT_SWAP_Y));
 #endif
@@ -73,7 +73,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_Y, PANEL_GAP_X));
 #endif
-#ifdef USES_TOUCH
+#ifdef HAS_TOUCH
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_ROT_SWAP_X));
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_ROT_SWAP_Y));
 #endif
@@ -85,12 +85,12 @@ void smartdisplay_init()
 {
 #ifdef HAS_RGB_LED
   // Setup RGB LED.  High is off
-  pinMode(LED_PIN_R, OUTPUT);
-  digitalWrite(LED_PIN_R, true);
-  pinMode(LED_PIN_G, OUTPUT);
-  digitalWrite(LED_PIN_G, true);
-  pinMode(LED_PIN_B, OUTPUT);
-  digitalWrite(LED_PIN_B, true);
+  pinMode(LED_R, OUTPUT);
+  digitalWrite(LED_R, true);
+  pinMode(LED_G, OUTPUT);
+  digitalWrite(LED_G, true);
+  pinMode(LED_B, OUTPUT);
+  digitalWrite(LED_B, true);
 #endif
 
 #ifdef HAS_LIGHTSENSOR
@@ -99,10 +99,10 @@ void smartdisplay_init()
   pinMode(LIGHTSENSOR_IN, INPUT);
 #endif
 
-#ifdef HAS_SPEAKER
+#ifdef HAS_SPEAK
   // Speaker
   // Note: tone function uses PWM channel 0
-  pinMode(SPEAKER_PIN, INPUT); // Set high impedance
+  pinMode(SPEAKER, INPUT); // Set high impedance
 #endif
 
 #if LV_USE_LOG
@@ -137,7 +137,7 @@ void smartdisplay_init()
   smartdisplay_tft_set_backlight(0.5f);
 
 // If there is a touch controller defined
-#ifdef USES_TOUCH
+#ifdef HAS_TOUCH
   // Setup touch
   lv_indev_drv_init(&indev_drv);
   indev_drv.disp = display;

@@ -13,6 +13,10 @@
 #include "hal/lcd_types.h"
 #include "esp_lcd_panel_vendor.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief LCD panel initialization commands.
  *
@@ -37,10 +41,6 @@ typedef struct {
                                                  */
     uint16_t init_cmds_size;                    /*<! Number of commands in above array */
 } st7796_vendor_config_t;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief Create LCD panel for model ST7796

@@ -1,0 +1,72 @@
+{
+  "build": {
+    "arduino": {
+      "ldscript": "esp32s3_out.ld",
+      "partitions": "default_16MB.csv",
+      "memory_type": "qio_opi"
+    },
+    "core": "esp32",
+    "extra_flags": [
+      "-DARDUINO_ESP32S3_DEV",
+      "-DBOARD_HAS_PSRAM",
+      "-DARDUINO_USB_MODE=1",
+      "-DARDUINO_RUNNING_CORE=1",
+      "-DARDUINO_EVENT_RUNNING_CORE=1",
+      "-DARDUINO_USB_CDC_ON_BOOT=0",
+      "-DESP32_4827S043R",
+      "-DTFT_WIDTH=480",
+      "-DTFT_HEIGHT=272",
+      "-DPIN_BCKL=2",
+      "-DUSES_PARALLEL_16",
+      "-DTFT_RGB_CONFIG={.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=43,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=12,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1}},.data_width=16,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.disp_gpio_num=-1,.data_gpio_nums={8,3,46,9,1,5,6,7,15,16,4,45,48,47,21,14},.flags={.fb_in_psram=1}}",
+      "-DTFT_RGB_CONFIG_COLOR_16_SWAP={.clk_src=LCD_CLK_SRC_PLL160M,.timings={.pclk_hz=16000000,.h_res=TFT_WIDTH,.v_res=TFT_HEIGHT,.hsync_pulse_width=4,.hsync_back_porch=43,.hsync_front_porch=8,.vsync_pulse_width=4,.vsync_back_porch=12,.vsync_front_porch=8,.flags={.hsync_idle_low=1,.vsync_idle_low=1,.pclk_active_neg=1}},.data_width=16,.psram_trans_align=64,.hsync_gpio_num=39,.vsync_gpio_num=41,.de_gpio_num=40,.pclk_gpio_num=42,.disp_gpio_num=-1,.data_gpio_nums={15,16,4,45,48,47,21,14,8,3,46,9,1,5,6,7},.flags={.fb_in_psram=1}}",
+      "-DHAS_TOUCH",
+      "-DUSES_XPT2046",
+      "-DXPT2046_SPI_HOST=SPI2_HOST",
+      "-DXPT2046_SPI_BUS_CONFIG={.mosi_io_num=11,.miso_io_num=13,.sclk_io_num=12,.quadwp_io_num=-1,.quadhd_io_num=-1}",
+      "-DXPT2046_IO_SPI_CONFIG={.cs_gpio_num=38,.dc_gpio_num=-1,.spi_mode=SPI_MODE0,.pclk_hz=2000000,.trans_queue_depth=3,.lcd_cmd_bits=8,.lcd_param_bits=8}",
+      "-DXPT2046_TOUCH_CONFIG={.x_max=TFT_WIDTH,.y_max=TFT_HEIGHT,.rst_gpio_num=GPIO_NUM_NC,.int_gpio_num=GPIO_NUM_18}",
+      "-DTOUCH_ROT_SWAP_X=false",
+      "-DTOUCH_ROT_SWAP_Y=false",
+      "-DBUTTON_BOOT=0",
+      "-DHAS_TF",
+      "-DTF_CS=5",
+      "-DTF_MOSI=23",
+      "-DTF_SCLK=18",
+      "-DTF_MISO=19"
+    ],
+    "f_cpu": "240000000L",
+    "f_flash": "80000000L",
+    "flash_mode": "qio",
+    "hwids": [
+      [
+        "0x303A",
+        "0x1001"
+      ]
+    ],
+    "mcu": "esp32s3",
+    "variant": "esp32s3"
+  },
+  "connectivity": [
+    "wifi"
+  ],
+  "debug": {
+    "openocd_target": "esp32s3.cfg"
+  },
+  "frameworks": [
+    "arduino",
+    "espidf"
+  ],
+  "name": "esp32-4827S043R",
+  "upload": {
+    "flash_size": "16MB",
+    "maximum_ram_size": 327680,
+    "maximum_size": 16777216,
+    "use_1200bps_touch": true,
+    "wait_for_upload_port": true,
+    "require_upload_port": true,
+    "speed": 460800
+  },
+  "url": "https://www.aliexpress.com/item/1005004788147691.html",
+  "vendor": "Sunton"
+}

@@ -1,0 +1,50 @@
+{
+  "build": {
+    "arduino": {
+      "ldscript": "esp32c3_out.ld"
+    },
+    "core": "esp32",
+    "f_cpu": "160000000L",
+    "f_flash": "80000000L",
+    "flash_mode": "qio",
+    "extra_flags": [
+      "-DARDUINO_ESP32C3_DEV",
+      "-DESP32_2424S012N",
+      "-DTFT_WIDTH=240",
+      "-DTFT_HEIGHT=240",
+      "-DPIN_BCKL=3",
+      "-DUSES_GC9A01",
+      "-DGC9A01_SPI_HOST=SPI2_HOST",
+      "-DGC9A01_SPI_BUS_CONFIG={.mosi_io_num=7,.miso_io_num=-1,.sclk_io_num=6,.quadwp_io_num=-1,.quadhd_io_num=-1}",
+      "-DGC9A01_IO_SPI_CONFIG={.cs_gpio_num=10,.dc_gpio_num=2,.spi_mode=SPI_MODE0,.pclk_hz=80000000,.trans_queue_depth=10,.lcd_cmd_bits=8,.lcd_param_bits=8}",
+      "-DGC9A01_PANEL_DEV_CONFIG={.reset_gpio_num=-1,.color_space=ESP_LCD_COLOR_SPACE_BGR,.bits_per_pixel=16}",
+      "-DPANEL_SWAP_XY=false",
+      "-DPANEL_MIRROR_X=true",
+      "-DPANEL_MIRROR_Y=false",
+      "-DBUTTON_BOOT=0"
+    ],
+    "mcu": "esp32c3",
+    "variant": "esp32c3"
+  },
+  "connectivity": [
+    "wifi",
+    "bluetooth"
+  ],
+  "debug": {
+    "openocd_target": "esp32c3.cfg"
+  },
+  "frameworks": [
+    "arduino",
+    "espidf"
+  ],
+  "name": "esp32-2424s012n",
+  "upload": {
+    "flash_size": "4MB",
+    "maximum_ram_size": 327680,
+    "maximum_size": 4194304,
+    "require_upload_port": true,
+    "speed": 460800
+  },
+  "url": "https://www.aliexpress.com/item/1005005453515690.html",
+  "vendor": "Sunton"
+}

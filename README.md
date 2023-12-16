@@ -57,11 +57,15 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 | ESP32-2432S032C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
 | ESP32-3248S035R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html)  |
 | ESP32-3248S035C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html)  |
-| ESP32-4827S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"  | Direct 16 bits parallel GPIO              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
-| ESP32-4827S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"  | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
+| ESP32-4827S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"  | Direct 16 bits parallel GPIO              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005004788147691.html)  |
+| ESP32-4827S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"  | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005004788147691.html)  |
+| ESP32-8048S043N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"  | Direct 16 bits parallel GPIO              | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
+| ESP32-8048S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"  | Direct 16 bits parallel GPIO              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
+| ESP32-8048S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"  | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
 | ESP32-8048S050N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"  | Direct 16 bits parallel GPIO              | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
 | ESP32-8048S050C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"  | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
-| ESP32-8048S070N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"  | Direct 16 bits parallel GPIO              | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html)  |
+| ESP32-8048S050R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"  | Direct 16 bits parallel GPIO              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
+| ESP32-8048S070N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"  | Direct 16 bits parallel GPIO              | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005928865239.htmlhttps://www.aliexpress.com/item/1005005928865239.html)  |
 | ESP32-8048S070C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"  | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html)  |
 
 >[!IMPORTANT]
@@ -88,6 +92,7 @@ Additionally this demo provides:
 - Sound over I2S and internal DAC
 - Read the CDR (light sensor)
 - Control of the LEDs
+- PlatformIO definitions for all the known boards
 - Full source code
 
 The next sections will guide you though the process of creating an application. However, knowledge of PlatformIO, C/C++ and LVGL is required!
@@ -102,10 +107,11 @@ This library is made for usage in PlatformIO. If not familiar with PlatformIO pl
 Make sure you have PlatformIO installed and functional. Follow the documentation on their site:
 [https://docs.platformio.org/en/latest/](https://docs.platformio.org/en/latest/)
 
+Board definitions are in the directory ```boards```. This is done because some boards use an ESP32-S3 with **16Mb flash and 8Mb PSRAM**. There is no definition for this board in the standard PlatformIO boards selection.
+Additionally, each board has definitions of the GPIO RGB LEDs, CDR sensor GPIO IO ports and other settings.
+
 >[!IMPORTANT]
->Some boards use an ESP32-S2 with **16Mb flash and 8Mb PSRAM**. There is no definition for this board in the standard PlatformIO boards selection.
->
->To be able to use these boards copy the [board definition](assets/boards/esp32-s3-devkitc-1-n16-psram.json) from the ```assets/boards/esp32-s3-devkitc-1-n16-psram.json``` to the ```.platformio\platforms\espressif32\boards``` directory.
+>To be able to use these boards copy the board definitions from the [```boards/```](boards/) to the ```.platformio\platforms\espressif32\boards``` directory.
 >The ```.platformio``` directory can be found under ```C:\Users\<user>``` (Windows) or ```/home/<user>``` (Linux).
 
 ### Step 2: Create a new project
@@ -279,6 +285,42 @@ If there are problems:
 - Refer to the [discussions](https://github.com/rzeldent/esp32-smartdisplay/discussions)
 - If all fails, submit an [issue](https://github.com/rzeldent/esp32-smartdisplay/issues) but there are no guarantees as this is done in my spare time.
 
+## More on board defines
+
+The boards definitions also contain information about the hardware available.
+
+| Define                    | Explanation |
+|---                        |---                            |
+| BUTTON_BOOT           | GPIO of the BOOT pushbutton |
+| TF_PIN_CS                 | GPIO of the CS of the TF card |
+| TF_PIN_MOSI               | GPIO of the MOSI of the TF card |
+| TF_PIN_SCLK               | GPIO of the SCLK of the TF card |
+| TF_PIN_MISO               | GPIO of the MISO of the TF card |
+| TFT_WIDTH                 | The width of the panel      |
+| TFT_HEIGHT                | The height of the panel |
+| PIN_BCKL                  | The backlight GPIO pin |
+| USES_ST7789               | Uses the ST7789 display driver |
+| ST7789_SPI_HOST           | The SPI host to use for the ST7789 |
+| ST7789_SPI_BUS_CONFIG     | The ST7789 SPI BUS configuration |
+| ST7789_IO_SPI_CONFIG      | The ST7789 IO SPI configuration |
+| ST7789_PANEL_DEV_CONFIG   | The ST7789 Panel device configuration |
+| PANEL_SWAP_XY             | Swap the panel for LV_DISP_ROT_NONE |
+| PANEL_MIRROR_X            | Mirror the panel horizontally for LV_DISP_ROT_NONE |
+| PANEL_MIRROR_Y            | Mirror the panel vertically for LV_DISP_ROT_NONE |
+| PANEL_GAP_X               | The horizontal gap before the panel starts |
+| PANEL_GAP_Y               | The vertical gap before the panel starts |
+| USES_GT911                | Uses the GT911 capacitive touch controller |
+| GT911_I2C_HOST            | The GT11 I2C host to user for the GT911 |
+| GT911_I2C_CONFIG          | The GT11 I2C configuration |
+| GT911_IO_I2C_CONFIG       | The GT11 IO I2C configuration |
+| GT911_TOUCH_CONFIG        | The GT11 touch configuration |
+| TOUCH_ROT_SWAP_X          | Swap the touch horizontally for for LV_DISP_ROT_NONE |
+| TOUCH_ROT_SWAP_Y          | Swap the touch vertically for for LV_DISP_ROT_NONE |
+
+
+
+
+
 ## More on LVGL.h
 
 To use the LVGL library, a `lv_conf.h` file is required to define the settings for LVGL.
@@ -360,16 +402,16 @@ Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL lib
 If the board has an RGB led, the define ```HAS_RGB_LED``` is defined.
 Additionally, the following defines are present for the definition of the GPIO pins:
 
-- LED_PIN_R
-- LED_PIN_G
-- LED_PIN_B
+- LED_R
+- LED_G
+- LED_B
 
 Before using the RGB LEDs, the GPIOs must be defined as output
 
 ```c++
-  pinmode(LED_PIN_R, OUTPUT);
-  pinmode(LED_PIN_G, OUTPUT);
-  pinmode(LED_PIN_B, OUTPUT);
+  pinmode(LED_R, OUTPUT);
+  pinmode(LED_G, OUTPUT);
+  pinmode(LED_B, OUTPUT);
 ```
 
 The LEDs are connected between the GPIO pin and the 3.3V. So the LED will light up if the GPIO is set to LOW (inverted).
@@ -379,9 +421,9 @@ The LEDs are connected between the GPIO pin and the 3.3V. So the LED will light 
 For example: set the RGB led to red is done by the following code:
 
 ```c++
-  digitalWrite(LED_PIN_R, false);
-  digitalWrite(LED_PIN_G, true);
-  digitalWrite(LED_PIN_B, true);
+  digitalWrite(LED_R, false);
+  digitalWrite(LED_G, true);
+  digitalWrite(LED_B, true);
 ```
 
 To have more colors than the 8 RGB combinations, PWM can be used to mix the colors.
@@ -402,15 +444,15 @@ ESP_ARDUINO_VERSION_MAJOR < 3:
 
 ```c++
   ledcSetup(0, 5000, 8);
-  ledcAttachPin(LED_PIN_R, 0);
+  ledcAttachPin(LED_R, 0);
   ledcWrite(0, 192);
 ```
 
 ESP_ARDUINO_VERSION_MAJOR >= 3
 
 ```c++
-  ledcAttach(LED_PIN_R, 0, 8);
-  ledcWrite(LED_PIN_R, 192);
+  ledcAttach(LED_R, 0, 8);
+  ledcWrite(LED_R, 192);
 ```
 
 ## Reading the CDS (light sensor)
@@ -444,11 +486,11 @@ The value ranges from 75mV (not covered) to 400mV (completely covered).
 >[!NOTE]
 >Not all boards have a LED. Refer to the [supported boards](#supported-boards) to see if this is available.
 
-An 8 &Omega; speaker can be connected to the SPEAK pin. This is a 1.25 JST connector.
+An 8&Omega; speaker can be connected to the SPEAK pin. This is a 1.25 JST connector.
 Beeps can be generated by generating a PWM signal on the SPEAK pin:
 
 ```c++
-pinmode(SPEAKER_PIN, OUTPUT)
+pinmode(SPEAKER, OUTPUT)
 // Uses PWM Channel 0
 tone(AUDIO_PIN, frequency, duration);
 ```
@@ -1378,8 +1420,8 @@ The following libraries are used from the EspressIf registry:
 
 | Name                  | Version |
 |---                    |---      |
-| [ESP LCD ILI9341](https://components.espressif.com/api/download/?object_type=component&object_id=98a2daed-183c-47d8-b1a8-b7aa9a198bb5)        | v1.2    |
-| [ESP LCD ST7796](https://components.espressif.com/api/download/?object_type=component&object_id=bdf53b24-6f59-4ab5-b92e-89ff0e94d307)         | v1.2    |
+| [ESP LCD ILI9341](https://components.espressif.com/api/download/?object_type=component&object_id=680fe7b6-c70b-4560-acf9-919e5b8fa192)        | v2.0    |
+| [ESP LCD ST7796](https://components.espressif.com/api/download/?object_type=component&object_id=eb6095d1-642a-4e14-9daf-d46db8a1f354)         | v1.2.1  |
 | [ESP LCD CG9A01](https://components.espressif.com/api/download/?object_type=component&object_id=6f06ecdf-97a6-4eea-ad4f-c00d11bd970a)         | v1.2    |
 | [ESP LCD Touch](https://components.espressif.com/api/download/?object_type=component&object_id=bb4a4d94-2827-4695-84d1-1b53383b8001)          | v1.1.1  |
 | [ESP LCD Touch CST816S](https://components.espressif.com/api/download/?object_type=component&object_id=cc8ef108-15e8-48cf-9be8-3c7e89ca493e)  | v1.0.3  |
