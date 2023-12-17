@@ -124,8 +124,8 @@ You can copy the boards definition to the ```<home>/.platformio\platforms\espres
 
 To add this library (and its dependency on LVGL) add the following line to the ```platformio.ini``` file:
 
-```ini
-lib_deps = https://github.com/rzeldent/esp32-smartdisplay.git#feature/esp32s3
+```i
+lib_deps = https://github.com/rzeldent/esp32-smartdisplay.git
 ```
 
 This will automatically download the library and also the LVGL library (as a dependency).
