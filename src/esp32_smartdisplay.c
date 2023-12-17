@@ -27,55 +27,55 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
   switch (drv->rotated)
   {
   case LV_DISP_ROT_NONE:
-#if defined(PANEL_SWAP_XY) && defined(PANEL_MIRROR_X) && defined(PANEL_MIRROR_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, PANEL_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, PANEL_MIRROR_X, PANEL_MIRROR_Y));
+#if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, LCD_MIRROR_Y));
 #endif    
-#if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_X, PANEL_GAP_Y));
+#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_X, LCD_GAP_Y));
 #endif
-#ifdef HAS_TOUCH
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_ROT_SWAP_X));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_ROT_SWAP_Y));
+#ifdef BOARD_HAS_TOUCH
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_SWAP_X));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_SWAP_Y));
 #endif
     break;
   case LV_DISP_ROT_90:
-#if defined(PANEL_SWAP_XY) && defined(PANEL_MIRROR_X) && defined(PANEL_MIRROR_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !PANEL_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !PANEL_MIRROR_X, PANEL_MIRROR_Y));
+#if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !LCD_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !LCD_MIRROR_X, LCD_MIRROR_Y));
 #endif    
-#if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_Y, PANEL_GAP_X));
+#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_Y, LCD_GAP_X));
 #endif
-#ifdef HAS_TOUCH
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_ROT_SWAP_X));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_ROT_SWAP_Y));
+#ifdef BOARD_HAS_TOUCH
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_SWAP_X));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_SWAP_Y));
 #endif
     break;
   case LV_DISP_ROT_180:
-#if defined(PANEL_SWAP_XY) && defined(PANEL_MIRROR_X) && defined(PANEL_MIRROR_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, PANEL_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !PANEL_MIRROR_X, !PANEL_MIRROR_Y));
+#if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !LCD_MIRROR_X, !LCD_MIRROR_Y));
 #endif    
-#if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_X, PANEL_GAP_Y));
+#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_X, LCD_GAP_Y));
 #endif
-#ifdef HAS_TOUCH
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_ROT_SWAP_X));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_ROT_SWAP_Y));
+#ifdef BOARD_HAS_TOUCH
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_SWAP_X));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_SWAP_Y));
 #endif
     break;
   case LV_DISP_ROT_270:
-#if defined(PANEL_SWAP_XY) && defined(PANEL_MIRROR_X) && defined(PANEL_MIRROR_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !PANEL_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, PANEL_MIRROR_X, !PANEL_MIRROR_Y));
+#if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !LCD_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, !LCD_MIRROR_Y));
 #endif    
-#if defined(PANEL_GAP_X) || defined(PANEL_GAP_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, PANEL_GAP_Y, PANEL_GAP_X));
+#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_Y, LCD_GAP_X));
 #endif
-#ifdef HAS_TOUCH
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_ROT_SWAP_X));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_ROT_SWAP_Y));
+#ifdef BOARD_HAS_TOUCH
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_SWAP_X));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_SWAP_Y));
 #endif
     break;
   }
@@ -83,14 +83,14 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 
 void smartdisplay_init()
 {
-#ifdef HAS_RGB_LED
+#ifdef BOARD_HAS_RGB_LED
   // Setup RGB LED.  High is off
-  pinMode(LED_R, OUTPUT);
-  digitalWrite(LED_R, true);
-  pinMode(LED_G, OUTPUT);
-  digitalWrite(LED_G, true);
-  pinMode(LED_B, OUTPUT);
-  digitalWrite(LED_B, true);
+  pinMode(LED_R_GPIO, OUTPUT);
+  digitalWrite(LED_R_GPIO, true);
+  pinMode(LED_G_GPIO, OUTPUT);
+  digitalWrite(LED_G_GPIO, true);
+  pinMode(LED_B_GPIO, OUTPUT);
+  digitalWrite(LED_B_GPIO, true);
 #endif
 
 #ifdef HAS_LIGHTSENSOR
@@ -99,10 +99,10 @@ void smartdisplay_init()
   pinMode(LIGHTSENSOR_IN, INPUT);
 #endif
 
-#ifdef HAS_SPEAK
+#ifdef BOARD_HAS_SPEAK_GPIO
   // Speaker
   // Note: tone function uses PWM channel 0
-  pinMode(SPEAKER, INPUT); // Set high impedance
+  pinMode(SPEAK_GPIO, OUTPUT);
 #endif
 
 #if LV_USE_LOG
@@ -111,21 +111,21 @@ void smartdisplay_init()
 
   lv_init();
   // Setup backlight
-  pinMode(PIN_BCKL, OUTPUT);
+  pinMode(LCD_BCKL_GPIO, OUTPUT);
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcAttach(PIN_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
+  ledcAttach(LCD_BCKL_GPIO, PWM_FREQ_BCKL, PWM_BITS_BCKL);
 #else
   ledcSetup(PWM_CHANNEL_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
-  ledcAttachPin(PIN_BCKL, PWM_CHANNEL_BCKL);
+  ledcAttachPin(LCD_BCKL_GPIO, PWM_CHANNEL_BCKL);
 #endif
-  digitalWrite(PIN_BCKL, LOW);
+  digitalWrite(LCD_BCKL_GPIO, LOW);
   // Setup TFT display
   lv_disp_drv_init(&disp_drv);
-  disp_drv.hor_res = TFT_WIDTH;
-  disp_drv.ver_res = TFT_HEIGHT;
+  disp_drv.hor_res = LCD_WIDTH;
+  disp_drv.ver_res = LCD_HEIGHT;
   // Create drawBuffer
   disp_drv.draw_buf = (lv_disp_draw_buf_t *)malloc(sizeof(lv_disp_draw_buf_t));
-  uint drawBufferPixels = TFT_WIDTH * LVGL_PIXEL_BUFFER_LINES;
+  uint drawBufferPixels = LCD_WIDTH * LVGL_PIXEL_BUFFER_LINES;
   void *drawBuffer = heap_caps_malloc(sizeof(lv_color16_t) * drawBufferPixels, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
   lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, drawBufferPixels);
   // Initialize specific driver
@@ -137,7 +137,7 @@ void smartdisplay_init()
   smartdisplay_tft_set_backlight(0.5f);
 
 // If there is a touch controller defined
-#ifdef HAS_TOUCH
+#ifdef BOARD_HAS_TOUCH
   // Setup touch
   lv_indev_drv_init(&indev_drv);
   indev_drv.disp = display;
@@ -154,7 +154,7 @@ void smartdisplay_init()
 void smartdisplay_tft_set_backlight(float duty)
 {
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcWrite(PIN_BCKL, dut * PWM_MAX_BCKL);
+  ledcWrite(LCD_BCKL_GPIO, dut * PWM_MAX_BCKL);
 #else
   ledcWrite(PWM_CHANNEL_BCKL, duty * PWM_MAX_BCKL);
 #endif
