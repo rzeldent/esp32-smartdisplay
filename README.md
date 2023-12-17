@@ -204,7 +204,7 @@ More information about the LVGL configuration can be found in the excellent [LVG
 
 ### Step 5: Copy the defines below in your project
 
-Especially the definition of the LV_CONF_PATH is critical, this must point to an **absolute path** where the ```lv_conf.h``` file is located. More about this in the [section below](#more-on-lvglh).
+Especially the definition of the LV_CONF_PATH is critical, this must point to an **absolute path** where the ```lv_conf.h``` file is located. More about this in the [section below](#more-on-lv_confh).
 
 ```ini
 build_flags =
@@ -427,7 +427,6 @@ Before using the RGB LEDs, the GPIOs must be defined as output
 The LEDs are connected between the GPIO pin and the 3.3V. So the LED will light up if the GPIO is set to LOW (inverted).
 ![LEDS schematic](assets/images//LEDS.png)
 
-
 For example: set the RGB led to red is done by the following code:
 
 ```c++
@@ -489,7 +488,6 @@ Next, read the value using:
 ```
 
 The value ranges from 75mV (not covered) to 400mV (completely covered).
-
 
 ## Controlling the speaker
 
@@ -1482,6 +1480,7 @@ The following libraries are used from the EspressIf registry:
 ## Version history
 
 - December 2023
+  - 2.0.0 rel
   - Updated documentation
   - Added rotation
   - Added ESP32_1732S019N/C
@@ -1516,4 +1515,3 @@ The following libraries are used from the EspressIf registry:
   - CDS light sensor input
 - July 2022
   - Initial work started
-
