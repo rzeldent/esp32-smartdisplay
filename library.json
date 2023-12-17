@@ -2,8 +2,8 @@
     "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
     "name": "esp32_smartdisplay",
     "version": "2.0.0",
-    "description": "LVGL driver for Sunton ESP32 display boards",
-    "keywords": "LVGL Sunton CYD - Cheap Yellow Display LCD TFT Touch",
+    "description": "LVGL driver for Sunton ESP32  Cheap Yellow Display display boards",
+    "keywords": "LVGL Sunton CYD LCD TFT Touch",
     "repository": {
         "type": "git",
         "url": "https://github.com/rzeldent/esp32-smartdisplay"
