@@ -1,6 +1,6 @@
 #include <esp32_smartdisplay.h>
 
-#ifdef USES_PARALLEL_16
+#ifdef LCD_USES_DIRECT_IO
 
 #include <esp_lcd_panel_rgb.h>
 #include <esp_lcd_panel_ops.h>
@@ -27,9 +27,9 @@ void lvgl_tft_init(lv_disp_drv_t *drv)
 
     // Create direct_io panel handle
 #if LV_COLOR_16_SWAP != 0
-    esp_lcd_rgb_panel_config_t tft_panel_config = TFT_RGB_CONFIG_COLOR_16_SWAP;
+    esp_lcd_rgb_panel_config_t tft_panel_config = LCD_RGB_PANEL_CONFIG_COLOR_16_SWAP;
 #else
-    esp_lcd_rgb_panel_config_t tft_panel_config = TFT_RGB_CONFIG;
+    esp_lcd_rgb_panel_config_t tft_panel_config = LCD_RGB_PANEL_CONFIG;
 #endif
     tft_panel_config.on_frame_trans_done = direct_io_frame_trans_done;
     tft_panel_config.user_ctx = drv;

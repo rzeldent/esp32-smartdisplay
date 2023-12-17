@@ -25,7 +25,7 @@ This library integrates seamlessly in [PlatformIO](https://platformio.org/) and 
 ## Why this library
 
 With the boards, there is a link supplied and there are a lot of examples present and this looks fine.... If you know your way around....
-These examples for [LVGL](https://lvgl.io/) depend on external libraries ([TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)).
+These examples for [LVGL](https://lvgl.io/) depend on external libraries ([LCD_eSPI](https://github.com/Bodmer/LCD_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)).
 However, when working with these libraries, I found out that these libraries had their flaws using these boards:
 
 - Lots of configuring to do before it all works,
@@ -108,29 +108,21 @@ This library is made for usage in PlatformIO. If not familiar with PlatformIO pl
 Make sure you have PlatformIO installed and functional. Follow the documentation on their site:
 [https://docs.platformio.org/en/latest/](https://docs.platformio.org/en/latest/)
 
-Board definitions are in the directory ```boards```. This is done because some boards use an ESP32-S3 with **16Mb flash and 8Mb PSRAM**. There is no definition for this board in the standard PlatformIO boards selection.
-Additionally, each board has definitions of the GPIO RGB LEDs, CDR sensor GPIO IO ports and other settings.
+The definitions required for this library are defined in the boards. This is done because some boards use an ESP32-S3 with **16Mb flash and 8Mb PSRAM**. There is no definition for this board in the standard PlatformIO boards selection. These boards definitions contain more information than just the CPU, FLASH/PSRAM sizes etc but also information about the hardware present on the boards. See [more on board defines](#more-on-board-defines) for the details.
 
->[!IMPORTANT]
->To be able to use these boards copy the board definitions from the [```boards/```](boards/) to the ```.platformio\platforms\espressif32\boards``` directory.
->The ```.platformio``` directory can be found under ```C:\Users\<user>``` (Windows) or ```/home/<user>``` (Linux).
+These boards are defined in the repository [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton) so they can also be used in other projects. It is recommended to use the git submodule to include these board definitions automatically.
+
+>[!TIP]
+>If you already have a project, clone it with the ```git clone --recurse-submodules```. If creating a new project, use ```git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards``` to add them to your project.
 
 ### Step 2: Create a new project
 
-Use the standard PlatformIO create project to start a new project.
-Because depending on the type of board used, the type of ESP32 can be different, choose the right board for your project. The CPU for your board can be looked up in the table of the [supported boards](#supported-boards).
-
-Then, choose the right board for your CPU:
-
-| CPU                       | board                         |
-|---                        |---                            |
-| ESP32-WROOM-32            | esp32dev                      |
-| ESP32-C3-MINI-1U-XXN4     | esp32-c3-devkitm-1            |
-| ESP32-S3-WROOM-1-MCN16R8  | esp32-s3-devkitc-1-n16-psram  |
+Use the standard PlatformIO create project to start a new project. When using a new PlatformIO installation these boards, defined in [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton), are not present.
+You can copy the boards definition to the ```<home>/.platformio\platforms\espressif32\boards``` directory to have them always available but it is probably easier to create the project, add the baords as a git submodule and change the board afterwards. For each supported board there is a board definition.
 
 ### Step 3: Add this library to your project
 
-To add this library (and its dependencies) add the following line to the ```platformio.ini``` file:
+To add this library (and its dependency on LVGL) add the following line to the ```platformio.ini``` file:
 
 ```ini
 lib_deps = https://github.com/rzeldent/esp32-smartdisplay.git#feature/esp32s3
@@ -157,7 +149,7 @@ Important settings are:
   ```
 
 - Because of the SPI interface, the bytes are sent in big endian format so this must be corrected.
-  The RGB panel interface takes care of this by swapping the GPIO lines. More information about this [below](#more-on-lv_color_16_swap).
+  The RGB panel interface takes care of this by swapping the GPIO lines but for the SPI controllers this is not optimal. More information about this [below](#more-on-lv_color_16_swap).
 
   ```h
   /*Swap the 2 bytes of RGB565 color. Useful if the display has an 8-bit interface (e.g. SPI)*/
@@ -179,10 +171,12 @@ Important settings are:
   #define LV_USE_MEM_MONITOR 1
   ```
 
-- Include (some) fonts that are bigger smaller but at lease 22pt.
+- (Optionally) Include additional fonts.
 
   ```h
+  ...
   #define LV_FONT_MONTSERRAT_22 1
+  ...
   ```
 
 - Optionally, only enable widgets that are used to save on code
@@ -195,7 +189,8 @@ Important settings are:
   ...
   ```
 
-For debugging it is possible to enable logging from LVGL. The library will output logging debugging output (using ```lv_log_register_print_cb```). To enable logging, set the define:
+For debugging it is possible to enable logging from LVGL. The library will output to the debugging output (using ```lv_log_register_print_cb```).
+To enable logging, set the define:
 
 ```h
 /*Enable the log module*/
@@ -208,7 +203,7 @@ More information about the LVGL configuration can be found in the excellent [LVG
 
 ### Step 5: Copy the defines below in your project
 
-Especially the definition of the LV_CONF_PATH is critical. More about this in the [section below](#more-on-lvglh).
+Especially the definition of the LV_CONF_PATH is critical, this must point to an **absolute path** where the ```lv_conf.h``` file is located. More about this in the [section below](#more-on-lvglh).
 
 ```ini
 build_flags =
@@ -217,16 +212,6 @@ build_flags =
     -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
     # LVGL settings. Point to your lv_conf.h file
     -D LV_CONF_PATH="${PROJECT_DIR}/example/lv_conf.h"
-    # EspressIf library defines
-    -D ESP_LCD_ST7796_VER_MAJOR=1
-    -D ESP_LCD_ST7796_VER_MINOR=2
-    -D ESP_LCD_ST7796_VER_PATCH=0
-    -D ESP_LCD_ILI9341_VER_MAJOR=1
-    -D ESP_LCD_ILI9341_VER_MINOR=2
-    -D ESP_LCD_ILI9341_VER_PATCH=0
-    -D CONFIG_ESP_LCD_TOUCH_MAX_POINTS=1
-    -D CONFIG_XPT2046_CONVERT_ADC_TO_COORDS
-    -D CONFIG_XPT2046_Z_THRESHOLD=600
 ```
 
 The line in the settings logs to the serial console but can be omitted for production builds:
@@ -234,9 +219,6 @@ The line in the settings logs to the serial console but can be omitted for produ
 ```ini
 -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
 ```
->[!NOTE]
->Flash size, memory type and PSRAM settings are set by using the board settings and do not need to be added.
-
 
 ### Step 6: Initialize the display (and touch) in your project
 
@@ -288,41 +270,67 @@ If there are problems:
 
 ## More on board defines
 
-The boards definitions also contain information about the hardware available.
+The [board definitions](https://github.com/rzeldent/platformio-espressif32-sunton) also contain information about the hardware available and how connected.
+The table below provides some explanation. At the moment of writing this in still incomplete because focus has been on implementing the defines required for the display and touch.
 
-| Define                    | Explanation |
-|---                        |---                            |
-| BUTTON_BOOT           | GPIO of the BOOT pushbutton |
-| TF_PIN_CS                 | GPIO of the CS of the TF card |
-| TF_PIN_MOSI               | GPIO of the MOSI of the TF card |
-| TF_PIN_SCLK               | GPIO of the SCLK of the TF card |
-| TF_PIN_MISO               | GPIO of the MISO of the TF card |
-| TFT_WIDTH                 | The width of the panel      |
-| TFT_HEIGHT                | The height of the panel |
-| PIN_BCKL                  | The backlight GPIO pin |
-| USES_ST7789               | Uses the ST7789 display driver |
-| ST7789_SPI_HOST           | The SPI host to use for the ST7789 |
-| ST7789_SPI_BUS_CONFIG     | The ST7789 SPI BUS configuration |
-| ST7789_IO_SPI_CONFIG      | The ST7789 IO SPI configuration |
-| ST7789_PANEL_DEV_CONFIG   | The ST7789 Panel device configuration |
-| PANEL_SWAP_XY             | Swap the panel for LV_DISP_ROT_NONE |
-| PANEL_MIRROR_X            | Mirror the panel horizontally for LV_DISP_ROT_NONE |
-| PANEL_MIRROR_Y            | Mirror the panel vertically for LV_DISP_ROT_NONE |
-| PANEL_GAP_X               | The horizontal gap before the panel starts |
-| PANEL_GAP_Y               | The vertical gap before the panel starts |
-| USES_GT911                | Uses the GT911 capacitive touch controller |
-| GT911_I2C_HOST            | The GT11 I2C host to user for the GT911 |
-| GT911_I2C_CONFIG          | The GT11 I2C configuration |
-| GT911_IO_I2C_CONFIG       | The GT11 IO I2C configuration |
-| GT911_TOUCH_CONFIG        | The GT11 touch configuration |
-| TOUCH_ROT_SWAP_X          | Swap the touch horizontally for for LV_DISP_ROT_NONE |
-| TOUCH_ROT_SWAP_Y          | Swap the touch vertically for for LV_DISP_ROT_NONE |
+| Define                              | Explanation                                                     |
+|---                                  |---                                                              |
+| ESP32_wwhhS0ddN/R/C                 | The board name, e.g. 2423S012C, see [boards](#supported-boards) |
+|                                     |                                                                 |
+| BOARD_HAS_PSRAM                     | The boards has PSRAM                                            |
+|                                     |                                                                 |
+| BUTTON_BOOT_GPIO                    | GPIO of the BOOT pushbutton                                     |
+|                                     |                                                                 |
+| LCD_USES_ST7789                     | LCD uses the ST7789 display driver                              |
+| LCD_USES_GC9A01                     | LCD uses the GC9A01 display driver                              |
+| LCD_USES_ILI9341                    | LCD uses the ILI9341 display driver                             |
+| LCD_USES_DIRECT_IO                  | LCD uses direct IO with the display                             |
+|                                     |                                                                 |
+| LCD_WIDTH                           | The width of the LCD panel in pixels                            |
+| LCD_HEIGHT                          | The height of the LCD panel in pixels                           |
+| LCD_BCKL_GPIO                       | GPIO of the backlight                                           |
+| LCD_SPI_HOST                        | The SPI host to use for the LCD driver                          |
+| LCD_SPI_BUS_CONFIG                  | The LCD SPI BUS configuration                                   |
+| LCD_IO_SPI_CONFIG                   | The LCD IO SPI configuration                                    |
+| LCD_PANEL_DEV_CONFIG                | The LCD panel device configuration                              |
+| LCD_RGB_PANEL_CONFIG                | The LCD panel settings for LV_COLOR_16_SWAP = 0                 |
+| LCD_RGB_PANEL_CONFIG_COLOR_16_SWAP  | The LCD panel settings for LV_COLOR_16_SWAP = 1                 |
+| LCD_SWAP_XY                         | Swap the X and Y axes for the panel                             |
+| LCD_MIRROR_X                        | Mirror the panel horizontally                                   |
+| LCD_MIRROR_Y                        | Mirror the panel vertically                                     |
+| LCD_GAP_X                           | The horizontal gap in pixels before the panel                   |
+| LCD_GAP_Y                           | The vertical gap in pixels before the panel                     |
+|                                     |                                                                 |
+| BOARD_HAS_TOUCH                     | The panel has a touch interface                                 |
+| TOUCH_USES_GT911                    | Touch uses the GT911 capacitive touch controller                |
+| TOUCH_USES_CST816S                  | Touch uses the CST816S capacitive touch controller              |
+| TOUCH_USES_XPT2046                  | Touch uses the XPT2046 resistive  touch controller              |
+|                                     |                                                                 |
+| TOUCH_I2C_HOST                      | The I2C host to use for the touch controller                    |
+| TOUCH_I2C_CONFIG                    | The touch I2C configuration                                     |
+| TOUCH_IO_I2C_CONFIG                 | The touch IO I2C configuration                                  |
+| TOUCH_DEV_CONFIG                    | The touch device configuration                                  |
+| TOUCH_SWAP_X                        | Swap the touch horizontally                                     |
+| TOUCH_SWAP_Y                        | Swap the touch vertically                                       |
+|                                     |                                                                 |
+| BOARD_HAS_TF                        | The board has a TF slot                                         |
+| TF_CS_GPIO                          | GPIO of the CS of the TF slot                                   |
+| TF_MOSI_GPIO                        | GPIO of the MOSI of the TF slot                                 |
+| TF_SCLK_GPIO                        | GPIO of the SCLK of the TF slot                                 |
+| TF_MISO_GPIO                        | GPIO of the MISO of the TF slot                                 |
+|                                     |                                                                 |
+| BOARD_HAS_RGB_LED                   | The board has an RGB led                                        |
+| LED_R_GPIO                          | GPIO of the red LED                                             |
+| LED_G_GPIO                          | GPIO of the green LED                                           |
+| LED_B_GPIO                          | GPIO of the blue LED                                            |
+|                                     |                                                                 |
+| BOARD_HAS_CDS                       | The board has a CdS resistive light sensor                      |
+| CDS_GPIO                            | Analogue GPIO input of the CdS sensor                           |
+|                                     |                                                                 |
+| BOARD_HAS_SPEAK_GPIO                | The board has an onboard amplifier for a speaker                |
+| SPEAK_GPIO                          | GPIO of the speaker                                             |
 
-
-
-
-
-## More on LVGL.h
+## More on lv_conf.h
 
 To use the LVGL library, a `lv_conf.h` file is required to define the settings for LVGL.
 This file needs to be provided by the application.
@@ -400,19 +408,19 @@ Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL lib
 >[!NOTE]
 >Not all boards have a LED. Refer to the [supported boards](#supported-boards) to see if this is available.
 
-If the board has an RGB led, the define ```HAS_RGB_LED``` is defined.
+If the board has an RGB led, the define ```BOARD_HAS_RGB_LED``` is defined.
 Additionally, the following defines are present for the definition of the GPIO pins:
 
-- LED_R
-- LED_G
-- LED_B
+- LED_R_GPIO
+- LED_G_GPIO
+- LED_B_GPIO
 
 Before using the RGB LEDs, the GPIOs must be defined as output
 
 ```c++
-  pinmode(LED_R, OUTPUT);
-  pinmode(LED_G, OUTPUT);
-  pinmode(LED_B, OUTPUT);
+  pinmode(LED_R_GPIO, OUTPUT);
+  pinmode(LED_G_GPIO, OUTPUT);
+  pinmode(LED_B_GPIO, OUTPUT);
 ```
 
 The LEDs are connected between the GPIO pin and the 3.3V. So the LED will light up if the GPIO is set to LOW (inverted).
@@ -422,9 +430,9 @@ The LEDs are connected between the GPIO pin and the 3.3V. So the LED will light 
 For example: set the RGB led to red is done by the following code:
 
 ```c++
-  digitalWrite(LED_R, false);
-  digitalWrite(LED_G, true);
-  digitalWrite(LED_B, true);
+  digitalWrite(LED_R_GPIO, false);
+  digitalWrite(LED_G_GPIO, true);
+  digitalWrite(LED_B_GPIO, true);
 ```
 
 To have more colors than the 8 RGB combinations, PWM can be used to mix the colors.
@@ -445,15 +453,15 @@ ESP_ARDUINO_VERSION_MAJOR < 3:
 
 ```c++
   ledcSetup(0, 5000, 8);
-  ledcAttachPin(LED_R, 0);
+  ledcAttachPin(LED_R_GPIO, 0);
   ledcWrite(0, 192);
 ```
 
 ESP_ARDUINO_VERSION_MAJOR >= 3
 
 ```c++
-  ledcAttach(LED_R, 0, 8);
-  ledcWrite(LED_R, 192);
+  ledcAttach(LED_R_GPIO, 0, 8);
+  ledcWrite(LED_R_GPIO, 192);
 ```
 
 ## Reading the CDS (light sensor)
@@ -461,22 +469,22 @@ ESP_ARDUINO_VERSION_MAJOR >= 3
 >[!NOTE]
 >Not all boards have a light sensor. Refer to the [supported boards](#supported-boards) to see if this is available.
 
-If the board has a CDS photo resistor (Cadmium Sulfide) light sensor, the define ```HAS_LIGHTSENSOR``` is defined.
+If the board has a CDS photo resistor (Cadmium Sulfide, CdS) light sensor, the define ```BOARD_HAS_CDS``` is defined.
 It is attached to the analogue input of the ESP32 with two resistors between the GND and the VCC. When the CDS is covered, it's resistance is in the order of mega&Omega; but in bright light can drop to a few 100&Omega;.
 
 ![CDS](assets/images/CDS.png)
 
-To use the sensor, the define ```LIGHTSENSOR_IN``` indicates the analogue port to read.
+To use the sensor, the define ```BOARD_HAS_CDS``` indicates the analogue port to read.
 
 ```c++
   analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
-  pinMode(LIGHTSENSOR_IN, INPUT);
+  pinMode(CDS_GPIO, INPUT);
 ```
 
 Next, read the value using:
 
 ```c++
-  auto value = analogReadMilliVolts(LIGHTSENSOR_IN);
+  auto value = analogReadMilliVolts(CDS_GPIO);
 ```
 
 The value ranges from 75mV (not covered) to 400mV (completely covered).
@@ -487,13 +495,13 @@ The value ranges from 75mV (not covered) to 400mV (completely covered).
 >[!NOTE]
 >Not all boards have a LED. Refer to the [supported boards](#supported-boards) to see if this is available.
 
-An 8&Omega; speaker can be connected to the SPEAK pin. This is a 1.25 JST connector.
-Beeps can be generated by generating a PWM signal on the SPEAK pin:
+An 8&Omega; speaker can be connected to the output marked SPEAK. This is a 1.25 JST connector.
+Beeps can be generated by generating a PWM signal on the SPEAK_GPIO:
 
 ```c++
-pinmode(SPEAKER, OUTPUT)
+pinmode(SPEAK_GPIO, OUTPUT)
 // Uses PWM Channel 0
-tone(AUDIO_PIN, frequency, duration);
+tone(SPEAK_GPIO, frequency, duration);
 ```
 
 To produce "real" audio connect the internal 8 bits D2A converter in the ESP32. Because the speaker is connected to GPIO26, this is the DAC2 (Left Channel).
@@ -501,7 +509,7 @@ To produce "real" audio connect the internal 8 bits D2A converter in the ESP32. 
 >[!TIP]
 >Make sure the I2S connection is only to the LEFT channel.
 
-The audio is a bit distorted. [HexeguitarDIY](https://github.com/hexeguitar/ESP32_TFT_PIO) has a fix for that by changing the resistor values to prevent distortion.
+The audio is a bit distorted. [HexeguitarDIY](https://github.com/hexeguitar/ESP32_LCD_PIO) has a fix for that by changing the resistor values to prevent distortion.
 [![HexeguitarDIY Audio mod](https://img.youtube.com/vi/6JCLHIXXVus/0.jpg)](https://www.youtube.com/watch?v=6JCLHIXXVus)
 
 ## Appendix: Board details
@@ -583,9 +591,30 @@ The platformio.ini file below supports all the boards. This is useful when runni
 
 ```ini
 [platformio]
-#default_envs = esp32dev
-#default_envs = esp32-c3-devkitm-1
-#default_envs = esp32-s3-devkitc-1-n16-psram
+#default_envs = esp32-2424S012C
+#default_envs = esp32-2424S012N
+#default_envs = esp32-2432S024C
+#default_envs = esp32-2432S024N
+#default_envs = esp32-2432S024R
+#default_envs = esp32-2432S028R
+#default_envs = esp32-2432S032C
+#default_envs = esp32-2432S032N
+#default_envs = esp32-2432S032R
+#default_envs = esp32-3248S035C
+#default_envs = esp32-3248S035R
+#default_envs = esp32-1732S019C
+#default_envs = esp32-1732S019N
+#default_envs = esp32-4827S043C
+#default_envs = esp32-4827S043N
+#default_envs = esp32-4827S043R
+#default_envs = esp32-8048S043C
+#default_envs = esp32-8048S043N
+#default_envs = esp32-8048S043R
+#default_envs = esp32-8048S050C
+#default_envs = esp32-8048S050N
+#default_envs = esp32-8048S050R
+#default_envs = esp32-8048S070C
+#default_envs = esp32-8048S070N
 
 [env]
 platform = espressif32
@@ -597,61 +626,81 @@ build_flags =
     -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
     # LVGL settings. Point to your lv_conf.h file
     -D LV_CONF_PATH="${PROJECT_DIR}/example/lv_conf.h"
-    # EspressIf library defines
-    -D ESP_LCD_ST7796_VER_MAJOR=1
-    -D ESP_LCD_ST7796_VER_MINOR=2
-    -D ESP_LCD_ST7796_VER_PATCH=0
-    -D ESP_LCD_ILI9341_VER_MAJOR=1
-    -D ESP_LCD_ILI9341_VER_MINOR=2
-    -D ESP_LCD_ILI9341_VER_PATCH=0
-    -D CONFIG_ESP_LCD_TOUCH_MAX_POINTS=1
-    -D CONFIG_XPT2046_CONVERT_ADC_TO_COORDS
-    -D CONFIG_XPT2046_Z_THRESHOLD=600
 
-[env:esp32dev]
-board = esp32dev
-build_flags =
-    ${env.build_flags}
-    # Smartdisplay selection
-    #-D ESP32_2432S024N
-    #-D ESP32_2432S024R
-    #-D ESP32_2432S024C
-    #-D ESP32_2432S028R
-    #-D ESP32_3248S032N
-    #-D ESP32_3248S032R
-    #-D ESP32_3248S032C
-    #-D ESP32_3248S035R
-    #-D ESP32_3248S035C
+[env:esp32-2424S012C]
+board = esp32-2424S012C
 
-[env:esp32-c3-devkitm-1]
-board = esp32-c3-devkitm-1
-build_flags =
-    ${env.build_flags}
-    # Smartdisplay selection
-    #-D ESP32_2424S012N
-    #-D ESP32_2424S012C
+[env:esp32-2424S012N]
+board = esp32-2424S012N
 
-[env:esp32-s3-devkitc-1-n16-psram]
-board = esp32-s3-devkitc-1-n16-psram
-build_flags =
-    ${env.build_flags}
-    # Smartdisplay selection
-    #-D ESP32_1732S019N
-    #-D ESP32_1732S019C
-    #-D ESP32_4827S043R
-    #-D ESP32_4827S043C
-    #-D ESP32_8048S043N
-    #-D ESP32_8048S043R
-    #-D ESP32_8048S043C
-    #-D ESP32_8048S050N
-    #-D ESP32_8048S050R
-    #-D ESP32_8048S050C
-    #-D ESP32_8048S070N
-    #-D ESP32_8048S070R
-    #-D ESP32_8048S070C
+[env:esp32-2432S024C]
+board = esp32-2432S024C
+
+[env:esp32-2432S024N]
+board = esp32-2432S024N
+
+[env:esp32-2432S024R]
+board = esp32-2432S024R
+
+[env:esp32-2432S028R]
+board = esp32-2432S024R
+
+[env:esp32-2432S032C]
+board = esp32-2432S032C
+
+[env:esp32-2432S032N]
+board = esp32-2432S032N
+
+[env:esp32-2432S032R]
+board = esp32-2432S032R
+
+[env:esp32-3248S035C]
+board = esp32-3248S035C
+
+[env:esp32-3248S035R]
+board = esp32-3248S035R
+
+[env:esp32-1732S019C]
+board = esp32-1732S019C
+
+[env:esp32-1732S019N]
+board = esp32-1732S019N
+
+[env:esp32-4827S043C]
+board = esp32-4827S043C
+
+[env:esp32-4827S043N]
+board = esp32-4827S043N
+
+[env:esp32-4827S043R]
+board = esp32-4827S043R
+
+[env:esp32-8048S043C]
+board = esp32-8048S043C
+
+[env:esp32-8048S043N]
+board = esp32-8048S043N
+
+[env:esp32-8048S043R]
+board = esp32-8048S043R
+
+[env:esp32-8048S050C]
+board = esp32-8048S050C
+
+[env:esp32-8048S050N]
+board = esp32-8048S050N
+
+[env:esp32-8048S050R]
+board = esp32-8048S050R
+
+[env:esp32-8048S070C]
+board = esp32-8048S070C
+
+[env:esp32-8048S070N]
+board = esp32-8048S070N
 ```
 
-## Appendix: lvgl_conf.h example
+## Appendix: lv_conf.h example
 
 ```cpp
 /**

@@ -20,9 +20,8 @@ jobs:
           python-version: "3.9"
       - name: Install PlatformIO
         run: python -m pip install platformio
-      - name: Check boards
-        run: pio boards espressif32
       - name: Build firmware
-        run: pio ci --lib=src --lib=include --exclude=assets --exclude=example --exclude=boards --project-conf="example/platformio.ini"  "example/main.cpp"
+        run: pio ci --lib=src --lib=include --exclude=assets --exclude=examples --exclude=boards --project-conf="examples/ci/platformio.ini"  "examples/ci/main.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h"  
+          PLATFORMIO_BOARDS_DIR: "${{github.workspace}}/boards"
+          #PLATFORMIO_BUILD_FLAGS: -DLV_CONF_PATH="${{github.workspace}}/examples/ci/lv_conf.h"

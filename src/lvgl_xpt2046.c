@@ -1,6 +1,6 @@
 #include <esp32_smartdisplay.h>
 
-#ifdef USES_XPT2046
+#ifdef TOUCH_USES_XPT2046
 
 #include <driver/spi_master.h>
 #include "esp_lcd_touch.h"
@@ -31,17 +31,17 @@ static void xpt2046_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 void lvgl_touch_init(lv_indev_drv_t *drv)
 {
     // Create SPI bus only if not already initialized (S035R shares the SPI bus)
-    const spi_bus_config_t spi_bus_config = XPT2046_SPI_BUS_CONFIG;
-    ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(XPT2046_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
+    const spi_bus_config_t spi_bus_config = TOUCH_SPI_BUS_CONFIG;
+    ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(TOUCH_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
 
     // Attach the touch controller to the SPI bus
-    esp_lcd_panel_io_spi_config_t io_spi_config = XPT2046_IO_SPI_CONFIG;
+    esp_lcd_panel_io_spi_config_t io_spi_config = TOUCH_IO_SPI_CONFIG;
     io_spi_config.user_ctx = drv;
     esp_lcd_panel_io_handle_t io_handle;
-    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)XPT2046_SPI_HOST, &io_spi_config, &io_handle));
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)TOUCH_SPI_HOST, &io_spi_config, &io_handle));
 
     // Create touch configuration
-    esp_lcd_touch_config_t touch_config = XPT2046_TOUCH_CONFIG;
+    esp_lcd_touch_config_t touch_config = TOUCH_DEV_CONFIG;
     touch_config.user_data = io_handle;
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_spi_xpt2046(io_handle, &touch_config, &touch_handle));
