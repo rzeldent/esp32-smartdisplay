@@ -32,6 +32,7 @@ However, when working with these libraries, I found out that these libraries had
 - Using a third party library there is unnecessary code included (for other boards),
 - No support for on the fly rotating,
 - No support for touch,
+- Not using code already present in the ESP firmware
 - No LVGL integration,
 - Not adapted for use in PlatformIO
 
