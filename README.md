@@ -135,9 +135,10 @@ This will automatically download the library and also the LVGL library (as a dep
 LVGL needs a configuration file. This file contains information about the fonts, color depths, default background, styles, etc...
 The default LVGL template can be found in the LVGL library at the location: ```lvgl/lv_conf_template.h```.
 This file must be copied to the include directory and renamed to ```lvgl_conf.h```. Also the ``#if 0`` must be removed to enable the file to be included.
+More information about setting up a project with LVGL can be obtained at [LVGL get-started/quick-overview](https://docs.lvgl.io/master/get-started/quick-overview.html#add-lvgl-into-your-project).
 
 >[!TIP]
->Only after downloading the library, this file is present in the ```.pio/libdeps/<board>/lvgl/lv_conf_template.h``` directory.
+>LVGL can also be downloaded manually from: [https://github.com/lvgl/lvgl/archive/master.zip](https://github.com/lvgl/lvgl/archive/master.zip) to extract the template.
 
 Important settings are:
 
