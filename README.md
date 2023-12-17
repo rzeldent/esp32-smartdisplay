@@ -246,7 +246,7 @@ void loop()
 }
 ```
 
-## Step 7: Create your LVGL file or use SquareLine Studio to make a design
+## Step 7 (Optional): Create your LVGL file or use SquareLine Studio to make a design
 
 There is a good UI designer available for LVGL and free (but some limitations) for personal use:
 [SquareLine Studio](https://squareline.io/):
