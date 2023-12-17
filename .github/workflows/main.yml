@@ -25,4 +25,4 @@ jobs:
       - name: Build firmware
         run: pio ci --lib=src --lib=include --exclude=assets --exclude=example --exclude=boards --project-conf="examples/ci/platformio.ini"  "examples/ci/main.cpp"
         env:
-          PLATFORMIO_BUILD_FLAGS: -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h"  
+          PLATFORMIO_BUILD_FLAGS: -DLV_CONF_PATH="${{github.workspace}}/example/lv_conf.h" -DPLATFORMIO_BOARDS_DIR="${{github.workspace}}/boards"
