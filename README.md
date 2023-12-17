@@ -1516,3 +1516,4 @@ The following libraries are used from the EspressIf registry:
   - CDS light sensor input
 - July 2022
   - Initial work started
+
