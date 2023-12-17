@@ -8,7 +8,7 @@ These boards have an LCD display and most of them have a touch interface.
 - R = Resistive touch
 - C = Capacitive touch
 
-Currently this library supports:
+Currently this library supports the following boards:
 
 - ESP32_1732S019N/C
 - ESP32_2424S012N/C
