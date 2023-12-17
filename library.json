@@ -1,11 +1,37 @@
 {
+    "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
     "name": "esp32_smartdisplay",
-    "version": "1.0.9",
-    "description": "LVGL driver for Sunton ESP32 TFT display boards",
-    "keywords": "LVGL 2432S024 2432S028 3248S035 8048S070",
+    "version": "2.0.0",
+    "description": "LVGL driver for Sunton ESP32 display boards",
+    "keywords": "LVGL Sunton CYD - Cheap Yellow Display LCD TFT Touch",
     "repository": {
         "type": "git",
         "url": "https://github.com/rzeldent/esp32-smartdisplay"
+    },
+    "build": {
+        "srcDir": "src",
+        "includeDir": "include",
+        "flags": [
+            "-DESP_LCD_ST7796_VER_MAJOR=1",
+            "-DESP_LCD_ST7796_VER_MINOR=2",
+            "-DESP_LCD_ST7796_VER_PATCH=0",
+            "-DESP_LCD_ILI9341_VER_MAJOR=1",
+            "-DESP_LCD_ILI9341_VER_MINOR=2",
+            "-DESP_LCD_ILI9341_VER_PATCH=0",
+            "-DESP_LCD_GC9A01_VER_MAJOR=1",
+            "-DESP_LCD_GC9A01_VER_MINOR=2",
+            "-DESP_LCD_GC9A01_VER_PATCH=0",
+            "-DCONFIG_ESP_LCD_TOUCH_MAX_POINTS=1",
+            "-DCONFIG_XPT2046_CONVERT_ADC_TO_COORDS",
+            "-DCONFIG_XPT2046_Z_THRESHOLD=600"
+        ]
+    },
+    "export": {
+        "include": [
+            "src/*.c",
+            "include/*.h",
+            "example/*.*"
+        ]
     },
     "authors": [
         {
@@ -17,8 +43,6 @@
     "frameworks": "arduino",
     "platforms": "espressif32",
     "dependencies": {
-        "SPI": "^2.0.0",
-        "Wire": "^2.0.0.",
         "lvgl/lvgl": "^8.3.9"
     }
 }
