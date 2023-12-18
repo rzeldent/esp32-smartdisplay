@@ -26,13 +26,6 @@
             "-DCONFIG_XPT2046_Z_THRESHOLD=600"
         ]
     },
-    "export": {
-        "include": [
-            "src/*.c",
-            "include/*.h",
-            "example/*.*"
-        ]
-    },
     "authors": [
         {
             "name": "Rene Zeldenthuis",
