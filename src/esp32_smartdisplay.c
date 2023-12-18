@@ -93,13 +93,13 @@ void smartdisplay_init()
   digitalWrite(LED_B_GPIO, true);
 #endif
 
-#ifdef HAS_LIGHTSENSOR
+#ifdef BOARD_HAS_CDS
   // CDS Light sensor
-  analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
   pinMode(LIGHTSENSOR_IN, INPUT);
+  analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
 #endif
 
-#ifdef BOARD_HAS_SPEAK_GPIO
+#ifdef BOARD_HAS_SPEAK
   // Speaker
   // Note: tone function uses PWM channel 0
   pinMode(SPEAK_GPIO, OUTPUT);

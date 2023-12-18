@@ -33,41 +33,40 @@ However, when working with these libraries, I found out that these libraries had
 - No support for on the fly rotating,
 - No support for touch,
 - Not using code already present in the ESP firmware
-- No LVGL integration,
-- Not adapted for use in PlatformIO
+- No LVGL integration
 
 ## How to obtain these boards
 
-These boards are available on AliExpress for decent prices and offer a lot.
+These boards are available on AliExpress for decent prices and offer a lot of functionality.
 They can be bought in the [Sunton Store](https://www.aliexpress.com/store/1100192306) on AliExpress but are also available from other sellers. In general these boards are well packed, swiftly shipped and... really worth their money!
 
 ## Supported boards
 
-| Type            | CPU                       | Flash | PSRAM | Cores/Speed | Display | Size  | Controller                                | Touch                                     | Audio  | Flash                                          | RGB LED  | Light sensor | Link                                                                  |
-|---              |---                        |---    |---    |--           |---      |--     |---                                        |---                                        |---     |---                                             |---       |---           |---                                                                    |
-| ESP32_1732S019N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 170x320 | 1.9"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html)  |
-| ESP32_1732S019C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 170x320 | 1.9"  | [ST7796](assets/datasheets/ST7796.pdf)    | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html)  |
-| ESP32-2424S012N | ESP32-C3-MINI-1U-XXN4     | 4Mb   | n/a   | 1 x 160Mhz  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html)  |
-| ESP32-2424S012C | ESP32-C3-MINI-1U-XXN4     | 4Mb   | n/a   | 1 x 160Mhz  | 240x240 | 1.2"  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html)  |
-| ESP32-2432S024N | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
-| ESP32-2432S024R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
-| ESP32-2432S024C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | [CST816S](assets/datasheets/CST816S.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
-| ESP32-2432S028R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.8"  | [ILI9341](assets/datasheets/ILI9341.pdf)  | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html)  |
-| ESP32-2432S032N | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
-| ESP32-2432S032R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
-| ESP32-2432S032C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"  | [ST7796](assets/datasheets/ST7796.pdf)    | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
-| ESP32-3248S035R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html)  |
-| ESP32-3248S035C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 320x480 | 3.5"  | [ST7796](assets/datasheets/ST7796.pdf)    | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html)  |
-| ESP32-4827S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"  | Direct 16 bits parallel GPIO              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005004788147691.html)  |
-| ESP32-4827S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"  | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005004788147691.html)  |
-| ESP32-8048S043N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"  | Direct 16 bits parallel GPIO              | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
-| ESP32-8048S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"  | Direct 16 bits parallel GPIO              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
-| ESP32-8048S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"  | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
-| ESP32-8048S050N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"  | Direct 16 bits parallel GPIO              | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
-| ESP32-8048S050C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"  | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
-| ESP32-8048S050R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"  | Direct 16 bits parallel GPIO              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
-| ESP32-8048S070N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"  | Direct 16 bits parallel GPIO              | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005928865239.htmlhttps://www.aliexpress.com/item/1005005928865239.html)  |
-| ESP32-8048S070C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"  | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html)  |
+| Type            | CPU                       | Flash | PSRAM | Cores/Speed | Display | Size        | Controller                                | Touch                                     | Audio  | Flash                                          | RGB LED  | Light sensor | Link                                                                  |
+|---              |---                        |---    |---    |--           |---      |--           |---                                        |---                                        |---     |---                                             |---       |---           |---                                                                    |
+| ESP32_1732S019N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 170x320 | 1.9"        | [ST7796](assets/datasheets/ST7796.pdf)    | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html)  |
+| ESP32_1732S019C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 170x320 | 1.9"        | [ST7796](assets/datasheets/ST7796.pdf)    | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html)  |
+| ESP32-2424S012N | ESP32-C3-MINI-1U-XXN4     | 4Mb   | n/a   | 1 x 160Mhz  | 240x240 | 1.2" round  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html)  |
+| ESP32-2424S012C | ESP32-C3-MINI-1U-XXN4     | 4Mb   | n/a   | 1 x 160Mhz  | 240x240 | 1.2" round  | [GC9A01A](assets/datasheets/GC9A01A.pdf)  | [CST816S](assets/datasheets/CST816S.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html)  |
+| ESP32-2432S024N | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"        | [ILI9341](assets/datasheets/ILI9341.pdf)  | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
+| ESP32-2432S024R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"        | [ILI9341](assets/datasheets/ILI9341.pdf)  | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
+| ESP32-2432S024C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"        | [ILI9341](assets/datasheets/ILI9341.pdf)  | [CST816S](assets/datasheets/CST816S.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
+| ESP32-2432S028R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.8"        | [ILI9341](assets/datasheets/ILI9341.pdf)  | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html)  |
+| ESP32-2432S032N | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"        | [ST7796](assets/datasheets/ST7796.pdf)    | n/a                                       | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
+| ESP32-2432S032R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"        | [ST7796](assets/datasheets/ST7796.pdf)    | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
+| ESP32-2432S032C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"        | [ST7796](assets/datasheets/ST7796.pdf)    | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
+| ESP32-3248S035R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 320x480 | 3.5"        | [ST7796](assets/datasheets/ST7796.pdf)    | [XPT2046](assets/datasheets/XPT2046.pdf)  | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html)  |
+| ESP32-3248S035C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 320x480 | 3.5"        | [ST7796](assets/datasheets/ST7796.pdf)    | [GT911](assets/datasheets//GT911.pdf)     | yes    | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | yes      | yes          | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html)  |
+| ESP32-4827S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"        | Direct 16 bits parallel GPIO              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005004788147691.html)  |
+| ESP32-4827S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"        | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005004788147691.html)  |
+| ESP32-8048S043N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"        | Direct 16 bits parallel GPIO              | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
+| ESP32-8048S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"        | Direct 16 bits parallel GPIO              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
+| ESP32-8048S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"        | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
+| ESP32-8048S050N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"        | Direct 16 bits parallel GPIO              | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
+| ESP32-8048S050C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"        | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
+| ESP32-8048S050R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"        | Direct 16 bits parallel GPIO              | [XPT2046](assets/datasheets/XPT2046.pdf)  | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
+| ESP32-8048S070N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"        | Direct 16 bits parallel GPIO              | n/a                                       | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005928865239.htmlhttps://www.aliexpress.com/item/1005005928865239.html)  |
+| ESP32-8048S070C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"        | Direct 16 bits parallel GPIO              | [GT911](assets/datasheets//GT911.pdf)     | no     | no                                             | no       | no           | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html)  |
 
 >[!IMPORTANT]
 >The additional flash chip (W25Q32JV) is not always mounted on the board.
@@ -79,11 +78,11 @@ This library depends on:
 - [LVGL](https://registry.platformio.org/libraries/lvgl/lvgl), currently version 8.3.9
 
 >[!NOTE]
->This library uses the "official" drivers from Espressif's component service. These drivers use  the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers have been copied and included to this library.
+>This library uses the "official" drivers from Espressif's component service. These drivers use the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers have been copied and included to this library.
 
 ## How to use
 
-Get started by following te steps below. It is also highly recommended to look at the demo application [esp32-smartdisplay-demo](https://github.com/rzeldent/esp32-smartdisplay-demo/tree/feature/esp32s3) to quickly see the possibilities of this library.
+Get started by following the steps below. It is also highly recommended to look at the demo application [esp32-smartdisplay-demo](https://github.com/rzeldent/esp32-smartdisplay-demo/tree/feature/esp32s3) to quickly see the possibilities of this library.
 
 ![Demo screen](assets/images/PXL_20231130_225143662.jpg)
 
@@ -96,13 +95,14 @@ Additionally this demo provides:
 - PlatformIO definitions for all the known boards
 - Full source code
 
-The next sections will guide you though the process of creating an application. However, knowledge of PlatformIO, C/C++ and LVGL is required!
+The next sections will guide you though the process of creating an application. However, some knowledge of PlatformIO, C/C++ and LVGL is required!
 
 If you run into problems, first try to open a discussion on the [github esp32-smartdisplay discussion board](https://github.com/rzeldent/esp32-smartdisplay/discussions)
 
 ### Step 1: Download (or open) PlatformIO
 
 [![PlatformIO](assets/images/PlatformIO.png)](https://platformio.org/)
+
 This library is made for usage in PlatformIO. If not familiar with PlatformIO please take a look at their site and micro controller boards they support. However these boards only use the Arduino platform and ESP32 boards.
 
 Make sure you have PlatformIO installed and functional. Follow the documentation on their site:
@@ -113,7 +113,7 @@ The definitions required for this library are defined in the boards. This is don
 These boards are defined in the repository [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton) so they can also be used in other projects. It is recommended to use the git submodule to include these board definitions automatically.
 
 >[!TIP]
->If you already have a project, clone it with the ```git clone --recurse-submodules```. If creating a new project, use ```git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards``` to add them to your project.
+>If you already have a project, clone it with the ```git clone --recurse-submodules```. If creating a new project, use ```git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards``` to add them to your project as a submodule.
 
 ### Step 2: Create a new project
 
@@ -124,21 +124,31 @@ You can copy the boards definition to the ```<home>/.platformio\platforms\espres
 
 To add this library (and its dependency on LVGL) add the following line to the ```platformio.ini``` file:
 
-```i
+From the platformIO registry (version 2.0.0):
+
+```ini
+lib_deps = rzeldent/esp32_smartdisplay@^2.0.0
+```
+
+or the Github repository:
+
+```ini
 lib_deps = https://github.com/rzeldent/esp32-smartdisplay.git
 ```
 
-This will automatically download the library and also the LVGL library (as a dependency).
+This will automatically download the library, the LVGL library (as a dependency) and set the defines required for the low level drivers.
 
 ### Step 4: Create a settings file for LVGL
 
-LVGL needs a configuration file. This file contains information about the fonts, color depths, default background, styles, etc...
+LVGL needs a configuration file; ```lv_conf.h```. This file contains information about the fonts, color depths, default background, styles, etc...
 The default LVGL template can be found in the LVGL library at the location: ```lvgl/lv_conf_template.h```.
 This file must be copied to the include directory and renamed to ```lvgl_conf.h```. Also the ``#if 0`` must be removed to enable the file to be included.
 More information about setting up a project with LVGL can be obtained at [LVGL get-started/quick-overview](https://docs.lvgl.io/master/get-started/quick-overview.html#add-lvgl-into-your-project).
+I suggest to put the ```lv_conf.h``` file in the include directory and set the build flags to specify the location of the file, see below.
 
 >[!TIP]
->LVGL can also be downloaded manually from: [https://github.com/lvgl/lvgl/archive/master.zip](https://github.com/lvgl/lvgl/archive/master.zip) to extract the template.
+>LVGL can also be downloaded manually from: [https://github.com/lvgl/lvgl/archive/master.zip](https://github.com/lvgl/lvgl/archive/master.zip) to extract the template
+>or taken from the [appendix](#appendix-lv_confh-example).
 
 Important settings are:
 
@@ -202,7 +212,7 @@ By default the logging is only ```LV_LOG_LEVEL_WARN``` but can be ajusted in the
 
 More information about the LVGL configuration can be found in the excellent [LVGL documentation](https://docs.lvgl.io/8.3/index.html).
 
-### Step 5: Copy the defines below in your project
+### Step 5: Copy the build flags below in your project
 
 Especially the definition of the LV_CONF_PATH is critical, this must point to an **absolute path** where the ```lv_conf.h``` file is located. More about this in the [section below](#more-on-lv_confh).
 
@@ -220,6 +230,8 @@ The line in the settings logs to the serial console but can be omitted for produ
 ```ini
 -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
 ```
+
+The -Wall flag can also be removed but outputs all the warnings.
 
 ### Step 6: Initialize the display (and touch) in your project
 
@@ -248,12 +260,11 @@ void loop()
 
 ## Step 7 (Optional): Create your LVGL file or use SquareLine Studio to make a design
 
-There is a good UI designer available for LVGL and free (but some limitations) for personal use:
-[SquareLine Studio](https://squareline.io/):
+There is a good UI designer available for LVGL and free (but some limitations) for personal use: [SquareLine Studio](https://squareline.io/):
 
 [![SquareLine Studio](assets/images/SquareLineStudio.png)](https://squareline.io/)
 
-This tool makes it easy to create transitions, insert images, work with round screens etc..
+This tool makes it easy to create transitions, insert images, attach events, work with round screens etc..
 A big advantage is that the UI C-code is generated!
 
 ## Step 8: Compile, upload and enjoy
@@ -263,11 +274,11 @@ These steps should make it possible to run your application on the display!
 If there are problems:
 
 - Read this manual again to see if all the steps were followed
-- If using the ESP32-S3, check if you installed the board correctly
+- Check if you installed the board definition(s) correctly, [see](#step-2-create-a-new-project)
 - Check if the [demo application works](https://github.com/rzeldent/esp32-smartdisplay-demo/tree/feature/esp32s3) and look for differences
 - Check if it is a known or previously resolved issue in the [issues](https://github.com/rzeldent/esp32-smartdisplay/issues)
 - Refer to the [discussions](https://github.com/rzeldent/esp32-smartdisplay/discussions)
-- If all fails, submit an [issue](https://github.com/rzeldent/esp32-smartdisplay/issues) but there are no guarantees as this is done in my spare time.
+- If all fails, submit an [issue](https://github.com/rzeldent/esp32-smartdisplay/issues), no SLA as this is done in my spare time.
 
 ## More on board defines
 
@@ -334,9 +345,8 @@ The table below provides some explanation. At the moment of writing this in stil
 ## More on lv_conf.h
 
 To use the LVGL library, a `lv_conf.h` file is required to define the settings for LVGL.
-This file needs to be provided by the application.
-As this file is referenced from the build of LVGL, the path must be known.
-Normally this file is included in the include directory of **your** project and used by the LVGL library.
+As this file is referenced from the build of LVGL, the **absolute path** must be known.
+Normally this file is included in the include directory of your project but also used by the LVGL in the library.
 
 To include it globally, the define must be (for the include directory):
 
@@ -359,7 +369,7 @@ However, the other boards with a resolution of 800x480, 800x480x2 = 768000 bytes
 
 This is the reason for boards with a direct 16bits parallel connection 8Mb of PSRAM is added and should be used to store this buffer.
 
-The standard definition of the ```esp32-s3-devkitc-1.json``` does not have any configuration for the increases flash size and PSRAM. That's the reason a special board definition has been created: ```esp32-s3-devkitc-1-n16-psram.json```.
+The standard definition of the ```esp32-s3-devkitc-1.json``` does not have any configuration for the increases flash size and PSRAM. This is one of the reasons a special board definitions have been created.
 
 ## More on LV_COLOR_16_SWAP
 
@@ -372,7 +382,7 @@ This makes it easier to have only one definition for lv_conf.h and SquareLine.
 
 >[!IMPORTANT]
 >If this is not done, the code will run but swapping will be done runtime (and degrading the performance).
->So it is recommended to always set the LV_COLOR_16_SWAP to 1.
+>So it is preferable to always set the LV_COLOR_16_SWAP to 1 when using SPI.
 
 Additionally, when using the [SquareLine Studio](https://squareline.io/) for designing the user interface, the display properties (under the project settings) must match this variable.
 It needs to be set both in `lv_conf.h` configuration file and the corresponding display properties (16 bit swap) in [SquareLine Studio](https://squareline.io/).
@@ -393,9 +403,10 @@ It initializes the display controller and touch controller and will turn on the 
 Set the brightness of the backlight display.
 The range is from [0, 1] so 0 is off, 0.5 is half and 1 is full brightness.
 
-## Rotation
+## Rotation of the display and touch
 
-The library supports rotating for most of the controllers. Support for the direct 16bits parallel connection is done using software emulation (in LVGL).
+The library supports rotating for most of the controllers using hardware. Support for the direct 16bits parallel connection is done using software emulation (in LVGL).
+Rotating the touch is also done when rotating.
 
 Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL library with the rotation:
 
@@ -403,6 +414,9 @@ Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL lib
   auto disp = lv_disp_get_default();
   lv_disp_set_rotation(disp, LV_DISP_ROT_90);
 ```
+
+Some boards are around that have flipped screens, this is probably due to differences during tha manufacturing or using different TFTs. It is possible to correct these boards overriding the default defines.
+However if this is encountered a separate board definition is preferable.
 
 ## Controlling the RGB led
 
@@ -416,7 +430,7 @@ Additionally, the following defines are present for the definition of the GPIO p
 - LED_G_GPIO
 - LED_B_GPIO
 
-Before using the RGB LEDs, the GPIOs must be defined as output
+Before using the RGB LEDs, the GPIOs must be defined as output. This is already done in the [smartdisplay_init()](#void-smartdisplay_init) function.
 
 ```c++
   pinmode(LED_R_GPIO, OUTPUT);
@@ -475,6 +489,7 @@ It is attached to the analogue input of the ESP32 with two resistors between the
 ![CDS](assets/images/CDS.png)
 
 To use the sensor, the define ```BOARD_HAS_CDS``` indicates the analogue port to read.
+Setting the port to input and the attenuation is already done in the [smartdisplay_init()](#void-smartdisplay_init) function. 
 
 ```c++
   analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
@@ -487,7 +502,7 @@ Next, read the value using:
   auto value = analogReadMilliVolts(CDS_GPIO);
 ```
 
-The value ranges from 75mV (not covered) to 400mV (completely covered).
+The value ranges from approximately 75mV (not covered) to 400mV (completely covered).
 
 ## Controlling the speaker
 
@@ -495,10 +510,15 @@ The value ranges from 75mV (not covered) to 400mV (completely covered).
 >Not all boards have a LED. Refer to the [supported boards](#supported-boards) to see if this is available.
 
 An 8&Omega; speaker can be connected to the output marked SPEAK. This is a 1.25 JST connector.
-Beeps can be generated by generating a PWM signal on the SPEAK_GPIO:
+Setting the speaker GPIO to output is already done in the [smartdisplay_init()](#void-smartdisplay_init) function.
 
 ```c++
 pinmode(SPEAK_GPIO, OUTPUT)
+```
+
+Beeps can be generated by generating a PWM signal on the SPEAK_GPIO or using the tone function:
+
+```c++
 // Uses PWM Channel 0
 tone(SPEAK_GPIO, frequency, duration);
 ```
@@ -506,7 +526,7 @@ tone(SPEAK_GPIO, frequency, duration);
 To produce "real" audio connect the internal 8 bits D2A converter in the ESP32. Because the speaker is connected to GPIO26, this is the DAC2 (Left Channel).
 
 >[!TIP]
->Make sure the I2S connection is only to the LEFT channel.
+>Make sure the I2S connection is only to the LEFT channel. GPIO25, the right channel, is connected on some boards to the GT911 touch controller and creates strange results.
 
 The audio is a bit distorted. [HexeguitarDIY](https://github.com/hexeguitar/ESP32_LCD_PIO) has a fix for that by changing the resistor values to prevent distortion.
 [![HexeguitarDIY Audio mod](https://img.youtube.com/vi/6JCLHIXXVus/0.jpg)](https://www.youtube.com/watch?v=6JCLHIXXVus)
