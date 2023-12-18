@@ -8,7 +8,7 @@ These boards have an LCD display and most of them have a touch interface.
 - R = Resistive touch
 - C = Capacitive touch
 
-Currently this library supports:
+Currently this library supports the following boards:
 
 - ESP32_1732S019N/C
 - ESP32_2424S012N/C
@@ -124,8 +124,8 @@ You can copy the boards definition to the ```<home>/.platformio\platforms\espres
 
 To add this library (and its dependency on LVGL) add the following line to the ```platformio.ini``` file:
 
-```ini
-lib_deps = https://github.com/rzeldent/esp32-smartdisplay.git#feature/esp32s3
+```i
+lib_deps = https://github.com/rzeldent/esp32-smartdisplay.git
 ```
 
 This will automatically download the library and also the LVGL library (as a dependency).
@@ -246,7 +246,7 @@ void loop()
 }
 ```
 
-## Step 7: Create your LVGL file or use SquareLine Studio to make a design
+## Step 7 (Optional): Create your LVGL file or use SquareLine Studio to make a design
 
 There is a good UI designer available for LVGL and free (but some limitations) for personal use:
 [SquareLine Studio](https://squareline.io/):
