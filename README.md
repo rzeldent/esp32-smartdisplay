@@ -1500,7 +1500,7 @@ The following libraries are used from the EspressIf registry:
 ## Version history
 
 - December 2023
-  - 2.0.0 rel
+  - 2.0.0 release
   - Updated documentation
   - Added rotation
   - Added ESP32_1732S019N/C
