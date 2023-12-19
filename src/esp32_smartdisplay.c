@@ -95,7 +95,7 @@ void smartdisplay_init()
 
 #ifdef BOARD_HAS_CDS
   // CDS Light sensor
-  pinMode(LIGHTSENSOR_IN, INPUT);
+  pinMode(CDS_GPIO, INPUT);
   analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
 #endif
 
