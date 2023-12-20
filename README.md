@@ -212,6 +212,10 @@ By default the logging is only ```LV_LOG_LEVEL_WARN``` but can be ajusted in the
 
 More information about the LVGL configuration can be found in the excellent [LVGL documentation](https://docs.lvgl.io/8.3/index.html).
 
+>[!WARNING]
+>After the library has been build, changes in the lv_conf.h are no longer applied because libraries are cached.
+>To apply these settings, delete the ```.pio``` directory so the libraries will be rebuild.
+
 ### Step 5: Copy the build flags below in your project
 
 Especially the definition of the LV_CONF_PATH is critical, this must point to an **absolute path** where the ```lv_conf.h``` file is located. More about this in the [section below](#more-on-lv_confh).
@@ -1500,7 +1504,7 @@ The following libraries are used from the EspressIf registry:
 ## Version history
 
 - December 2023
-  - 2.0.0 release
+  - 2.0.2 release
   - Updated documentation
   - Added rotation
   - Added ESP32_1732S019N/C
