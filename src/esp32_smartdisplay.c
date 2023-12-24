@@ -15,10 +15,6 @@ extern void lvgl_touch_init(lv_indev_drv_t *drv);
 static lv_disp_drv_t disp_drv;
 static lv_indev_drv_t indev_drv;
 
-#ifdef BOARD_HAS_CDS
-static lv_timer_t *update_brightness_timer;
-#endif
-
 touch_calibration_data_t smartdisplay_touch_calibration_data;
 void (*touch_read_cb)(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
 
@@ -26,6 +22,32 @@ void (*touch_read_cb)(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
 void lvgl_log(const char *buf)
 {
   log_printf("%s", buf);
+}
+#endif
+
+#ifdef BOARD_HAS_CDS
+static lv_timer_t *update_brightness_timer;
+
+static void update_brightness(lv_timer_t *timer)
+{
+  static float avgCds;
+  // Read CdS sensor
+  uint16_t sensorValue = analogRead(CDS_GPIO);
+  // Approximation of moving average for the sensor
+  avgCds -= avgCds / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
+  avgCds += sensorValue / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
+  // Section of interest is 0 = full light until ~500 darkish
+  int16_t lightValue = BRIGHTNESS_DARK_ZONE - avgCds;
+  if (lightValue < 0)
+    lightValue = 0;
+  // Set fixed percentage and variable based on CdS sensor
+  uint32_t pwmDuty = 0.01 * PWM_MAX_BCKL + (0.99 * PWM_MAX_BCKL / BRIGHTNESS_DARK_ZONE) * lightValue;
+  // Set backlight
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
+  ledcWrite(LCD_BCKL_GPIO, pwmDuty);
+#else
+  ledcWrite(PWM_CHANNEL_BCKL, pwmDuty);
+#endif
 }
 #endif
 
@@ -222,27 +244,15 @@ void smartdisplay_calibrate()
   indev_drv.read_cb = original_read_cb;
 }
 
-void update_brightness(lv_timer_t *timer)
+#ifdef BOARD_HAS_RGB_LED
+void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 {
-  static float avgCds;
-  // Read CdS sensor
-  uint16_t sensorValue = analogRead(CDS_GPIO);
-  // Approximation of moving average for the sensor
-  avgCds -= avgCds / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
-  avgCds += sensorValue / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
-  // Section of interest is 0 = full light until ~500 darkish
-  int16_t lightValue = BRIGHTNESS_DARK_ZONE - avgCds;
-  if (lightValue < 0)
-    lightValue = 0;
-  // Set fixed percentage and variable based on CdS sensor
-  uint32_t pwmDuty = 0.01 * PWM_MAX_BCKL + (0.99 * PWM_MAX_BCKL / BRIGHTNESS_DARK_ZONE) * lightValue;
-// Set backlight
-#if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcWrite(LCD_BCKL_GPIO, pwmDuty);
-#else
-  ledcWrite(PWM_CHANNEL_BCKL, pwmDuty);
-#endif
+  digitalWrite(LED_R_GPIO, !r);
+  digitalWrite(LED_G_GPIO, !g);
+  digitalWrite(LED_B_GPIO, !b);
+#
 }
+#endif
 
 void smartdisplay_init()
 {
@@ -299,8 +309,14 @@ void smartdisplay_init()
   lv_disp_t *display = lv_disp_drv_register(&disp_drv);
   // Clear screen
   lv_obj_clean(lv_scr_act());
+
+#ifdef BOARD_HAS_CDS
+  // Enable auto brightness
+  update_brightness_timer = lv_timer_create(update_brightness, BRIGHTNESS_UPDATE_INTERVAL, NULL);
+#else
   // Turn backlight on (50%)
-  smartdisplay_tft_set_backlight(0.5f);
+  smartdisplay__set_backlight(0.5f);
+#endif
 
 // If there is a touch controller defined
 #ifdef BOARD_HAS_TOUCH
@@ -318,24 +334,23 @@ void smartdisplay_init()
   // Call the callback to set the rotation
   lvgl_update_callback(&disp_drv);
 
-#ifdef BOARD_HAS_CDS
-  update_brightness_timer = lv_timer_create(update_brightness, BRIGHTNESS_UPDATE_INTERVAL, NULL);
-#endif
-
   smartdisplay_calibrate();
 }
 
 #ifdef BOARD_HAS_CDS
-void smartdisplay_set_auto_brightness(bool enable)
+void smartdisplay_lcd_set_auto_brightness(bool enable)
 {
   if (enable)
     lv_timer_resume(update_brightness_timer);
   else
+  {
     lv_timer_pause(update_brightness_timer);
+    smartdisplay_lcd_set_backlight(0.5);
+  }
 }
 #endif
 
-void smartdisplay_tft_set_backlight(float duty)
+void smartdisplay_lcd_set_backlight(float duty)
 {
   log_i("Set backlight PWM ratio to: %.2f%%", duty * 100);
 #if ESP_ARDUINO_VERSION_MAJOR >= 3

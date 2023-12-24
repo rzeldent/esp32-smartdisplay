@@ -33,7 +33,8 @@ However, when working with these libraries, I found out that these libraries had
 - Using a third party library there is unnecessary code included (for other boards),
 - No support for on the fly rotating,
 - No support for touch,
-- Not using code already present in the ESP firmware
+- No support for adaptive brightness based on the surrounding light,
+- Not using code already present in the ESP firmware,
 - No LVGL integration
 
 ## How to obtain these boards
@@ -43,32 +44,32 @@ They can be bought in the [Sunton Store](https://www.aliexpress.com/store/110019
 
 ## Supported boards
 
-| Type            | CPU                       | Flash | PSRAM | Cores/Speed | Display | Size        | Interface | Display controller                       | Interface  | Touch controller                          | Audio                                     | Flash                                          | LED  | CdS | Relay  | Link                                                                  |
-|---              |---                        |---    |---    |--           |---      |--           |---        |---                                       |---         |---                                        |---                                        |---                                             |---   |---  |---     |---                                                                    |
-| ESP32_1732S019N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 170x320 | 1.9"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   |            | n/a                                       | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html)  |
-| ESP32_1732S019C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 170x320 | 1.9"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   | I2C        | [GT911](assets/datasheets//GT911.pdf)     | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html)  |
-| ESP32-2424S012N | ESP32-C3-MINI-1U-XXN4     | 4Mb   | n/a   | 1 x 160Mhz  | 240x240 | 1.2" round  | SPI       | [GC9A01A](assets/datasheets/GC9A01A.pdf) |            | n/a                                       | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html)  |
-| ESP32-2424S012C | ESP32-C3-MINI-1U-XXN4     | 4Mb   | n/a   | 1 x 160Mhz  | 240x240 | 1.2" round  | SPI       | [GC9A01A](assets/datasheets/GC9A01A.pdf) | I2C        | [CST816S](assets/datasheets/CST816S.pdf)  | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html)  |
-| ESP32-2432S024N | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"        | SPI       | [ILI9341](assets/datasheets/ILI9341.pdf) |            | n/a                                       | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | yes |        | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
-| ESP32-2432S024R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"        | SPI       | [ILI9341](assets/datasheets/ILI9341.pdf) | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | yes |        | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
-| ESP32-2432S024C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"        | SPI       | [ILI9341](assets/datasheets/ILI9341.pdf) | I2C        | [CST816S](assets/datasheets/CST816S.pdf)  | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | yes |        | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
-| ESP32-2432S028R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.8"        | SPI       | [ILI9341](assets/datasheets/ILI9341.pdf) | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | yes |        | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html)  |
-| ESP32-2432S032N | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   |            | n/a                                       | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | yes |        | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
-| ESP32-2432S032R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | yes |        | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
-| ESP32-2432S032C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   | I2C        | [GT911](assets/datasheets//GT911.pdf)     | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | yes |        | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
-| ESP32-3248S035R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 320x480 | 3.5"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | yes |        | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html)  |
-| ESP32-3248S035C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 320x480 | 3.5"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   | I2C        | [GT911](assets/datasheets//GT911.pdf)     | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | yes |        | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html)  |
-| ESP32-4827S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005004788147691.html)  |
-| ESP32-4827S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | I2C        | [GT911](assets/datasheets//GT911.pdf)     | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005004788147691.html)  |
-| ESP32-8048S043N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  |            | n/a                                       | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
-| ESP32-8048S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
-| ESP32-8048S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | I2C        | [GT911](assets/datasheets//GT911.pdf)     | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
-| ESP32-8048S050N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  |            | n/a                                       | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
-| ESP32-8048S050C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | I2C        | [GT911](assets/datasheets//GT911.pdf)     | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
-| ESP32-8048S050R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
-| ESP32-8048S070N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  |            | n/a                                       | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html)  |
-| ESP32-8048S070C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | I2C        | [GT911](assets/datasheets//GT911.pdf)     | no                                        | no                                             | no   | no  |        | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html)  |
-| ESP32-4848S040C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 240x240 | 4.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | I2C        | [GT911](assets/datasheets//GT911.pdf)     | [NS4168](assets/datasheets/NS4168.pdf)    | no                                             | yes  | no  | yes    | [Ali Express](https://www.aliexpress.com/item/1005006320253803.html)  |
+| Type            | CPU                       | Flash | PSRAM | Cores/Speed | Display | Size        | Interface | Display controller                       | Interface  | Touch controller                          | Audio                                     | Flash                                          | LED  | CdS                                       | Relay  | Link                                                                  |
+|---              |---                        |---    |---    |--           |---      |--           |---        |---                                       |---         |---                                        |---                                        |---                                             |---   |---                                        |---     |---                                                                    |
+| ESP32_1732S019N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 170x320 | 1.9"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   |            | n/a                                       | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html)  |
+| ESP32_1732S019C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 170x320 | 1.9"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   | I2C        | [GT911](assets/datasheets//GT911.pdf)     | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005005059421229.html)  |
+| ESP32-2424S012N | ESP32-C3-MINI-1U-XXN4     | 4Mb   | n/a   | 1 x 160Mhz  | 240x240 | 1.2" round  | SPI       | [GC9A01A](assets/datasheets/GC9A01A.pdf) |            | n/a                                       | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html)  |
+| ESP32-2424S012C | ESP32-C3-MINI-1U-XXN4     | 4Mb   | n/a   | 1 x 160Mhz  | 240x240 | 1.2" round  | SPI       | [GC9A01A](assets/datasheets/GC9A01A.pdf) | I2C        | [CST816S](assets/datasheets/CST816S.pdf)  | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005005453515690.html)  |
+| ESP32-2432S024N | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"        | SPI       | [ILI9341](assets/datasheets/ILI9341.pdf) |            | n/a                                       | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | [GT36516](assets/datasheets//GT36516.pdf) |        | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
+| ESP32-2432S024R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"        | SPI       | [ILI9341](assets/datasheets/ILI9341.pdf) | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | [GT36516](assets/datasheets//GT36516.pdf) |        | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
+| ESP32-2432S024C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.4"        | SPI       | [ILI9341](assets/datasheets/ILI9341.pdf) | I2C        | [CST816S](assets/datasheets/CST816S.pdf)  | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | [GT36516](assets/datasheets//GT36516.pdf) |        | [Ali Express](https://www.aliexpress.com/item/1005005865107357.html)  |
+| ESP32-2432S028R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 2.8"        | SPI       | [ILI9341](assets/datasheets/ILI9341.pdf) | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | [GT36516](assets/datasheets//GT36516.pdf) |        | [Ali Express](https://www.aliexpress.com/item/1005004502250619.html)  |
+| ESP32-2432S032N | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   |            | n/a                                       | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | [GT36516](assets/datasheets//GT36516.pdf) |        | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
+| ESP32-2432S032R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | [GT36516](assets/datasheets//GT36516.pdf) |        | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
+| ESP32-2432S032C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 240x320 | 3.2"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   | I2C        | [GT911](assets/datasheets//GT911.pdf)     | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | [GT36516](assets/datasheets//GT36516.pdf) |        | [Ali Express](https://www.aliexpress.com/item/1005006224494145.html)  |
+| ESP32-3248S035R | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 320x480 | 3.5"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | [GT36516](assets/datasheets//GT36516.pdf) |        | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html)  |
+| ESP32-3248S035C | ESP32-WROOM-32            | 4Mb   | n/a   | 2 x 240Mhz  | 320x480 | 3.5"        | SPI       | [ST7796](assets/datasheets/ST7796.pdf)   | I2C        | [GT911](assets/datasheets//GT911.pdf)     | [FM8002A](assets/datasheets/FM8002A.pdf)  | [W25Q32JV](assets/datasheets/25Q32JVSSIQ.pdf)  | RGB  | [GT36516](assets/datasheets//GT36516.pdf) |        | [Ali Express](https://www.aliexpress.com/item/1005004632953455.html)  |
+| ESP32-4827S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005004788147691.html)  |
+| ESP32-4827S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 480x272 | 4.3"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | I2C        | [GT911](assets/datasheets//GT911.pdf)     | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005004788147691.html)  |
+| ESP32-8048S043N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  |            | n/a                                       | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
+| ESP32-8048S043R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
+| ESP32-8048S043C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 4.3"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | I2C        | [GT911](assets/datasheets//GT911.pdf)     | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005006110360174.html)  |
+| ESP32-8048S050N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  |            | n/a                                       | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
+| ESP32-8048S050C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | I2C        | [GT911](assets/datasheets//GT911.pdf)     | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
+| ESP32-8048S050R | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 5.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | SPI        | [XPT2046](assets/datasheets/XPT2046.pdf)  | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005005938915207.html)  |
+| ESP32-8048S070N | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  |            | n/a                                       | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html)  |
+| ESP32-8048S070C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 800x480 | 7.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | I2C        | [GT911](assets/datasheets//GT911.pdf)     | no                                        | no                                             | no   | no                                        |        | [Ali Express](https://www.aliexpress.com/item/1005005928865239.html)  |
+| ESP32-4848S040C | ESP32-S3-WROOM-1-MCN16R8  | 16Mb  | 8Mb   | 2 x 240Mhz  | 240x240 | 4.0"        | Direct    | [ST7701](assets/datasheets/ST7701S.pdf)  | I2C        | [GT911](assets/datasheets//GT911.pdf)     | [NS4168](assets/datasheets/NS4168.pdf)    | no                                             | yes  | no                                        | yes    | [Ali Express](https://www.aliexpress.com/item/1005006320253803.html)  |
 
 >[!IMPORTANT]
 >The additional flash chip (W25Q32JV) is not always mounted on the board.
@@ -404,10 +405,35 @@ The library exposes the following functions.
 This is the first function that needs to be called.
 It initializes the display controller and touch controller and will turn on the display at 50% brightness.
 
-### void smartdisplay_tft_set_backlight(float duty)
+### void smartdisplay_lcd_set_backlight(float duty)
 
-Set the brightness of the backlight display.
+Set the brightness of the backlight display. The timer used has 13 bits (0 - 8191) but this is converted into a float so the value can be set in percent..
 The range is from [0, 1] so 0 is off, 0.5 is half and 1 is full brightness.
+
+### void smartdisplay_lcd_set_auto_brightness(bool enable)
+
+If the board has a CdS sensor, auto brightness is by default enabled. This function allows to en/disable this functionality.
+When disabling, the board is set to 50% brightness.
+
+### void smartdisplay_led_set_rgb(bool r, bool g, bool b)
+
+If the board has a RGB led, this function controls the on/off state of the RGB leds.
+A true value means: ON (LED is lit), false turns off the led.
+
+This function allows only 8 LED colors:
+
+| R   | G   | B   | Color   |
+|---  |---  |---  |---      |
+| 0   | 0   | 0   | Black   |
+| 1   | 0   | 0   | Red     |
+| 0   | 1   | 0   | Green   |
+| 0   | 0   | 1   | Blue    |
+| 1   | 1   | 0   | Yellow  |
+| 1   | 0   | 1   | Magenta |
+| 0   | 1   | 1   | Cyan    |
+| 1   | 1   | 1   | White   |
+
+![RGB Mix](assets/images/RGB.png)
 
 ## Rotation of the display and touch
 
@@ -421,7 +447,7 @@ Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL lib
   lv_disp_set_rotation(disp, LV_DISP_ROT_90);
 ```
 
-Some boards are around that have flipped screens, this is probably due to differences during tha manufacturing or using different TFTs. It is possible to correct these boards overriding the default defines.
+Some boards are around that have flipped screens, this is probably due to differences during tha manufacturing or using different LCDs. It is possible to correct these boards overriding the default defines.
 However if this is encountered a separate board definition is preferable.
 
 ## Controlling the RGB led
@@ -490,25 +516,28 @@ ESP_ARDUINO_VERSION_MAJOR >= 3
 >Not all boards have a light sensor. Refer to the [supported boards](#supported-boards) to see if this is available.
 
 If the board has a CDS photo resistor (Cadmium Sulfide, CdS) light sensor, the define ```BOARD_HAS_CDS``` is defined.
-It is attached to the analogue input of the ESP32 with two resistors between the GND and the VCC. When the CDS is covered, it's resistance is in the order of mega&Omega; but in bright light can drop to a few 100&Omega;.
+It is attached to the analogue input of the ESP32 with a voltage divider of two 1 M&Omega; resistors between the GND and the VCC 3.3V). When the CDS is covered, it's resistance is in the order of mega&Omega; but in bright light can drop to a few 5-10k&Omega;.
 
 ![CDS](assets/images/CDS.png)
 
-To use the sensor, the define ```BOARD_HAS_CDS``` indicates the analogue port to read.
-Setting the port to input and the attenuation is already done in the [smartdisplay_init()](#void-smartdisplay_init) function. 
+So, see the [GT36516](assets/datasheets/GT36516.pdf) specifications: Dark = 0.3M, Light 5k. Theory: voltage between 1.28V (dark) and 16mV (light).
+
+To use the sensor, the define ```CDS_GPIO``` indicates the analogue port to read.
+Setting the port to input and the attenuation is already done in the [smartdisplay_init()](#void-smartdisplay_init) function.
 
 ```c++
-  analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
+  // 0dB(1.0x) 0~800mV, 1V input => ADC reading of 1088
+  analogSetAttenuation(ADC_0db);
   pinMode(CDS_GPIO, INPUT);
 ```
 
 Next, read the value using:
 
 ```c++
-  auto value = analogReadMilliVolts(CDS_GPIO);
+  auto value = analogRead(CDS_GPIO);
 ```
 
-The value ranges from approximately 75mV (not covered) to 400mV (completely covered).
+In practice the value ranges from 0 (some light) to over 1000. The practical range is from [0 - 200].
 
 ## Controlling the speaker
 
@@ -1520,7 +1549,7 @@ The following libraries are used from the EspressIf registry:
   - Use C instead of cpp
 - October 2023
   - Added support for esp32_8048S034N/C
-  - Added option for flipped/mirrored TFT's
+  - Added option for flipped/mirrored LCD's
   - Changed default RGB order to BGR
   - Version 1.0.8 and 1.0.9
 - September 2023
