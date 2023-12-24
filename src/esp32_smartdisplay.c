@@ -30,7 +30,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, LCD_MIRROR_Y));
-#endif    
+#endif
 #if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_X, LCD_GAP_Y));
 #endif
@@ -43,7 +43,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !LCD_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !LCD_MIRROR_X, LCD_MIRROR_Y));
-#endif    
+#endif
 #if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_Y, LCD_GAP_X));
 #endif
@@ -56,7 +56,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !LCD_MIRROR_X, !LCD_MIRROR_Y));
-#endif    
+#endif
 #if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_X, LCD_GAP_Y));
 #endif
@@ -69,7 +69,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !LCD_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, !LCD_MIRROR_Y));
-#endif    
+#endif
 #if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_Y, LCD_GAP_X));
 #endif
@@ -79,6 +79,35 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 #endif
     break;
   }
+}
+
+// See: https://www.maximintegrated.com/en/design/technical-documents/app-notes/5/5296.html
+
+touch_calibration_data_t touch_calibration_data;
+
+void lvgl_touch_calibration_transform(lv_indev_drv_t *drv, lv_indev_data_t *data)
+{
+  if (touch_calibration_data.is_valid)
+  {
+    lv_point_t pt = {
+        .x = roundf((float)data->point.x * touch_calibration_data.a + (float)data->point.y * touch_calibration_data.b + touch_calibration_data.c),
+        .y = roundf((float)data->point.x * touch_calibration_data.d + (float)data->point.y * touch_calibration_data.e + touch_calibration_data.f)};
+    data->point = pt;
+  }
+}
+
+void lvgl_compute_touch_calibration(lv_point_t screen[3], lv_point_t touch[3])
+{
+  const float divisor = touch[0].x * (touch[2].y - touch[1].y) - touch[1].x * touch[2].y + touch[1].y * touch[2].x + touch[0].y * (touch[1].x - touch[2].x);
+  touch_calibration_data_t result = {
+      .is_valid = true,
+      .a = (screen[0].x * (touch[2].y - touch[1].y) - screen[1].x * touch[2].y + screen[2].x * touch[1].y + (screen[1].x - screen[2].x) * touch[0].y) / divisor,
+      .b = (screen[0].x * (touch[2].x - touch[1].x) - screen[1].x * touch[2].x + screen[2].x * touch[1].x + (screen[1].x - screen[2].x) * touch[0].x) / divisor,
+      .c = (screen[0].x * (touch[1].y * touch[2].x - touch[1].x * touch[2].y) + touch[0].x * (screen[1].x * touch[2].y - screen[2].x * touch[1].y) + touch[0].y * (screen[2].x * touch[1].x - screen[1].x * touch[2].x)) / divisor,
+      .d = (screen[0].y * (touch[2].y - touch[1].y) - screen[1].y * touch[2].y + screen[2].y * touch[1].y + (screen[1].y - screen[2].y) * touch[0].y) / divisor,
+      .e = (screen[0].y * (touch[2].x - touch[1].x) - screen[1].y * touch[2].x + screen[2].y * touch[1].x + (screen[1].y - screen[2].y) * touch[0].x) / divisor,
+      .f = (screen[0].y * (touch[1].y * touch[2].x - touch[1].x * touch[2].y) + touch[0].x * (screen[1].y * touch[2].y - screen[2].y * touch[1].y) + touch[0].y * (screen[2].y * touch[1].x - screen[1].y * touch[2].x)) / divisor};
+  touch_calibration_data = result;
 }
 
 void smartdisplay_init()
@@ -142,6 +171,7 @@ void smartdisplay_init()
   lv_indev_drv_init(&indev_drv);
   indev_drv.disp = display;
   lvgl_touch_init(&indev_drv);
+  indev_drv.read_cb = lvgl_touch_calibration_transform;
   lv_indev_drv_register(&indev_drv);
 #endif
 
