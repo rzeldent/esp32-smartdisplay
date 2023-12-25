@@ -36,13 +36,19 @@ extern "C"
     // Set the brightness of the backlight display
     void smartdisplay_lcd_set_backlight(float duty); // [0, 1]
     // Set the brightness automatically based on the CdS sensor
- #ifdef BOARD_HAS_CDS
+#ifdef BOARD_HAS_CDS
     void smartdisplay_lcd_set_auto_brightness(bool enable);
 #endif
+#ifdef BOARD_HAS_RGB_LED
+    void smartdisplay_led_set_rgb(bool r, bool g, bool b);
+#endif
+#ifdef BOARD_HAS_TOUCH
     // Touch calibration
-    extern touch_calibration_data_t smartdisplay_touch_calibration_data;
+    extern touch_calibration_data_t smartdisplay_touch_calibration;
     void smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3]);
-    void smartdisplay_calibrate();
+    void smartdisplay_touch_calibrate();
+#endif
+
 #ifdef __cplusplus
 }
 #endif
