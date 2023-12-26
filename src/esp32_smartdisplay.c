@@ -4,16 +4,29 @@
 #include <esp_lcd_touch.h>
 #include <esp_lcd_panel_ops.h>
 
+// Defines for adaptive brightness adjustment
 #define BRIGHTNESS_UPDATE_INTERVAL 100
 #define BRIGHTNESS_SMOOTHING_MEASUREMENTS 100
-#define BRIGHTNESS_DARK_ZONE 100
+#define BRIGHTNESS_DARK_ZONE 250
 
-// Functions to be defined in the tft/touch driver
+// Defines for calibration
+#define CALIBRATION_CROSS_LENGTH 10
+
+// Functions to be defined in the lcd/touch driver
 extern void lvgl_tft_init(lv_disp_drv_t *drv);
 extern void lvgl_touch_init(lv_indev_drv_t *drv);
 
-static lv_disp_drv_t disp_drv;
-static lv_indev_drv_t indev_drv;
+// Static variables
+lv_disp_drv_t disp_drv;
+lv_indev_drv_t indev_drv;
+#ifdef BOARD_HAS_TOUCH
+touch_calibration_data_t touch_calibration_data;
+lv_point_t calibration_point;
+void (*driver_touch_read_cb)(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
+#endif
+#ifdef BOARD_HAS_CDS
+lv_timer_t *update_brightness_timer;
+#endif
 
 #if LV_USE_LOG
 void lvgl_log(const char *buf)
@@ -22,38 +35,12 @@ void lvgl_log(const char *buf)
 }
 #endif
 
-#ifdef BOARD_HAS_CDS
-static lv_timer_t *update_brightness_timer;
-
-static void update_brightness(lv_timer_t *timer)
-{
-  static float avgCds;
-  // Read CdS sensor
-  uint16_t sensorValue = analogRead(CDS_GPIO);
-  // Approximation of moving average for the sensor
-  avgCds -= avgCds / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
-  avgCds += sensorValue / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
-  // Section of interest is 0 = full light until ~500 darkish
-  int16_t lightValue = BRIGHTNESS_DARK_ZONE - avgCds;
-  if (lightValue < 0)
-    lightValue = 0;
-  // Set fixed percentage and variable based on CdS sensor
-  uint32_t pwmDuty = 0.01 * PWM_MAX_BCKL + (0.99 * PWM_MAX_BCKL / BRIGHTNESS_DARK_ZONE) * lightValue;
-  // Set backlight
-#if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcWrite(LCD_BCKL_GPIO, pwmDuty);
-#else
-  ledcWrite(PWM_CHANNEL_BCKL, pwmDuty);
-#endif
-}
-#endif
-
 // Called when driver parameters are updated (rotation)
 // Top of the display is top left when connector is at the bottom
 static void lvgl_update_callback(lv_disp_drv_t *drv)
 {
-  esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
-  esp_lcd_touch_handle_t touch_handle = indev_drv.user_data;
+  const esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
+  const esp_lcd_touch_handle_t touch_handle = indev_drv.user_data;
   switch (drv->rotated)
   {
   case LV_DISP_ROT_NONE:
@@ -111,90 +98,50 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
   }
 }
 
+// Calibration and touch point adjustment
 #ifdef BOARD_HAS_TOUCH
-touch_calibration_data_t smartdisplay_touch_calibration;
-void (*driver_touch_read_cb)(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
-
 // See: https://www.maximintegrated.com/en/design/technical-documents/app-notes/5/5296.html
 void lvgl_touch_calibration_transform(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
   // Call low level read from the driver
   driver_touch_read_cb(drv, data);
   // Check if transformation is required
-  if (smartdisplay_touch_calibration.valid && data->state == LV_INDEV_STATE_PRESSED)
+  if (touch_calibration_data.valid && data->state == LV_INDEV_STATE_PRESSED)
   {
     lv_point_t pt = {
-        .x = roundf(data->point.x * smartdisplay_touch_calibration.alphaX + data->point.y * smartdisplay_touch_calibration.betaX + smartdisplay_touch_calibration.deltaX),
-        .y = roundf(data->point.x * smartdisplay_touch_calibration.alphaY + data->point.y * smartdisplay_touch_calibration.betaY + smartdisplay_touch_calibration.deltaY)};
+        .x = roundf(data->point.x * touch_calibration_data.alphaX + data->point.y * touch_calibration_data.betaX + touch_calibration_data.deltaX),
+        .y = roundf(data->point.x * touch_calibration_data.alphaY + data->point.y * touch_calibration_data.betaY + touch_calibration_data.deltaY)};
     log_i("Calibrate point (%d, %d) => (%d, %d)", data->point.x, data->point.y, pt.x, pt.y);
-    data->point.x = pt.x;
-    data->point.y = pt.y;
+    data->point = (lv_point_t){pt.x, pt.y};
   }
 }
 
 void smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3])
 {
-  smartdisplay_touch_calibration.valid = false;
+  touch_calibration_data.valid = false;
   const float delta = ((touch[0].x - touch[2].x) * (touch[1].y - touch[2].y)) - ((touch[1].x - touch[2].x) * (touch[0].y - touch[2].y));
-  smartdisplay_touch_calibration.alphaX = (((screen[0].x - screen[2].x) * (touch[1].y - touch[2].y)) - ((screen[1].x - screen[2].x) * (touch[0].y - touch[2].y))) / delta;
-  smartdisplay_touch_calibration.betaX = (((touch[0].x - touch[2].x) * (screen[1].x - screen[2].x)) - ((touch[1].x - touch[2].x) * (screen[0].x - screen[2].x))) / delta;
-  smartdisplay_touch_calibration.deltaX = ((screen[0].x * ((touch[1].x * touch[2].y) - (touch[2].x * touch[1].y))) - (screen[1].x * ((touch[0].x * touch[2].y) - (touch[2].x * touch[0].y))) + (screen[2].x * ((touch[0].x * touch[1].y) - (touch[1].x * touch[0].y)))) / delta;
-  smartdisplay_touch_calibration.alphaY = (((screen[0].y - screen[2].y) * (touch[1].y - touch[2].y)) - ((screen[1].y - screen[2].y) * (touch[0].y - touch[2].y))) / delta;
-  smartdisplay_touch_calibration.betaY = (((touch[0].x - touch[2].x) * (screen[1].y - screen[2].y)) - ((touch[1].x - touch[2].x) * (screen[0].y - screen[2].y))) / delta;
-  smartdisplay_touch_calibration.deltaY = ((screen[0].y * (touch[1].x * touch[2].y - touch[2].x * touch[1].y)) - (screen[1].y * (touch[0].x * touch[2].y - touch[2].x * touch[0].y)) + (screen[2].y * (touch[0].x * touch[1].y - touch[1].x * touch[0].y))) / delta;
+  touch_calibration_data = (touch_calibration_data_t){
+      .valid = true,
+      .alphaX = (((screen[0].x - screen[2].x) * (touch[1].y - touch[2].y)) - ((screen[1].x - screen[2].x) * (touch[0].y - touch[2].y))) / delta,
+      .betaX = (((touch[0].x - touch[2].x) * (screen[1].x - screen[2].x)) - ((touch[1].x - touch[2].x) * (screen[0].x - screen[2].x))) / delta,
+      .deltaX = ((screen[0].x * ((touch[1].x * touch[2].y) - (touch[2].x * touch[1].y))) - (screen[1].x * ((touch[0].x * touch[2].y) - (touch[2].x * touch[0].y))) + (screen[2].x * ((touch[0].x * touch[1].y) - (touch[1].x * touch[0].y)))) / delta,
+      .alphaY = (((screen[0].y - screen[2].y) * (touch[1].y - touch[2].y)) - ((screen[1].y - screen[2].y) * (touch[0].y - touch[2].y))) / delta,
+      .betaY = (((touch[0].x - touch[2].x) * (screen[1].y - screen[2].y)) - ((touch[1].x - touch[2].x) * (screen[0].y - screen[2].y))) / delta,
+      .deltaY = ((screen[0].y * (touch[1].x * touch[2].y - touch[2].x * touch[1].y)) - (screen[1].y * (touch[0].x * touch[2].y - touch[2].x * touch[0].y)) + (screen[2].y * (touch[0].x * touch[1].y - touch[1].x * touch[0].y))) / delta,
+  };
 
-  log_i("Calibration (alphaX,betaX,deltaX,alphaY,betaY,deltaY) = (%f, %f, %f, %f, %f, %f)", smartdisplay_touch_calibration.alphaX, smartdisplay_touch_calibration.betaX, smartdisplay_touch_calibration.deltaX, smartdisplay_touch_calibration.alphaY, smartdisplay_touch_calibration.betaY, smartdisplay_touch_calibration.deltaY);
-  smartdisplay_touch_calibration.valid = true;
+  log_i("Calibration (alphaX, betaX, deltaX, alphaY, betaY, deltaY) = (%f, %f, %f, %f, %f, %f)", touch_calibration_data.alphaX, touch_calibration_data.betaX, touch_calibration_data.deltaX, touch_calibration_data.alphaY, touch_calibration_data.betaY, touch_calibration_data.deltaY);
 };
 
-#define CROSS_LENGHT 10
-#define READ_CALIBRATE_POINTS 40
-
-float calibrate_avg_x, calibrate_avg_y;
-volatile bool calibrate_capturing_done = false;
-volatile uint calibrate_points;
-
-void lvgl_touch_calibrate_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
+void btn_click_action_calibration(lv_event_t *event)
 {
-  static bool lastPressed = false;
-  // Call low level read from the driver
-  driver_touch_read_cb(drv, data);
-  // Approximation of moving average for the sensor
-  if (data->state == LV_INDEV_STATE_PRESSED)
+  if (event)
   {
-    if (!lastPressed)
-    {
-      lastPressed = true;
-      calibrate_points = 0;
-      calibrate_avg_x = data->point.x;
-      calibrate_avg_y = data->point.y;
-    }
-    else
-    {
-      calibrate_avg_x -= calibrate_avg_x / READ_CALIBRATE_POINTS;
-      calibrate_avg_x += (float)data->point.x / READ_CALIBRATE_POINTS;
-      calibrate_avg_y -= calibrate_avg_y / READ_CALIBRATE_POINTS;
-      calibrate_avg_y += (float)data->point.y / READ_CALIBRATE_POINTS;
-    }
-    calibrate_points++;
-
-    log_i("Calibrate got point %3d: (%d, %d). Average: (%d, %d)", calibrate_points, data->point.x, data->point.y, (lv_coord_t)calibrate_avg_x, (lv_coord_t)calibrate_avg_y);
+    // Get the hardware coordinates from the driver here.
+    lv_indev_t *indev = lv_indev_get_act();
+    lv_indev_get_point(indev, &calibration_point);
+    log_i("Calibration touch at %d, %d\n", calibration_point.x, calibration_point.y);
   }
-  else
-  {
-    if (lastPressed)
-    {
-      lastPressed = false;
-      if (calibrate_points > READ_CALIBRATE_POINTS)
-      {
-        calibrate_capturing_done = true;
-      }
-    }
-  }
-
-  // Do not pass data to LVGL
-  data->state = LV_INDEV_STATE_RELEASED;
-  data->point = (lv_point_t){0, 0};
 }
 
 void smartdisplay_touch_calibrate()
@@ -202,43 +149,49 @@ void smartdisplay_touch_calibrate()
   log_i("Starting calibration");
 
   // Disable calibration adjustment
-  smartdisplay_touch_calibration.valid = false;
-
-  // Save orginal read callback
-  void (*original_read_cb)(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *data) = indev_drv.read_cb;
-  indev_drv.read_cb = lvgl_touch_calibrate_cb;
+  touch_calibration_data.valid = false;
 
   // Create screen points
   const lv_point_t screen_pt[] = {
-      {.x = CROSS_LENGHT, .y = CROSS_LENGHT},               // X=~0, Y=~0
-      {.x = LCD_WIDTH - CROSS_LENGHT, .y = LCD_HEIGHT / 2}, // X=~Max, Y=~Max/2
-      {.x = CROSS_LENGHT, .y = LCD_HEIGHT - CROSS_LENGHT}}; // X=~0, Y=~Max
+      {.x = CALIBRATION_CROSS_LENGTH, .y = CALIBRATION_CROSS_LENGTH},               // X=~0, Y=~0
+      {.x = LCD_WIDTH - CALIBRATION_CROSS_LENGTH, .y = LCD_HEIGHT / 2}, // X=~Max, Y=~Max/2
+      {.x = CALIBRATION_CROSS_LENGTH, .y = LCD_HEIGHT - CALIBRATION_CROSS_LENGTH}}; // X=~0, Y=~Max
 
   // Results for touch points
   lv_point_t touch_pt[sizeof(screen_pt) / sizeof(lv_point_t)];
 
+  // Save the old screen
   lv_obj_t *oldscreen = lv_scr_act();
 
+  // Create a calibration screen, full size!
   lv_obj_t *cal_screen = lv_obj_create(NULL);
   lv_obj_remove_style(cal_screen, NULL, LV_PART_ANY | LV_STATE_ANY);
   lv_obj_set_size(cal_screen, LV_HOR_RES, LV_VER_RES);
   lv_scr_load(cal_screen);
 
+  // Make the screen one big button
+  lv_obj_t *big_btn = lv_btn_create(cal_screen);
+  lv_obj_remove_style(big_btn, NULL, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_size(big_btn, LV_HOR_RES, LV_VER_RES);
+  // lv_obj_set_style_opa(big_btn, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT); // Opacity zero
+  lv_obj_add_event_cb(big_btn, btn_click_action_calibration, LV_EVENT_CLICKED, NULL);
+  lv_obj_set_layout(big_btn, 0); // Disable layout of children. The first registered layout starts at 1
+
   lv_point_t *pt = (lv_point_t *)&screen_pt;
   for (int p = 0; p < sizeof(screen_pt) / sizeof(lv_point_t); p++, pt++)
   {
     // Clear the screen
-    lv_obj_clean(cal_screen);
+    lv_obj_clean(big_btn);
     delay(1000);
     log_i("Calibrate screen point %d: (%d, %d)", p, pt->x, pt->y);
 
     // Cross
     lv_point_t line_points[] = {
-        {pt->x - CROSS_LENGHT, pt->y},
-        {pt->x + CROSS_LENGHT, pt->y},
+        {pt->x - CALIBRATION_CROSS_LENGTH, pt->y},
+        {pt->x + CALIBRATION_CROSS_LENGTH, pt->y},
         {pt->x, pt->y},
-        {pt->x, pt->y - CROSS_LENGHT},
-        {pt->x, pt->y + CROSS_LENGHT}};
+        {pt->x, pt->y - CALIBRATION_CROSS_LENGTH},
+        {pt->x, pt->y + CALIBRATION_CROSS_LENGTH}};
 
     // Create style
     lv_style_t style_line;
@@ -246,38 +199,78 @@ void smartdisplay_touch_calibrate()
     lv_style_set_line_width(&style_line, 3);
     lv_style_set_line_color(&style_line, lv_color_black());
 
-    lv_obj_t *cross = lv_line_create(cal_screen);
+    lv_obj_t *cross = lv_line_create(big_btn);
     lv_line_set_points(cross, line_points, sizeof(line_points) / sizeof(lv_point_t));
     lv_obj_add_style(cross, &style_line, 0);
     lv_obj_align(cross, LV_ALIGN_TOP_LEFT, 0, 0);
 
-    calibrate_points = 0;
-    calibrate_capturing_done = false;
-    while (!calibrate_capturing_done)
-    {
-      if (calibrate_points > READ_CALIBRATE_POINTS)
-      {
-        lv_obj_remove_style(cross, &style_line, 0);
-        lv_style_set_line_color(&style_line, lv_palette_main(LV_PALETTE_GREEN));
-        lv_obj_add_style(cross, &style_line, 0);
-      }
-
+    calibration_point = (lv_point_t){-1, -1};
+    while (calibration_point.y == -1)
       lv_timer_handler();
-    }
 
+    touch_pt[p] = calibration_point;
     lv_obj_del(cross);
     lv_timer_handler();
-    touch_pt[p].x = calibrate_avg_x;
-    touch_pt[p].y = calibrate_avg_y;
+
     log_i("Result %d: Screen (%d,%d), Touch (%d, %d)", p, pt->x, pt->y, touch_pt[p].x, touch_pt[p].y);
   }
 
   // Calculate the transform parameters
   smartdisplay_compute_touch_calibration(screen_pt, touch_pt);
-  // Restore original read callback
-  indev_drv.read_cb = original_read_cb;
 }
 #endif
+
+// Backlight
+void smartdisplay_lcd_set_backlight(float duty)
+{
+  if (duty > 1.0)
+    duty = 1.0f;
+  if (duty < 0.0)
+    duty = 0.0f;
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
+  ledcWrite(LCD_BCKL_GPIO, duty * PWM_MAX_BCKL);
+#else
+  ledcWrite(PWM_CHANNEL_BCKL, duty * PWM_MAX_BCKL);
+#endif
+}
+
+#ifdef BOARD_HAS_CDS
+// Read CdS sensor and return a value for the screen brightness
+float smartdisplay_lcd_adaptive_brightness_cds()
+{
+  static float avgCds;
+  // Read CdS sensor
+  uint16_t sensorValue = analogRead(CDS_GPIO);
+  // Approximation of moving average for the sensor
+  avgCds -= avgCds / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
+  avgCds += sensorValue / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
+  // Section of interest is 0 (full light) until ~500 (darkish)
+  int16_t lightValue = BRIGHTNESS_DARK_ZONE - avgCds;
+  if (lightValue < 0)
+    lightValue = 0;
+  // Set fixed percentage and variable based on CdS sensor
+  return 0.01 + (0.99 / BRIGHTNESS_DARK_ZONE) * lightValue;
+}
+#endif
+
+void adaptive_brightness(lv_timer_t *timer)
+{
+  const smartdisplay_lcd_adaptive_brightness_cb_t callback = timer->user_data;
+  smartdisplay_lcd_set_backlight(callback());
+}
+
+void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval)
+{
+  // Delete current timer if any
+  if (update_brightness_timer)
+    lv_timer_del(update_brightness_timer);
+
+  // Use callback for intensity or 50% default
+  if (cb && interval > 0)
+    update_brightness_timer = lv_timer_create(adaptive_brightness, interval, cb);
+  else
+    smartdisplay_lcd_set_backlight(0.5f);
+}
 
 #ifdef BOARD_HAS_RGB_LED
 void smartdisplay_led_set_rgb(bool r, bool g, bool b)
@@ -345,8 +338,8 @@ void smartdisplay_init()
   lv_obj_clean(lv_scr_act());
 
 #ifdef BOARD_HAS_CDS
-  // Enable auto brightness
-  update_brightness_timer = lv_timer_create(update_brightness, BRIGHTNESS_UPDATE_INTERVAL, NULL);
+  // Enable auto brightness based on CdS
+  smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cds, BRIGHTNESS_UPDATE_INTERVAL);
 #else
   // Turn backlight on (50%)
   smartdisplay_lcd_set_backlight(0.5f);
@@ -361,33 +354,10 @@ void smartdisplay_init()
   // Chain calibration handler for calibration
   driver_touch_read_cb = indev_drv.read_cb;
   indev_drv.read_cb = lvgl_touch_calibration_transform;
-  lv_indev_drv_register(&indev_drv);
+  lv_indev_t *input_device = lv_indev_drv_register(&indev_drv);
 #endif
   // Register callback for changes to the driver parameters
   disp_drv.drv_update_cb = lvgl_update_callback;
   // Call the callback to set the rotation
   lvgl_update_callback(&disp_drv);
-}
-
-#ifdef BOARD_HAS_CDS
-void smartdisplay_lcd_set_auto_brightness(bool enable)
-{
-  if (enable)
-    lv_timer_resume(update_brightness_timer);
-  else
-  {
-    lv_timer_pause(update_brightness_timer);
-    smartdisplay_lcd_set_backlight(0.5);
-  }
-}
-#endif
-
-void smartdisplay_lcd_set_backlight(float duty)
-{
-  log_i("Set backlight PWM ratio to: %.2f%%", duty * 100);
-#if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcWrite(LCD_BCKL_GPIO, dut * PWM_MAX_BCKL);
-#else
-  ledcWrite(PWM_CHANNEL_BCKL, duty * PWM_MAX_BCKL);
-#endif
 }

@@ -410,10 +410,23 @@ It initializes the display controller and touch controller and will turn on the 
 Set the brightness of the backlight display. The timer used has 13 bits (0 - 8191) but this is converted into a float so the value can be set in percent..
 The range is from [0, 1] so 0 is off, 0.5 is half and 1 is full brightness.
 
-### void smartdisplay_lcd_set_auto_brightness(bool enable)
+### void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval)
 
-If the board has a CdS sensor, auto brightness is by default enabled. This function allows to en/disable this functionality.
-When disabling, the board is set to 50% brightness.
+This function can be called to periodically call a user defined function to set the brightness of the display. If a NULL value is passed for the parameter ```cb``` the functionality is disabled.
+The callback function must have the following format:
+
+```cpp
+float smartdisplay_lcd_adaptive_brightness_function)()
+{
+  ...
+  return <float[0,1]>
+}
+```
+
+If the board has a CdS sensor, a callback is automatically enabled. The callback is set to the internal function ```smartdisplay_lcd_adaptive_brightness_cds```.
+This function will adjust the brightness to the value read from the CdS sensor on the front of the display.
+
+When disabling (calling wil), the board is set to 50% brightness.
 
 ### void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 
