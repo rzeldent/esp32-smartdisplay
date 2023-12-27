@@ -82,7 +82,7 @@ This library depends on:
 
 ## How to use
 
-Get started by following the steps below. It is also highly recommended to look at the demo application [esp32-smartdisplay-demo](https://github.com/rzeldent/esp32-smartdisplay-demo/tree/feature/esp32s3) to quickly see the possibilities of this library.
+Get started by following the steps below. It is also highly recommended to look at the demo application [esp32-smartdisplay-demo](https://github.com/rzeldent/esp32-smartdisplay-demo) to quickly see the possibilities of this library.
 
 ![Demo screen](assets/images/PXL_20231130_225143662.jpg)
 
@@ -275,7 +275,7 @@ If there are problems:
 
 - Read this manual again to see if all the steps were followed
 - Check if you installed the board definition(s) correctly, [see](#step-2-create-a-new-project)
-- Check if the [demo application works](https://github.com/rzeldent/esp32-smartdisplay-demo/tree/feature/esp32s3) and look for differences
+- Check if the [demo application works](https://github.com/rzeldent/esp32-smartdisplay-demo) and look for differences
 - Check if it is a known or previously resolved issue in the [issues](https://github.com/rzeldent/esp32-smartdisplay/issues)
 - Refer to the [discussions](https://github.com/rzeldent/esp32-smartdisplay/discussions)
 - If all fails, submit an [issue](https://github.com/rzeldent/esp32-smartdisplay/issues), no SLA as this is done in my spare time.
