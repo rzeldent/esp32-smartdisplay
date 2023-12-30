@@ -171,7 +171,7 @@ void lvgl_touch_calibration_transform(lv_indev_drv_t *drv, lv_indev_data_t *data
   }
 }
 
-touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3]);
+touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3])
 {
   touch_calibration_data.valid = false;
   const float delta = ((touch[0].x - touch[2].x) * (touch[1].y - touch[2].y)) - ((touch[1].x - touch[2].x) * (touch[0].y - touch[2].y));
