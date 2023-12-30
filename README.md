@@ -252,7 +252,7 @@ These steps should make it possible to run your application on the display!
 If there are problems:
 
 - Read this manual again to see if all the steps were followed,
-- Check if you installed the board definition(s) correctly, [see](#step 2-boards-definitions),
+- Check if you installed the board definition(s) correctly, [see](#step-2-boards-definitions),
 - Check if the [demo application works](https://github.com/rzeldent/esp32-smartdisplay-demo/tree/feature/esp32s3) and look for differences,
 - Check if it is a known or previously resolved issue in the [issues](https://github.com/rzeldent/esp32-smartdisplay/issues),
 - Refer to the [discussions](https://github.com/rzeldent/esp32-smartdisplay/discussions),
