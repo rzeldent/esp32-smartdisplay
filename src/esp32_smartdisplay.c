@@ -140,6 +140,15 @@ void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_
     smartdisplay_lcd_set_backlight(0.5f);
 }
 
+#ifdef BOARD_HAS_RGB_LED
+void smartdisplay_led_set_rgb(bool r, bool g, bool b)
+{
+  digitalWrite(LED_R_GPIO, !r);
+  digitalWrite(LED_G_GPIO, !g);
+  digitalWrite(LED_B_GPIO, !b);
+}
+#endif
+
 void smartdisplay_init()
 {
 #ifdef BOARD_HAS_RGB_LED

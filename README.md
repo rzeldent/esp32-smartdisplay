@@ -322,6 +322,26 @@ float smartdisplay_lcd_adaptive_brightness_function)()
 If the board has a CdS sensor, a callback is automatically enabled. The callback is set to the internal function ```smartdisplay_lcd_adaptive_brightness_cds```.
 This function will adjust the brightness to the value read from the CdS sensor on the front of the display.
 
+### void smartdisplay_led_set_rgb(bool r, bool g, bool b)
+
+If the board has a RGB led, this function controls the on/off state of the RGB leds.
+A true value means: ON (LED is lit), false turns off the led.
+
+This function allows only 8 LED colors:
+
+| R   | G   | B   | Color   |
+|---  |---  |---  |---      |
+| 0   | 0   | 0   | Black   |
+| 1   | 0   | 0   | Red     |
+| 0   | 1   | 0   | Green   |
+| 0   | 0   | 1   | Blue    |
+| 1   | 1   | 0   | Yellow  |
+| 1   | 0   | 1   | Magenta |
+| 0   | 1   | 1   | Cyan    |
+| 1   | 1   | 1   | White   |
+
+![RGB Mix](assets/images/RGB.png)
+
 ## Rotation of the display and touch
 
 The library supports rotating for most of the controllers using hardware. Support for the direct 16bits parallel connection is done using software emulation (in LVGL).
