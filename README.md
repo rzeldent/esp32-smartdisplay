@@ -86,7 +86,6 @@ The board definitions required for this library are defined in the boards librar
 >If you already have a project, clone it with the ```git clone --recurse-submodules```. If creating a new project, use ```git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards``` to add them to your project as a submodule.
 
 ### Step 3: Create a new project
-
 Use the standard PlatformIO create project to start a new project. When using a new PlatformIO installation these boards, defined in [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton), are not present. Just use a known ESP32 board and correct this later in the platformIO file.
 
 Optionally, you can copy the boards definition to the ```<home>/.platformio\platforms\espressif32\boards``` directory to have them always available but it is probably easier to create the project, add the boards as a git submodule and change the board afterwards. For each supported board there is a board definition.
@@ -240,7 +239,6 @@ There is a good UI designer available for LVGL and free (but some limitations) f
 [![SquareLine Studio](assets/images/SquareLineStudio.png)](https://squareline.io/)
 
 This tool makes it easy to create transitions, insert images, attach events, work with round screens etc.. A big advantage is that the UI C-code is generated!
-
 SquareLine als provides drivers but only export the ui files!
 
 In the project settings change the include ```lvgl/lvgl.h``` to ```lvgl.h```.
@@ -322,6 +320,8 @@ float smartdisplay_lcd_adaptive_brightness_function)()
 If the board has a CdS sensor, a callback is automatically enabled. The callback is set to the internal function ```smartdisplay_lcd_adaptive_brightness_cds```.
 This function will adjust the brightness to the value read from the CdS sensor on the front of the display.
 
+If no CdS sensor is present, for example, the time of day can be used or sunrise/set.
+
 ### void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 
 If the board has a RGB led, this function controls the on/off state of the RGB leds.
@@ -341,6 +341,15 @@ This function allows only 8 LED colors:
 | 1   | 1   | 1   | White   |
 
 ![RGB Mix](assets/images/RGB.png)
+
+### touch_calibration_data_t touch_calibration_data
+
+This data structure holds the calibration data for the touch display. If the valid member is true, adjustments will be applied.
+
+### touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3])
+
+This function returns the calibration data based on 3 points. The screen array contains the (selected) calibration points on the screen and the touch array the actual measured position.
+The data returned can set in to the ```touch_calibration_data```
 
 ## Rotation of the display and touch
 
