@@ -10,7 +10,7 @@
 #define BRIGHTNESS_DARK_ZONE 250
 
 // Functions to be defined in the tft/touch driver
-extern void lvgl_tft_init(lv_disp_drv_t *drv);
+extern void lvgl_lcd_init(lv_disp_drv_t *drv);
 extern void lvgl_touch_init(lv_indev_drv_t *drv);
 
 static lv_disp_drv_t disp_drv;
@@ -200,7 +200,7 @@ void smartdisplay_init()
   // Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on (50%)
-  smartdisplay_tft_set_backlight(0.5f);
+  smartdisplay_lcd_tft_set_backlight(0.5f);
 
 // If there is a touch controller defined
 #ifdef BOARD_HAS_TOUCH
