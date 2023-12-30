@@ -5,7 +5,7 @@
 ## Supported boards
 
 These Sunton boards have an LCD display and most of them have a touch interface.
-More information, data sheets, ordering information etc. can be found at [Sunton Boards information](https://github.com/rzeldent/platformio-espressif32-sunton)
+More information, data sheets, ordering information etc. can be found at [Sunton Boards information](https://github.com/rzeldent/platformio-espressif32-sunton).
 
 - N = No touch
 - R = Resistive touch
@@ -57,7 +57,7 @@ Get started by following the steps below. It is also highly recommended to look 
 
 This demo provides:
 
-- UI created using the SquareLine Studio GUI generator.
+- User Interface created using the SquareLine Studio GUI generator.
 - Sound over I2S and internal DAC
 - Read the CdS (light sensor)
 - Control of the LEDs
@@ -80,7 +80,7 @@ Make sure you have PlatformIO installed and functional. Follow the documentation
 ### Step 2: Boards definitions
 The board definitions required for this library are defined in the boards library platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton). This library must reside in the ```<project>/boards``` directory so PlatformIo will automatically recognize these boards.
 
-It is recommended to use the git submodule to include these board definitions automatically.
+**It is recommended to use ```git submodule``` to include these board definitions automatically.**
 
 >[!TIP]
 >If you already have a project, clone it with the ```git clone --recurse-submodules```. If creating a new project, use ```git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards``` to add them to your project as a submodule.
@@ -95,7 +95,7 @@ Optionally, you can copy the boards definition to the ```<home>/.platformio\plat
 
 To add this library (and its dependency on LVGL) add the following line to the ```platformio.ini``` file:
 
-From the platformIO registry (version 2.0.0):
+From the platformIO registry (version 2.0.x):
 
 ```ini
 lib_deps = rzeldent/esp32_smartdisplay
@@ -210,7 +210,7 @@ The -Wall flag can also be removed but outputs all the warnings.
 
 ### Step 7: Initialize the display (and touch) in your project
 
-To enable to display in your project call the void ```smartdisplay_init()``` function at startup and set the orientation:
+To enable to display in your project call the void ```smartdisplay_init()``` function at startup and optionally set the orientation:
 
 ```cpp
 void setup()
@@ -239,8 +239,11 @@ There is a good UI designer available for LVGL and free (but some limitations) f
 
 [![SquareLine Studio](assets/images/SquareLineStudio.png)](https://squareline.io/)
 
-This tool makes it easy to create transitions, insert images, attach events, work with round screens etc..
-A big advantage is that the UI C-code is generated!
+This tool makes it easy to create transitions, insert images, attach events, work with round screens etc.. A big advantage is that the UI C-code is generated!
+
+SquareLine als provides drivers but only export the ui files!
+
+In the project settings change the include ```lvgl/lvgl.h``` to ```lvgl.h```.
 
 ## Step 9: Compile, upload and enjoy
 
@@ -248,11 +251,11 @@ These steps should make it possible to run your application on the display!
 
 If there are problems:
 
-- Read this manual again to see if all the steps were followed
-- Check if you installed the board definition(s) correctly, [see](#step 2-boards-definitions)
-- Check if the [demo application works](https://github.com/rzeldent/esp32-smartdisplay-demo/tree/feature/esp32s3) and look for differences
-- Check if it is a known or previously resolved issue in the [issues](https://github.com/rzeldent/esp32-smartdisplay/issues)
-- Refer to the [discussions](https://github.com/rzeldent/esp32-smartdisplay/discussions)
+- Read this manual again to see if all the steps were followed,
+- Check if you installed the board definition(s) correctly, [see](#step 2-boards-definitions),
+- Check if the [demo application works](https://github.com/rzeldent/esp32-smartdisplay-demo/tree/feature/esp32s3) and look for differences,
+- Check if it is a known or previously resolved issue in the [issues](https://github.com/rzeldent/esp32-smartdisplay/issues),
+- Refer to the [discussions](https://github.com/rzeldent/esp32-smartdisplay/discussions),
 - If all fails, submit an [issue](https://github.com/rzeldent/esp32-smartdisplay/issues), no SLA as this is done in my spare time.
 
 ## More on lv_conf.h
@@ -297,10 +300,27 @@ The library exposes the following functions.
 This is the first function that needs to be called.
 It initializes the display controller and touch controller and will turn on the display at 50% brightness.
 
-### void smartdisplay_tft_set_backlight(float duty)
+### void smartdisplay_lcd_set_backlight(float duty)
 
-Set the brightness of the backlight display.
+Set the brightness of the backlight display. The timer used has 13 bits (0 - 8191) but this is converted into a float so the value can be set in percent..
 The range is from [0, 1] so 0 is off, 0.5 is half and 1 is full brightness.
+
+### void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval)
+
+This function can be called to periodically call a user defined function to set the brightness of the display. If a NULL value is passed for the parameter ```cb``` the functionality is disabled and the display is set to 50% brightness.
+
+The callback function must have the following format:
+
+```cpp
+float smartdisplay_lcd_adaptive_brightness_function)()
+{
+  ...
+  return <float[0,1]>
+}
+```
+
+If the board has a CdS sensor, a callback is automatically enabled. The callback is set to the internal function ```smartdisplay_lcd_adaptive_brightness_cds```.
+This function will adjust the brightness to the value read from the CdS sensor on the front of the display.
 
 ## Rotation of the display and touch
 

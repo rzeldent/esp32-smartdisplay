@@ -27,7 +27,7 @@ static void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color1
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, color_map));
 };
 
-void lvgl_tft_init(lv_disp_drv_t *drv)
+void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
     // Hardware rotation is supported
     drv->sw_rotate = 0;

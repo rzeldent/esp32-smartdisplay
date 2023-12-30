@@ -4,12 +4,19 @@
 #include <esp_lcd_touch.h>
 #include <esp_lcd_panel_ops.h>
 
+// Defines for adaptive brightness adjustment
+#define BRIGHTNESS_UPDATE_INTERVAL 100
+#define BRIGHTNESS_SMOOTHING_MEASUREMENTS 100
+#define BRIGHTNESS_DARK_ZONE 250
+
 // Functions to be defined in the tft/touch driver
-extern void lvgl_tft_init(lv_disp_drv_t *drv);
+extern void lvgl_lcd_init(lv_disp_drv_t *drv);
 extern void lvgl_touch_init(lv_indev_drv_t *drv);
 
 static lv_disp_drv_t disp_drv;
 static lv_indev_drv_t indev_drv;
+
+lv_timer_t *update_brightness_timer;
 
 #if LV_USE_LOG
 void lvgl_log(const char *buf)
@@ -81,6 +88,58 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
   }
 }
 
+// Set backlight intensity
+void smartdisplay_lcd_set_backlight(float duty)
+{
+  if (duty > 1.0)
+    duty = 1.0f;
+  if (duty < 0.0)
+    duty = 0.0f;
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
+  ledcWrite(LCD_BCKL_GPIO, duty * PWM_MAX_BCKL);
+#else
+  ledcWrite(PWM_CHANNEL_BCKL, duty * PWM_MAX_BCKL);
+#endif
+}
+
+#ifdef BOARD_HAS_CDS
+// Read CdS sensor and return a value for the screen brightness
+float smartdisplay_lcd_adaptive_brightness_cds()
+{
+  static float avgCds;
+  // Read CdS sensor
+  uint16_t sensorValue = analogRead(CDS_GPIO);
+  // Approximation of moving average for the sensor
+  avgCds -= avgCds / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
+  avgCds += sensorValue / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
+  // Section of interest is 0 (full light) until ~500 (darkish)
+  int16_t lightValue = BRIGHTNESS_DARK_ZONE - avgCds;
+  if (lightValue < 0)
+    lightValue = 0;
+  // Set fixed percentage and variable based on CdS sensor
+  return 0.01 + (0.99 / BRIGHTNESS_DARK_ZONE) * lightValue;
+}
+#endif
+
+void adaptive_brightness(lv_timer_t *timer)
+{
+  const smartdisplay_lcd_adaptive_brightness_cb_t callback = timer->user_data;
+  smartdisplay_lcd_set_backlight(callback());
+}
+
+void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval)
+{
+  // Delete current timer if any
+  if (update_brightness_timer)
+    lv_timer_del(update_brightness_timer);
+
+  // Use callback for intensity or 50% default
+  if (cb && interval > 0)
+    update_brightness_timer = lv_timer_create(adaptive_brightness, interval, cb);
+  else
+    smartdisplay_lcd_set_backlight(0.5f);
+}
+
 void smartdisplay_init()
 {
 #ifdef BOARD_HAS_RGB_LED
@@ -129,12 +188,19 @@ void smartdisplay_init()
   void *drawBuffer = heap_caps_malloc(sizeof(lv_color16_t) * drawBufferPixels, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
   lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, drawBufferPixels);
   // Initialize specific driver
-  lvgl_tft_init(&disp_drv);
+  lvgl_lcd_init(&disp_drv);
   lv_disp_t *display = lv_disp_drv_register(&disp_drv);
+#ifdef BOARD_HAS_CDS
+  // Enable auto brightness based on CdS
+  smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cds, BRIGHTNESS_UPDATE_INTERVAL);
+#else
+  // Turn backlight on (50%)
+  smartdisplay_lcd_set_backlight(0.5f);
+#endif  
   // Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on (50%)
-  smartdisplay_tft_set_backlight(0.5f);
+  smartdisplay_lcd_set_backlight(0.5f);
 
 // If there is a touch controller defined
 #ifdef BOARD_HAS_TOUCH
@@ -149,13 +215,4 @@ void smartdisplay_init()
   disp_drv.drv_update_cb = lvgl_update_callback;
   // Call the callback to set the rotation
   lvgl_update_callback(&disp_drv);
-}
-
-void smartdisplay_tft_set_backlight(float duty)
-{
-#if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcWrite(LCD_BCKL_GPIO, dut * PWM_MAX_BCKL);
-#else
-  ledcWrite(PWM_CHANNEL_BCKL, duty * PWM_MAX_BCKL);
-#endif
 }
