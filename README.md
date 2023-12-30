@@ -322,6 +322,8 @@ float smartdisplay_lcd_adaptive_brightness_function)()
 If the board has a CdS sensor, a callback is automatically enabled. The callback is set to the internal function ```smartdisplay_lcd_adaptive_brightness_cds```.
 This function will adjust the brightness to the value read from the CdS sensor on the front of the display.
 
+If no CdS sensor is present, for example, the time of day can be used or sunrise/set.
+
 ### void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 
 If the board has a RGB led, this function controls the on/off state of the RGB leds.
@@ -341,6 +343,15 @@ This function allows only 8 LED colors:
 | 1   | 1   | 1   | White   |
 
 ![RGB Mix](assets/images/RGB.png)
+
+### touch_calibration_data_t touch_calibration_data
+
+This data structure holds the calibration data for the touch display. If the valid member is true, adjustments will be applied.
+
+### touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3])
+
+This function returns the calibration data based on 3 points. The screen array contains the (selected) calibration points on the screen and the touch array the actual measured position.
+The data returned can set in to the ```touch_calibration_data```
 
 ## Rotation of the display and touch
 
