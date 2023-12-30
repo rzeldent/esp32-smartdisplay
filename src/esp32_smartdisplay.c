@@ -175,7 +175,7 @@ touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t
 {
   touch_calibration_data.valid = false;
   const float delta = ((touch[0].x - touch[2].x) * (touch[1].y - touch[2].y)) - ((touch[1].x - touch[2].x) * (touch[0].y - touch[2].y));
-  touch_calibration_data = (touch_calibration_data_t){
+  touch_calibration_data_t touch_calibration_data = {
       .valid = true,
       .alphaX = (((screen[0].x - screen[2].x) * (touch[1].y - touch[2].y)) - ((screen[1].x - screen[2].x) * (touch[0].y - touch[2].y))) / delta,
       .betaX = (((touch[0].x - touch[2].x) * (screen[1].x - screen[2].x)) - ((touch[1].x - touch[2].x) * (screen[0].x - screen[2].x))) / delta,
