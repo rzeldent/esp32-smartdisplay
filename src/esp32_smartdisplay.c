@@ -184,11 +184,11 @@ touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t
       .betaY = (((touch[0].x - touch[2].x) * (screen[1].y - screen[2].y)) - ((touch[1].x - touch[2].x) * (screen[0].y - screen[2].y))) / delta,
       .deltaY = ((screen[0].y * (touch[1].x * touch[2].y - touch[2].x * touch[1].y)) - (screen[1].y * (touch[0].x * touch[2].y - touch[2].x * touch[0].y)) + (screen[2].y * (touch[0].x * touch[1].y - touch[1].x * touch[0].y))) / delta,
   };
-#endif
 
   log_i("Calibration (alphaX, betaX, deltaX, alphaY, betaY, deltaY) = (%f, %f, %f, %f, %f, %f)", touch_calibration_data.alphaX, touch_calibration_data.betaX, touch_calibration_data.deltaX, touch_calibration_data.alphaY, touch_calibration_data.betaY, touch_calibration_data.deltaY);
   return touch_calibration_data;
 };
+#endif
 
 void smartdisplay_init()
 {
