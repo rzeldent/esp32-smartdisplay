@@ -22,7 +22,13 @@ extern "C"
     // Initialize the display and touch
     void smartdisplay_init();
     // Set the brightness of the backlight display
-    void smartdisplay_tft_set_backlight(float duty); // [0, 1]
+    void smartdisplay_lcd_set_backlight(float duty); // [0, 1]
+    // Set the adaptive brightness callback
+    typedef float (*smartdisplay_lcd_adaptive_brightness_cb_t)();
+    void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval);
+#ifdef BOARD_HAS_RGB_LED
+    void smartdisplay_led_set_rgb(bool r, bool g, bool b);
+#endif
 #ifdef __cplusplus
 }
 #endif
