@@ -188,7 +188,7 @@ void smartdisplay_init()
   void *drawBuffer = heap_caps_malloc(sizeof(lv_color16_t) * drawBufferPixels, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
   lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, drawBufferPixels);
   // Initialize specific driver
-  lvgl_tft_init(&disp_drv);
+  lvgl_lcd_init(&disp_drv);
   lv_disp_t *display = lv_disp_drv_register(&disp_drv);
 #ifdef BOARD_HAS_CDS
   // Enable auto brightness based on CdS
@@ -200,7 +200,7 @@ void smartdisplay_init()
   // Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on (50%)
-  smartdisplay_lcd_tft_set_backlight(0.5f);
+  smartdisplay_lcd_set_backlight(0.5f);
 
 // If there is a touch controller defined
 #ifdef BOARD_HAS_TOUCH
