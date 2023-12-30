@@ -55,18 +55,18 @@ Get started by following the steps below. It is also highly recommended to look 
 
 ![Demo screen](assets/images/PXL_20231130_225143662.jpg)
 
-Additionally this demo provides:
+This demo provides:
 
 - UI created using the SquareLine Studio GUI generator.
 - Sound over I2S and internal DAC
-- Read the CDR (light sensor)
+- Read the CdS (light sensor)
 - Control of the LEDs
-- PlatformIO definitions for all the known boards
+- Works for all known boards
 - Full source code
 
 The next sections will guide you though the process of creating an application. However, some knowledge of PlatformIO, C/C++ and LVGL is required!
 
-If you run into problems, first try to open a discussion on the [github esp32-smartdisplay discussion board](https://github.com/rzeldent/esp32-smartdisplay/discussions)
+If you run into problems, first try to open a discussion on the [github esp32-smartdisplay discussion board](https://github.com/rzeldent/esp32-smartdisplay/discussions).
 
 ### Step 1: Download (or open) PlatformIO
 
@@ -77,6 +77,7 @@ This library is made for usage in PlatformIO. If not familiar with PlatformIO pl
 Make sure you have PlatformIO installed and functional. Follow the documentation on their site:
 [https://docs.platformio.org/en/latest/](https://docs.platformio.org/en/latest/)
 
+### Step 2: Boards definitions
 The board definitions required for this library are defined in the boards library platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton). This library must reside in the ```<project>/boards``` directory so PlatformIo will automatically recognize these boards.
 
 It is recommended to use the git submodule to include these board definitions automatically.
@@ -84,13 +85,13 @@ It is recommended to use the git submodule to include these board definitions au
 >[!TIP]
 >If you already have a project, clone it with the ```git clone --recurse-submodules```. If creating a new project, use ```git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards``` to add them to your project as a submodule.
 
-### Step 2: Create a new project
+### Step 3: Create a new project
 
 Use the standard PlatformIO create project to start a new project. When using a new PlatformIO installation these boards, defined in [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton), are not present. Just use a known ESP32 board and correct this later in the platformIO file.
 
 Optionally, you can copy the boards definition to the ```<home>/.platformio\platforms\espressif32\boards``` directory to have them always available but it is probably easier to create the project, add the boards as a git submodule and change the board afterwards. For each supported board there is a board definition.
 
-### Step 3: Add this library to your project
+### Step 4: Add this library to your project
 
 To add this library (and its dependency on LVGL) add the following line to the ```platformio.ini``` file:
 
@@ -108,7 +109,7 @@ lib_deps = https://github.com/rzeldent/esp32-smartdisplay.git
 
 This will automatically download the library, the LVGL library (as a dependency) and set the defines required for the low level drivers.
 
-### Step 4: Create a settings file for LVGL
+### Step 5: Create a settings file for LVGL
 
 LVGL needs a configuration file; ```lv_conf.h```. This file contains information about the fonts, color depths, default background, styles, etc...
 The default LVGL template can be found in the LVGL library at the location: ```lvgl/lv_conf_template.h```.
@@ -186,7 +187,7 @@ More information about the LVGL configuration can be found in the excellent [LVG
 >After the library has been build, changes in the lv_conf.h are no longer applied because libraries are cached.
 >To apply these settings, delete the ```.pio``` directory so the libraries will be rebuild.
 
-### Step 5: Copy the build flags below in your project
+### Step 6: Copy the build flags below in your project
 
 Especially the definition of the LV_CONF_PATH is critical, this must point to an **absolute path** where the ```lv_conf.h``` file is located. More about this in the [section below](#more-on-lv_confh).
 
@@ -207,7 +208,7 @@ The line in the settings logs to the serial console but can be omitted for produ
 
 The -Wall flag can also be removed but outputs all the warnings.
 
-### Step 6: Initialize the display (and touch) in your project
+### Step 7: Initialize the display (and touch) in your project
 
 To enable to display in your project call the void ```smartdisplay_init()``` function at startup and set the orientation:
 
@@ -232,7 +233,7 @@ void loop()
 }
 ```
 
-## Step 7 (Optional): Create your LVGL file or use SquareLine Studio to make a design
+## Step 8 (Optional): Create your LVGL file or use SquareLine Studio to make a design
 
 There is a good UI designer available for LVGL and free (but some limitations) for personal use: [SquareLine Studio](https://squareline.io/):
 
@@ -241,14 +242,14 @@ There is a good UI designer available for LVGL and free (but some limitations) f
 This tool makes it easy to create transitions, insert images, attach events, work with round screens etc..
 A big advantage is that the UI C-code is generated!
 
-## Step 8: Compile, upload and enjoy
+## Step 9: Compile, upload and enjoy
 
 These steps should make it possible to run your application on the display!
 
 If there are problems:
 
 - Read this manual again to see if all the steps were followed
-- Check if you installed the board definition(s) correctly, [see](#step-2-create-a-new-project)
+- Check if you installed the board definition(s) correctly, [see](#step 2-boards-definitions)
 - Check if the [demo application works](https://github.com/rzeldent/esp32-smartdisplay-demo/tree/feature/esp32s3) and look for differences
 - Check if it is a known or previously resolved issue in the [issues](https://github.com/rzeldent/esp32-smartdisplay/issues)
 - Refer to the [discussions](https://github.com/rzeldent/esp32-smartdisplay/discussions)
@@ -269,28 +270,17 @@ To include it globally, the define must be (for the include directory):
 >[!TIP]
 >The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/libdeps/<board>/lvgl/lv_conf_template.h`.
 
-## More on PSRAM
-
-At boot the ESP32 has approx 315Kb usable memory (from the 520Kb present). Displays with a controller do not have an internal frame buffer to save the state of the display. However, if the display is using the direct 16bits parallel connection, there is no controller and the contents of the RAM is copied to the display at a fast rate. This buffer is allocated from the memory of the ESP32.
-
-If using the normal SRAM, this would (for the ESP32_4827S043 with a 480x270 pixels) snoop away 480x270x2 = 261120 bytes, leaving only 54140 bytes for the application. This can be done and works.
-However, the other boards with a resolution of 800x480, 800x480x2 = 768000 bytes are required. This is more than the available RAM.
-
-This is the reason for boards with a direct 16bits parallel connection 8Mb of PSRAM is added and should be used to store this buffer.
-
-The standard definition of the ```esp32-s3-devkitc-1.json``` does not have any configuration for the increases flash size and PSRAM. This is one of the reasons a special board definitions have been created.
-
-## More on LV_COLOR_16_SWAP
+## LV_COLOR_16_SWAP
 
 The LVGL library has a define called **LV_COLOR_16_SWAP** in the ```lvgl_conf.h```. The value can be 1 or 0.
 This variable will swap the byte order of the lv_color16_t. This is required because the SPI is by default LSB first.
 
-Setting this variable to true is recommended for the SPI interfaces: ST7789, GC9A01A, ILI9341 and ST7796. If not, a warning will be issued but the code should work. The parallel 16 bits panels without interface are not affected by this; the GPIO pin layout will change accordingly.
+Setting this variable to true is recommended for the SPI interfaces (GC9A01A, ST7789, ILI9341 and ST7796). If not, a warning will be issued but the code should work. The parallel 16 bits panels without interface are not affected by this; the GPIO pin layout will change accordingly.
 
 This makes it easier to have only one definition for lv_conf.h and SquareLine.
 
 >[!IMPORTANT]
->If this is not done, the code will run but swapping will be done runtime (and degrading the performance).
+>If this is not done, the code will run but swapping will be done runtime (degrading a bit the performance).
 >So it is preferable to always set the LV_COLOR_16_SWAP to 1 when using SPI.
 
 Additionally, when using the [SquareLine Studio](https://squareline.io/) for designing the user interface, the display properties (under the project settings) must match this variable.
@@ -326,119 +316,6 @@ Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL lib
 
 Some boards are around that have flipped screens, this is probably due to differences during tha manufacturing or using different TFTs. It is possible to correct these boards overriding the default defines.
 However if this is encountered a separate board definition is preferable.
-
-## Controlling the RGB led
-
->[!NOTE]
->Not all boards have a LED. Refer to the [Sunton Boards information](https://github.com/rzeldent/platformio-espressif32-sunton) to see if this is available.
-
-If the board has an RGB led, the define ```BOARD_HAS_RGB_LED``` is defined.
-Additionally, the following defines are present for the definition of the GPIO pins:
-
-- LED_R_GPIO
-- LED_G_GPIO
-- LED_B_GPIO
-
-Before using the RGB LEDs, the GPIOs must be defined as output. This is already done in the [smartdisplay_init()](#void-smartdisplay_init) function.
-
-```c++
-  pinmode(LED_R_GPIO, OUTPUT);
-  pinmode(LED_G_GPIO, OUTPUT);
-  pinmode(LED_B_GPIO, OUTPUT);
-```
-
-The LEDs are connected between the GPIO pin and the 3.3V. So the LED will light up if the GPIO is set to LOW (inverted).
-![LEDS schematic](assets/images//LEDS.png)
-
-For example: set the RGB led to red is done by the following code:
-
-```c++
-  digitalWrite(LED_R_GPIO, false);
-  digitalWrite(LED_G_GPIO, true);
-  digitalWrite(LED_B_GPIO, true);
-```
-
-To have more colors than the 8 RGB combinations, PWM can be used to mix the colors.
-To do this, attach a PWM channel to each GPIO pin to modulate the intensity.
-
->[!WARNING]
->The number of PWM channels is limited and some channels are reserved for some functions
->e.g. channel 0 is used by the tone() function but can be used if this function is not called.
-
-Example:
-Set PWM channel 0 to 5000Hz with a resolution of 8 bits (256 levels) and attach it to the red LED.
-Next, set the level to 25%. This is 192 (256 - 25%) because of the inverted output.
-
->[!CAUTION]
->The functions for using PWM will change in the upcoming release of the IDF and will break the usage of the PWM functions!
-
-ESP_ARDUINO_VERSION_MAJOR < 3:
-
-```c++
-  ledcSetup(0, 5000, 8);
-  ledcAttachPin(LED_R_GPIO, 0);
-  ledcWrite(0, 192);
-```
-
-ESP_ARDUINO_VERSION_MAJOR >= 3
-
-```c++
-  ledcAttach(LED_R_GPIO, 0, 8);
-  ledcWrite(LED_R_GPIO, 192);
-```
-
-## Reading the CDS (light sensor)
-
->[!NOTE]
->Not all boards have a light sensor. Refer to the [Sunton Boards information](https://github.com/rzeldent/platformio-espressif32-sunton) to see if this is available.
-
-If the board has a CDS photo resistor (Cadmium Sulfide, CdS) light sensor, the define ```BOARD_HAS_CDS``` is defined.
-It is attached to the analogue input of the ESP32 with two resistors between the GND and the VCC. When the CDS is covered, it's resistance is in the order of mega&Omega; but in bright light can drop to a few 100&Omega;.
-
-![CDS](assets/images/CDS.png)
-
-To use the sensor, the define ```CDS_GPIO``` indicates the analogue port to read.
-Setting the port to input and the attenuation is already done in the [smartdisplay_init()](#void-smartdisplay_init) function.
-
-```c++
-  analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
-  pinMode(CDS_GPIO, INPUT);
-```
-
-Next, read the value using:
-
-```c++
-  auto value = analogReadMilliVolts(CDS_GPIO);
-```
-
-The value ranges from approximately 75mV (not covered) to 400mV (completely covered).
-
-## Controlling the speaker
-
->[!NOTE]
->Not all boards have a LED. Refer to the [Sunton Boards information](https://github.com/rzeldent/platformio-espressif32-sunton) to see if this is available.
-
-An 8&Omega; speaker can be connected to the output marked SPEAK. This is a 1.25 JST connector.
-Setting the speaker GPIO to output is already done in the [smartdisplay_init()](#void-smartdisplay_init) function.
-
-```c++
-pinmode(SPEAK_GPIO, OUTPUT)
-```
-
-Beeps can be generated by generating a PWM signal on the SPEAK_GPIO or using the tone function:
-
-```c++
-// Uses PWM Channel 0
-tone(SPEAK_GPIO, frequency, duration);
-```
-
-To produce "real" audio connect the internal 8 bits D2A converter in the ESP32. Because the speaker is connected to GPIO26, this is the DAC2 (Left Channel).
-
->[!TIP]
->Make sure the I2S connection is only to the LEFT channel. GPIO25, the right channel, is connected on some boards to the GT911 touch controller and creates strange results.
-
-The audio is a bit distorted. [HexeguitarDIY](https://github.com/hexeguitar/ESP32_LCD_PIO) has a fix for that by changing the resistor values to prevent distortion.
-[![HexeguitarDIY Audio mod](https://img.youtube.com/vi/6JCLHIXXVus/0.jpg)](https://www.youtube.com/watch?v=6JCLHIXXVus)
 
 ## Appendix: Template to support ALL the boards
 
