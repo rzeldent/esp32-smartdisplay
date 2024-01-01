@@ -101,7 +101,7 @@ void smartdisplay_lcd_set_backlight(float duty)
   if (duty < 0.0)
     duty = 0.0f;
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcWrite(LCD_BCKL_GPIO, duty * PWM_MAX_BCKL);
+  ledcWrite(BCKL, duty * PWM_MAX_BCKL);
 #else
   ledcWrite(PWM_CHANNEL_BCKL, duty * PWM_MAX_BCKL);
 #endif
@@ -113,7 +113,7 @@ float smartdisplay_lcd_adaptive_brightness_cds()
 {
   static float avgCds;
   // Read CdS sensor
-  uint16_t sensorValue = analogRead(CDS_GPIO);
+  uint16_t sensorValue = analogRead(CDS);
   // Approximation of moving average for the sensor
   avgCds -= avgCds / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
   avgCds += sensorValue / BRIGHTNESS_SMOOTHING_MEASUREMENTS;
@@ -148,9 +148,9 @@ void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_
 #ifdef BOARD_HAS_RGB_LED
 void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 {
-  digitalWrite(LED_R_GPIO, !r);
-  digitalWrite(LED_G_GPIO, !g);
-  digitalWrite(LED_B_GPIO, !b);
+  digitalWrite(RGB_LED_R, !r);
+  digitalWrite(RGB_LED_B, !g);
+  digitalWrite(RGB_LED_B, !b);
 }
 #endif
 
@@ -194,24 +194,24 @@ void smartdisplay_init()
 {
 #ifdef BOARD_HAS_RGB_LED
   // Setup RGB LED.  High is off
-  pinMode(LED_R_GPIO, OUTPUT);
-  digitalWrite(LED_R_GPIO, true);
-  pinMode(LED_G_GPIO, OUTPUT);
-  digitalWrite(LED_G_GPIO, true);
-  pinMode(LED_B_GPIO, OUTPUT);
-  digitalWrite(LED_B_GPIO, true);
+  pinMode(RGB_LED_R, OUTPUT);
+  digitalWrite(RGB_LED_R, true);
+  pinMode(RGB_LED_G, OUTPUT);
+  digitalWrite(RGB_LED_G, true);
+  pinMode(RGB_LED_B, OUTPUT);
+  digitalWrite(RGB_LED_B, true);
 #endif
 
 #ifdef BOARD_HAS_CDS
   // CDS Light sensor
-  pinMode(CDS_GPIO, INPUT);
+  pinMode(CDS, INPUT);
   analogSetAttenuation(ADC_0db); // 0dB(1.0x) 0~800mV
 #endif
 
 #ifdef BOARD_HAS_SPEAK
   // Speaker
   // Note: tone function uses PWM channel 0
-  pinMode(SPEAK_GPIO, OUTPUT);
+  pinMode(SPEAK, OUTPUT);
 #endif
 
 #if LV_USE_LOG
@@ -220,14 +220,14 @@ void smartdisplay_init()
 
   lv_init();
   // Setup backlight
-  pinMode(LCD_BCKL_GPIO, OUTPUT);
+  pinMode(BCKL, OUTPUT);
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcAttach(LCD_BCKL_GPIO, PWM_FREQ_BCKL, PWM_BITS_BCKL);
+  ledcAttach(BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
 #else
   ledcSetup(PWM_CHANNEL_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
-  ledcAttachPin(LCD_BCKL_GPIO, PWM_CHANNEL_BCKL);
+  ledcAttachPin(BCKL, PWM_CHANNEL_BCKL);
 #endif
-  digitalWrite(LCD_BCKL_GPIO, LOW);
+  digitalWrite(BCKL, LOW);
   // Setup TFT display
   lv_disp_drv_init(&disp_drv);
   disp_drv.hor_res = LCD_WIDTH;
