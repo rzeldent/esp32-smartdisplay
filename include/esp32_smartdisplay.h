@@ -9,7 +9,7 @@
 
 // Use last PWM_CHANNEL for backlight
 #define PWM_CHANNEL_BCKL (SOC_LEDC_CHANNEL_NUM - 1)
-#define PWM_FREQ_BCKL 5000
+#define PWM_FREQ_BCKL 20000
 #define PWM_BITS_BCKL 8
 #define PWM_MAX_BCKL ((1 << PWM_BITS_BCKL) - 1)
 

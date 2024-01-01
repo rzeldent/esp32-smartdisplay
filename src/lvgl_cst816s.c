@@ -1,7 +1,6 @@
-#include <esp32_smartdisplay.h>
-
 #ifdef TOUCH_USES_CST816S
 
+#include <esp32_smartdisplay.h>
 #include "driver/i2c.h"
 #include "esp_lcd_touch.h"
 #include "esp_lcd_touch_cst816s.h"
@@ -31,18 +30,18 @@ static void cst816s_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 void lvgl_touch_init(lv_indev_drv_t *drv)
 {
     // Create I2C bus
-    const i2c_config_t i2c_config = TOUCH_I2C_CONFIG;
-    ESP_ERROR_CHECK(i2c_param_config(TOUCH_I2C_HOST, &i2c_config));
-    ESP_ERROR_CHECK(i2c_driver_install(TOUCH_I2C_HOST, i2c_config.mode, 0, 0, 0));
+    const i2c_config_t i2c_config = {.mode = I2C_MODE_MASTER, .sda_io_num = CST816S_I2C_SDA, .scl_io_num = CST816S_I2C_SCL, .sda_pullup_en = GPIO_PULLUP_ENABLE, .scl_pullup_en = GPIO_PULLUP_ENABLE, .master = {.clk_speed = 400000}};
+    ESP_ERROR_CHECK(i2c_param_config(CST816S_I2C_HOST, &i2c_config));
+    ESP_ERROR_CHECK(i2c_driver_install(CST816S_I2C_HOST, i2c_config.mode, 0, 0, 0));
 
     // Create IO handle
-    esp_lcd_panel_io_i2c_config_t io_i2c_config = TOUCH_IO_I2C_CONFIG;
+    esp_lcd_panel_io_i2c_config_t io_i2c_config = {.dev_addr = ESP_LCD_TOUCH_IO_I2C_CST816S_ADDRESS, .control_phase_bytes = 1, .lcd_cmd_bits = 8, .flags = {.disable_control_phase = 1}};
     io_i2c_config.user_ctx = drv;
     esp_lcd_panel_io_handle_t io_handle;
-    ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)TOUCH_I2C_HOST, &io_i2c_config, &io_handle));
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)CST816S_I2C_HOST, &io_i2c_config, &io_handle));
 
     // Create touch configuration
-    esp_lcd_touch_config_t touch_config = TOUCH_DEV_CONFIG;
+    esp_lcd_touch_config_t touch_config = {.x_max = LCD_WIDTH, .y_max = LCD_HEIGHT, .rst_gpio_num = CST816S_RST, .int_gpio_num = CST816S_INT};
     touch_config.user_data = io_handle;
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_i2c_cst816s(io_handle, &touch_config, &touch_handle));
