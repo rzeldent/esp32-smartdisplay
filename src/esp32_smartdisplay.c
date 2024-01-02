@@ -149,7 +149,7 @@ void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_
 void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 {
   digitalWrite(RGB_LED_R, !r);
-  digitalWrite(RGB_LED_B, !g);
+  digitalWrite(RGB_LED_G, !g);
   digitalWrite(RGB_LED_B, !b);
 }
 #endif

@@ -41,7 +41,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     io_spi_config.on_color_trans_done = st7789_color_trans_done;
     io_spi_config.user_ctx = drv;
     esp_lcd_panel_io_handle_t io_handle;
-    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)ST7789_SPI_MOSI, &io_spi_config, &io_handle));
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)ST7789_SPI_HOST, &io_spi_config, &io_handle));
 
     // Create st7789 panel handle
     const esp_lcd_panel_dev_config_t panel_dev_config = {.reset_gpio_num = ST7789_RST, .color_space = ESP_LCD_COLOR_SPACE_RGB, .bits_per_pixel = 16, .vendor_config = ST7789_VENDOR_CONFIG};
