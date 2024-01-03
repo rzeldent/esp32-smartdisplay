@@ -37,7 +37,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(ST7789_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
 
     // Attach the LCD controller to the SPI bus
-    esp_lcd_panel_io_spi_config_t io_spi_config = {.cs_gpio_num = ST7789_CS, .dc_gpio_num = ST7789_DC, .spi_mode = SPI_MODE0, .pclk_hz = 24000000, .trans_queue_depth = 10, .lcd_cmd_bits = 8, .lcd_param_bits = 8};
+    esp_lcd_panel_io_spi_config_t io_spi_config = {.cs_gpio_num = ST7789_CS, .dc_gpio_num = ST7789_DC, .spi_mode = SPI_MODE3, .pclk_hz = 24000000, .trans_queue_depth = 10, .lcd_cmd_bits = 8, .lcd_param_bits = 8};
     io_spi_config.on_color_trans_done = st7789_color_trans_done;
     io_spi_config.user_ctx = drv;
     esp_lcd_panel_io_handle_t io_handle;
