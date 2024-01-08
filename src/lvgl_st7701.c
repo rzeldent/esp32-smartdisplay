@@ -45,7 +45,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     tft_panel_config.on_frame_trans_done = direct_io_frame_trans_done;
     tft_panel_config.user_ctx = drv;
 
-    st7701_vendor_config_t vendor_config = {
+    const st7701_vendor_config_t vendor_config = {
         .rgb_config = &tft_panel_config};
 
     const esp_lcd_panel_dev_config_t panel_config = {
