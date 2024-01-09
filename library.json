@@ -12,6 +12,7 @@
         "srcDir": "src",
         "includeDir": "include",
         "flags": [
+            "-DSOC_LCD_RGB_SUPPORTED",
             "-DESP_LCD_PANEL_IO_ADDITIONS_VER_MAJOR=1",
             "-DESP_LCD_PANEL_IO_ADDITIONS_VER_MINOR=0",
             "-DESP_LCD_PANEL_IO_ADDITIONS_VER_PATCH=1",
