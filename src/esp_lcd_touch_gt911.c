@@ -1,3 +1,5 @@
+#ifdef TOUCH_USES_GT911
+
 /*
  * SPDX-FileCopyrightText: 2015-2023 Espressif Systems (Shanghai) CO LTD
  *
@@ -376,3 +378,5 @@ static esp_err_t touch_gt911_i2c_write(esp_lcd_touch_handle_t tp, uint16_t reg, 
     return esp_lcd_panel_io_tx_param(tp->io, reg, (uint8_t[]){data}, 1);
     // *INDENT-ON*
 }
+
+#endif

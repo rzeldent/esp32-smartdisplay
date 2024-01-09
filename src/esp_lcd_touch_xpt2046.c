@@ -1,3 +1,5 @@
+#ifdef TOUCH_USES_XPT2046
+
 /*
  * SPDX-FileCopyrightText: 2022 atanisoft (github.com/atanisoft)
  *
@@ -271,3 +273,5 @@ esp_err_t esp_lcd_touch_xpt2046_read_battery_level(const esp_lcd_touch_handle_t 
 
     return ESP_OK;
 }
+
+#endif

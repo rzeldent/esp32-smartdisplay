@@ -1,3 +1,5 @@
+#ifdef LCD_USES_ST7701
+
 /*
  * SPDX-FileCopyrightText: 2023 Espressif Systems (Shanghai) CO LTD
  *
@@ -430,3 +432,5 @@ static esp_err_t panel_st7701_disp_on_off(esp_lcd_panel_t *panel, bool on_off)
     }
     return ESP_OK;
 }
+
+#endif
