@@ -1,3 +1,5 @@
+#ifdef LCD_USES_ST7796
+
 /*
  * SPDX-FileCopyrightText: 2023 Espressif Systems (Shanghai) CO LTD
  *
@@ -357,3 +359,5 @@ static esp_err_t panel_st7796_disp_on_off(esp_lcd_panel_t *panel, bool on_off)
     ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, command, NULL, 0), TAG, "send command failed");
     return ESP_OK;
 }
+
+#endif

@@ -33,28 +33,43 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     drv->rotated = LV_DISP_ROT_NONE;
 
     // Create SPI bus
-    const spi_bus_config_t spi_bus_config = {.mosi_io_num = ST7789_SPI_MOSI, .sclk_io_num = ST7789_SPI_SCLK, .quadwp_io_num = -1, .quadhd_io_num = -1};
+    const spi_bus_config_t spi_bus_config = {
+        .mosi_io_num = ST7789_SPI_MOSI,
+        .sclk_io_num = ST7789_SPI_SCLK,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1};
     ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(ST7789_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
 
     // Attach the LCD controller to the SPI bus
-    esp_lcd_panel_io_spi_config_t io_spi_config = {.cs_gpio_num = ST7789_CS, .dc_gpio_num = ST7789_DC, .spi_mode = SPI_MODE3, .pclk_hz = 24000000, .trans_queue_depth = 10, .lcd_cmd_bits = 8, .lcd_param_bits = 8};
-    io_spi_config.on_color_trans_done = st7789_color_trans_done;
-    io_spi_config.user_ctx = drv;
+    const esp_lcd_panel_io_spi_config_t io_spi_config = {
+        .cs_gpio_num = ST7789_CS,
+        .dc_gpio_num = ST7789_DC,
+        .spi_mode = SPI_MODE3,
+        .pclk_hz = 24000000,
+        .on_color_trans_done = st7789_color_trans_done,
+        .user_ctx = drv,
+        .trans_queue_depth = 10,
+        .lcd_cmd_bits = 8,
+        .lcd_param_bits = 8};
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)ST7789_SPI_HOST, &io_spi_config, &io_handle));
 
     // Create st7789 panel handle
-    const esp_lcd_panel_dev_config_t panel_dev_config = {.reset_gpio_num = ST7789_RST, .color_space = ESP_LCD_COLOR_SPACE_RGB, .bits_per_pixel = 16, .vendor_config = ST7789_VENDOR_CONFIG};
+    const esp_lcd_panel_dev_config_t panel_dev_config = {
+        .reset_gpio_num = ST7789_RST,
+        .color_space = ESP_LCD_COLOR_SPACE_RGB,
+        .bits_per_pixel = 16,
+        .vendor_config = ST7789_VENDOR_CONFIG};
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle, &panel_dev_config, &panel_handle));
 
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
-    drv->user_data = panel_handle;
-    drv->flush_cb = st7789_lv_flush;
-
     // Invert color
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
+
+    drv->user_data = panel_handle;
+    drv->flush_cb = st7789_lv_flush;
 }
 
 #endif
