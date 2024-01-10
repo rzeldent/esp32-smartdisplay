@@ -1,3 +1,5 @@
+#ifdef TOUCH_USES_CST816S
+
 /*
  * SPDX-FileCopyrightText: 2015-2023 Espressif Systems (Shanghai) CO LTD
  *
@@ -182,3 +184,5 @@ static esp_err_t i2c_read_bytes(esp_lcd_touch_handle_t tp, uint16_t reg, uint8_t
 
     return esp_lcd_panel_io_rx_param(tp->io, reg, data, len);
 }
+
+#endif
