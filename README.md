@@ -20,16 +20,18 @@ Currently this library supports the following boards:
 - ESP32-2432S032N/R/C
 - ESP32-3248S035R/C
 - ESP32-4827S043R/C
+- ESP32-4848S040C_I_Y_1/3
 - ESP32-8048S050N/C
 - ESP32-8048S070N/C
 - ESP32-4848S040C
 
-This library integrates seamlessly in [PlatformIO](https://platformio.org/) and supports these boards with little effort and provides a jump start!
+This library integrates seamlessly in [PlatformIO](https://platformio.org/) and supports these boards by providing display and touch and provides a jump start!
 
 ## Why this library
 
 With the boards, there is a link supplied and there are a lot of examples present and this looks fine.... If you know your way around....
-These examples for [LVGL](https://lvgl.io/) depend on external libraries ([LCD_eSPI](https://github.com/Bodmer/LCD_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)).
+
+These examples for [LVGL](https://lvgl.io/) depend on external libraries ([LCD_eSPI](https://github.com/Bodmer/LCD_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)) but also different touch drivers.
 However, when working with these libraries, I found out that these libraries had their flaws using these boards:
 
 - Lots of configuring to do before it all works,
@@ -38,6 +40,7 @@ However, when working with these libraries, I found out that these libraries had
 - No support for touch,
 - Not using code already present in the ESP firmware
 - No LVGL integration
+- Easy compile the same application for different boards
 
 ## Dependencies
 
@@ -78,7 +81,8 @@ Make sure you have PlatformIO installed and functional. Follow the documentation
 [https://docs.platformio.org/en/latest/](https://docs.platformio.org/en/latest/)
 
 ### Step 2: Boards definitions
-The board definitions required for this library are defined in the boards library platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton). This library must reside in the ```<project>/boards``` directory so PlatformIo will automatically recognize these boards.
+
+The board definitions required for this library are defined in the boards library [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton). This library must reside in the ```<project>/boards``` directory so PlatformIo will automatically recognize these boards.
 
 **It is recommended to use ```git submodule``` to include these board definitions automatically.**
 
@@ -86,6 +90,7 @@ The board definitions required for this library are defined in the boards librar
 >If you already have a project, clone it with the ```git clone --recurse-submodules```. If creating a new project, use ```git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards``` to add them to your project as a submodule.
 
 ### Step 3: Create a new project
+
 Use the standard PlatformIO create project to start a new project. When using a new PlatformIO installation these boards, defined in [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton), are not present. Just use a known ESP32 board and correct this later in the platformIO file.
 
 Optionally, you can copy the boards definition to the ```<home>/.platformio\platforms\espressif32\boards``` directory to have them always available but it is probably easier to create the project, add the boards as a git submodule and change the board afterwards. For each supported board there is a board definition.
@@ -117,8 +122,8 @@ More information about setting up a project with LVGL can be obtained at [LVGL g
 I suggest to put the ```lv_conf.h``` file in the include directory and set the build flags to specify the location of the file, see below.
 
 >[!TIP]
->LVGL can also be downloaded manually from: [https://github.com/lvgl/lvgl/archive/master.zip](https://github.com/lvgl/lvgl/archive/master.zip) to extract the template
->or taken from the [appendix](#appendix-lv_confh-example).
+>LVGL can also be downloaded manually from: [https://github.com/lvgl/lvgl/archive/master.zip](https://github.com/lvgl/lvgl/archive/master.zip) to extract the template.
+>The template can also be copied from the demo application.
 
 Important settings are:
 
@@ -130,7 +135,7 @@ Important settings are:
   ```
 
 - Because of the SPI interface, the bytes are sent in big endian format so this must be corrected.
-  The RGB panel interface takes care of this by swapping the GPIO lines but for the SPI controllers this is not optimal. More information about this [below](#more-on-lv_color_16_swap).
+  The RGB panel interface takes care of this by swapping the GPIO lines but for the SPI controllers this is not optimal. More information about this can be found [below](#lv_color_16_swap).
 
   ```h
   /*Swap the 2 bytes of RGB565 color. Useful if the display has an 8-bit interface (e.g. SPI)*/
@@ -317,8 +322,14 @@ float smartdisplay_lcd_adaptive_brightness_function)()
 }
 ```
 
-If the board has a CdS sensor, a callback is automatically enabled. The callback is set to the internal function ```smartdisplay_lcd_adaptive_brightness_cds```.
+If the board has a CdS sensor, a callback is automatically provided. The callback can be set to the internal function ```smartdisplay_lcd_set_brightness_cb```.
 This function will adjust the brightness to the value read from the CdS sensor on the front of the display.
+
+So, to enable adaptive brightness using the CdS sensor, call
+
+```c++
+smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cds, 100);
+```
 
 If no CdS sensor is present, for example, the time of day can be used or sunrise/set.
 
@@ -368,7 +379,7 @@ However if this is encountered a separate board definition is preferable.
 
 ## Appendix: Template to support ALL the boards
 
-The platformio.ini file below supports all the boards. This is useful when running your application on multiple boards. If using one board only, uncomment the ```default_envs ``` for that board in the ```[platformio]``` section.
+The platformio.ini file below supports all the boards. This is useful when running your application on multiple boards. If using one board only, uncomment the ```default_envs``` for that board in the ```[platformio]``` section.
 
 >[!TIP]
 >When building using a pipeline (github action), the ini below, with all the boards, can be used automatically create builds for all the boards.
@@ -392,7 +403,8 @@ The platformio.ini file below supports all the boards. This is useful when runni
 #default_envs = esp32-4827S043C
 #default_envs = esp32-4827S043N
 #default_envs = esp32-4827S043R
-#default_envs = esp32-4848S040C
+#default_envs = esp32-4848S040C_I_Y_1
+#default_envs = esp32-4848S040C_I_Y_2
 #default_envs = esp32-8048S043C
 #default_envs = esp32-8048S043N
 #default_envs = esp32-8048S043R
@@ -422,8 +434,7 @@ build_flags =
     #-DLV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
     
 lib_deps =
-    # From library.json. Normally not needed!
-    lvgl/lvgl
+    https://github.com/rzeldent/esp32-smartdisplay.git
 
 [env:esp32-1732S019C]
 board = esp32-1732S019C
@@ -476,8 +487,11 @@ board = esp32-4827S043N
 [env:esp32-4827S043R]
 board = esp32-4827S043R
 
-[env:esp32-4848S040C]
-board = esp32-8048S043C
+[env:esp32-4848S040C_I_Y_1]
+board = esp32-8048S043C_I_Y_1
+
+[env:esp32-4848S040C_I_Y_3]
+board = esp32-8048S043C_I_Y_3
 
 [env:esp32-8048S043C]
 board = esp32-8048S043C
@@ -510,36 +524,45 @@ The following libraries are used from the [EspressIf component registry](https:/
 
 | Name                  | Version |
 |---                    |---      |
-| [ESP LCD CG9A01](https://components.espressif.com/api/download/?object_type=component&object_id=6f06ecdf-97a6-4eea-ad4f-c00d11bd970a)         | v1.2    |
-| [ESP LCD ILI9341](https://components.espressif.com/api/download/?object_type=component&object_id=680fe7b6-c70b-4560-acf9-919e5b8fa192)        | v2.0    |
-| [ESP LCD ST7796](https://components.espressif.com/api/download/?object_type=component&object_id=eb6095d1-642a-4e14-9daf-d46db8a1f354)         | v1.2.1  |
-| [ESP LCD Touch](https://components.espressif.com/api/download/?object_type=component&object_id=bb4a4d94-2827-4695-84d1-1b53383b8001)          | v1.1.1  |
-| [ESP LCD Touch CST816S](https://components.espressif.com/api/download/?object_type=component&object_id=cc8ef108-15e8-48cf-9be8-3c7e89ca493e)  | v1.0.3  |
-| [ESP LCD Touch GT911](https://components.espressif.com/api/download/?object_type=component&object_id=4f44d570-8a04-466e-b4bb-429f1df7a9a1)    | v1.1.0  |
-| [ESP LCD Touch Driver](https://components.espressif.com/api/download/?object_type=component&object_id=225971c2-051f-4619-9f91-0080315ee8b8)   | v1.2.0  |
+| [ESP LCD ST7701](https://components.espressif.com/api/download/?object_type=component&object_id=b9904296-b88e-46a4-897a-3f5b3fa96a6e)             | v1.0.0  |
+| [ESP LCD CG9A01](https://components.espressif.com/api/download/?object_type=component&object_id=6f06ecdf-97a6-4eea-ad4f-c00d11bd970a)             | v1.2    |
+| [ESP LCD ILI9341](https://components.espressif.com/api/download/?object_type=component&object_id=680fe7b6-c70b-4560-acf9-919e5b8fa192)            | v2.0    |
+| [ESP LCD ST7796](https://components.espressif.com/api/download/?object_type=component&object_id=eb6095d1-642a-4e14-9daf-d46db8a1f354)             | v1.2.1  |
+| [ESP_LCD_PANEL_IO_ADDITIONS](https://components.espressif.com/api/download/?object_type=component&object_id=fc4eba6f-2091-4b28-8703-df58c6c975c7) | v1.0.0  |
+| [ESP IO Expander Component](https://components.espressif.com/api/download/?object_type=component&object_id=44022a0f-c4b2-40c0-b2a2-40d7b648cb52)  | v1.0.0  |
+| [ESP LCD Touch](https://components.espressif.com/api/download/?object_type=component&object_id=bb4a4d94-2827-4695-84d1-1b53383b8001)              | v1.1.1  |
+| [ESP LCD Touch CST816S](https://components.espressif.com/api/download/?object_type=component&object_id=cc8ef108-15e8-48cf-9be8-3c7e89ca493e)      | v1.0.3  |
+| [ESP LCD Touch GT911](https://components.espressif.com/api/download/?object_type=component&object_id=4f44d570-8a04-466e-b4bb-429f1df7a9a1)        | v1.1.0  |
+| [ESP LCD Touch Driver](https://components.espressif.com/api/download/?object_type=component&object_id=225971c2-051f-4619-9f91-0080315ee8b8)       | v1.2.0  |
 
 ## Version history
 
+- January 2024
+  - Fixed esp32-8048S070C
+  - Added esp32-4848S040C_I_Y_1/3
+  - Added automatic brightness functionality (and CdS sensor callback)
+  - Use of Sunton boards defines
+  - Possibility to add calibration parameters
 - December 2023
   - 2.0.2 release
   - Updated documentation
   - Added rotation
-  - Added ESP32_1732S019N/C
+  - Added esp32-1732S019N/C
 - November 2023
   - Major version update: 2.0.0
   - Rewrite of the library to support the new ESP32-C3 and ESP32-S3 panels
   - Use the new Espressif esp_lcd interface
   - Use C instead of cpp
 - October 2023
-  - Added support for esp32_8048S034N/C
+  - Added support for esp32-8048S034N/C
   - Added option for flipped/mirrored TFT's
   - Changed default RGB order to BGR
   - Version 1.0.8 and 1.0.9
 - September 2023
-  - Added support for ESP32_2432S024N/R/S
+  - Added support for esp32-2432S024N/R/S
   - Version 1.0.7
 - August 2023
-  - Added support for esp32_8048S070N/C
+  - Added support for esp32-8048S070N/C
   - Display buffer size configurable
 - February 2023
   - Version 1.0.3
@@ -550,7 +573,7 @@ The following libraries are used from the [EspressIf component registry](https:/
   - Changed RGB led input to lv_color32_t
 - December 2022
   - Initial version 1.0.2.
-  - Drivers for ESP32_2432S028R, ESP32_3248S035R and ESP32_3248S035C displays working.
+  - Drivers for ESP32-2432S028R, ESP32-3248S035R and ESP32-3248S035C displays working.
   - Sound output
   - RGB Led output
   - CDS light sensor input

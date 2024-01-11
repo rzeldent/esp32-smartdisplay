@@ -5,7 +5,6 @@
 #include <esp_lcd_panel_ops.h>
 
 // Defines for adaptive brightness adjustment
-#define BRIGHTNESS_UPDATE_INTERVAL 100
 #define BRIGHTNESS_SMOOTHING_MEASUREMENTS 100
 #define BRIGHTNESS_DARK_ZONE 250
 
@@ -240,13 +239,8 @@ void smartdisplay_init()
   // Initialize specific driver
   lvgl_lcd_init(&disp_drv);
   lv_disp_t *display = lv_disp_drv_register(&disp_drv);
-#ifdef BOARD_HAS_CDS
-  // Enable auto brightness based on CdS
-  smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cds, BRIGHTNESS_UPDATE_INTERVAL);
-#else
   // Turn backlight on (50%)
   smartdisplay_lcd_set_backlight(0.5f);
-#endif
   // Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on (50%)

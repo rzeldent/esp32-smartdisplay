@@ -13,7 +13,7 @@ jobs:
           path: |
             ~/.cache/pip
             ~/.platformio/.cache
-          key: ${{ runner.os }}-pio          
+          key: ${{ runner.os }}-pio
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
