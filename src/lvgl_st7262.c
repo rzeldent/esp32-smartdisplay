@@ -1,4 +1,4 @@
-#ifdef LCD_USES_RGB_PANEL
+#ifdef LCD_USES_ST7262
 
 #include <esp32_smartdisplay.h>
 #include <esp_lcd_panel_rgb.h>
@@ -31,27 +31,27 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
             .pclk_hz = 16000000,
             .h_res = LCD_WIDTH,
             .v_res = LCD_HEIGHT,
-            .hsync_pulse_width = RGB_PANEL_HSYNC_PULSE_WIDTH,
-            .hsync_back_porch = RGB_PANEL_HSYNC_BACK_PORCH,
-            .hsync_front_porch = RGB_PANEL_HSYNC_FRONT_PORCH,
-            .vsync_pulse_width = RGB_PANEL_VSYNC_PULSE_WIDTH,
-            .vsync_back_porch = RGB_PANEL_VSYNC_BACK_PORCH,
-            .vsync_front_porch = RGB_PANEL_VSYNC_FRONT_PORCH,
+            .hsync_pulse_width = ST7262_HSYNC_PULSE_WIDTH,
+            .hsync_back_porch = ST7262_HSYNC_BACK_PORCH,
+            .hsync_front_porch = ST7262_HSYNC_FRONT_PORCH,
+            .vsync_pulse_width = ST7262_VSYNC_PULSE_WIDTH,
+            .vsync_back_porch = ST7262_VSYNC_BACK_PORCH,
+            .vsync_front_porch = ST7262_VSYNC_FRONT_PORCH,
             .flags = {
                 .hsync_idle_low = 1,
                 .vsync_idle_low = 1,
                 .pclk_active_neg = 1}},
         .data_width = 16,
         .psram_trans_align = 64,
-        .hsync_gpio_num = RGB_PANEL_HSYNC,
-        .vsync_gpio_num = RGB_PANEL_VSYNC,
-        .de_gpio_num = RGB_PANEL_DE,
-        .pclk_gpio_num = RGB_PANEL_PCLK,
+        .hsync_gpio_num = ST7262_HSYNC,
+        .vsync_gpio_num = ST7262_VSYNC,
+        .de_gpio_num = ST7262_DE,
+        .pclk_gpio_num = ST7262_PCLK,
         .disp_gpio_num = GPIO_NUM_NC,
 #if LV_COLOR_16_SWAP == 0
-        .data_gpio_nums = {RGB_PANEL_R0, RGB_PANEL_R1, RGB_PANEL_R2, RGB_PANEL_R3, RGB_PANEL_R4, RGB_PANEL_G0, RGB_PANEL_G1, RGB_PANEL_G2, RGB_PANEL_G3, RGB_PANEL_G4, RGB_PANEL_G5, RGB_PANEL_B0, RGB_PANEL_B1, RGB_PANEL_B2, RGB_PANEL_B3, RGB_PANEL_B4},
+        .data_gpio_nums = {ST7262_R0, ST7262_R1, ST7262_R2, ST7262_R3, ST7262_R4, ST7262_G0, ST7262_G1, ST7262_G2, ST7262_G3, ST7262_G4, ST7262_G5, ST7262_B0, ST7262_B1, ST7262_B2, ST7262_B3, ST7262_B4},
 #else
-        .data_gpio_nums = {RGB_PANEL_G3, RGB_PANEL_G4, RGB_PANEL_G5, RGB_PANEL_B0, RGB_PANEL_B1, RGB_PANEL_B2, RGB_PANEL_B3, RGB_PANEL_B4, RGB_PANEL_R0, RGB_PANEL_R1, RGB_PANEL_R2, RGB_PANEL_R3, RGB_PANEL_R4, RGB_PANEL_G0, RGB_PANEL_G1, RGB_PANEL_G2},
+        .data_gpio_nums = {ST7262_G3, ST7262_G4, ST7262_G5, ST7262_B0, ST7262_B1, ST7262_B2, ST7262_B3, ST7262_B4, ST7262_R0, ST7262_R1, ST7262_R2, ST7262_R3, ST7262_R4, ST7262_G0, ST7262_G1, ST7262_G2},
 #endif
         .on_frame_trans_done = direct_io_frame_trans_done,
         .user_ctx = drv,

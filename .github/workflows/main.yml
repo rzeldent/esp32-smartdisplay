@@ -13,13 +13,13 @@ jobs:
           path: |
             ~/.cache/pip
             ~/.platformio/.cache
-          key: ${{ runner.os }}-pio          
+          key: ${{ runner.os }}-pio
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.9"
       - name: Install PlatformIO
-        run: python -m pip install platformio
+        run: python -m pip install -U platformio
       - name: Build firmware
         run: pio ci --lib=./ --exclude=assets --exclude=examples --exclude=boards --project-conf="examples/ci/platformio.ini" "examples/ci/main.cpp"
         env:
