@@ -34,32 +34,40 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
 
     // Create SPI bus
     const spi_bus_config_t spi_bus_config = {
-        .mosi_io_num = ST7789_SPI_MOSI,
-        .sclk_io_num = ST7789_SPI_SCLK,
-        .quadwp_io_num = -1,
-        .quadhd_io_num = -1};
+        .mosi_io_num = ST7789_SPI_BUS_MOSI_IO_NUM,
+        .miso_io_num = ST7789_SPI_BUS_MISO_IO_NUM,
+        .sclk_io_num = ST7789_SPI_BUS_SCLK_IO_NUM,
+        .quadwp_io_num = ST7789_SPI_BUS_QUADWP_IO_NUM,
+        .quadhd_io_num = ST7789_SPI_BUS_QUADHD_IO_NUM};
     ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(ST7789_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
 
     // Attach the LCD controller to the SPI bus
     const esp_lcd_panel_io_spi_config_t io_spi_config = {
-        .cs_gpio_num = ST7789_CS,
-        .dc_gpio_num = ST7789_DC,
-        .spi_mode = SPI_MODE3,
-        .pclk_hz = ST7789_PCLK_HZ,
+        .cs_gpio_num = ST7789_SPI_CONFIG_CS_GPIO_NUM,
+        .dc_gpio_num = ST7789_SPI_CONFIG_DC_GPIO_NUM,
+        .spi_mode = ST7789_SPI_CONFIG_SPI_MODE,
+        .pclk_hz = ST7789_SPI_CONFIG_PCLK_HZ,
         .on_color_trans_done = st7789_color_trans_done,
         .user_ctx = drv,
-        .trans_queue_depth = 10,
-        .lcd_cmd_bits = 8,
-        .lcd_param_bits = 8};
+        .trans_queue_depth = ST7789_SPI_CONFIG_TRANS_QUEUE_DEPTH,
+        .lcd_cmd_bits = ST7789_SPI_CONFIG_LCD_CMD_BITS,
+        .lcd_param_bits = ST7789_SPI_CONFIG_LCD_PARAM_BITS,
+        .flags = {
+            .dc_as_cmd_phase = ST7789_SPI_CONFIG_FLAGS_DC_AS_CMD_PHASE,
+            .dc_low_on_data = ST7789_SPI_CONFIG_FLAGS_DC_LOW_ON_DATA,
+            .octal_mode = ST7789_SPI_CONFIG_FLAGS_OCTAL_MODE,
+            .lsb_first = ST7789_SPI_CONFIG_FLAGS_LSB_FIRST}};
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)ST7789_SPI_HOST, &io_spi_config, &io_handle));
 
     // Create st7789 panel handle
     const esp_lcd_panel_dev_config_t panel_dev_config = {
-        .reset_gpio_num = ST7789_RST,
-        .color_space = ESP_LCD_COLOR_SPACE_RGB,
-        .bits_per_pixel = 16,
-        .vendor_config = ST7789_VENDOR_CONFIG};
+        .reset_gpio_num = ST7789_DEV_CONFIG_RESET_GPIO_NUM,
+        .color_space = ST7789_DEV_CONFIG_COLOR_SPACE,
+        .bits_per_pixel = ST7789_DEV_CONFIG_BITS_PER_PIXEL,
+        .flags = {
+            .reset_active_high = ST7789_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
+        .vendor_config = ST7789_DEV_CONFIG_VENDOR_CONFIG};
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle, &panel_dev_config, &panel_handle));
 
