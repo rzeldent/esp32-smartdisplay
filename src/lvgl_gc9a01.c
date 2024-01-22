@@ -47,7 +47,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .cs_gpio_num = GC9A01_CS,
         .dc_gpio_num = GC9A01_DC,
         .spi_mode = SPI_MODE0,
-        .pclk_hz = 80000000,
+        .pclk_hz = GC9A01_PCLK_HZ,
         .trans_queue_depth = 10,
         .user_ctx = drv,
         .on_color_trans_done = gc9a01_color_trans_done,

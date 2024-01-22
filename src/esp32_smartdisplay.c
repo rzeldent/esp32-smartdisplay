@@ -34,7 +34,9 @@ void lvgl_log(const char *buf)
 static void lvgl_update_callback(lv_disp_drv_t *drv)
 {
   esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
+#ifdef BOARD_HAS_TOUCH
   esp_lcd_touch_handle_t touch_handle = indev_drv.user_data;
+#endif  
   switch (drv->rotated)
   {
   case LV_DISP_ROT_NONE:

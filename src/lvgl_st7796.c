@@ -48,7 +48,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .cs_gpio_num = ST7796_CS,
         .dc_gpio_num = ST7796_DC,
         .spi_mode = SPI_MODE0,
-        .pclk_hz = 24000000,
+        .pclk_hz = ST7796_PCLK_HZ,
         .on_color_trans_done = st7796_color_trans_done,
         .user_ctx = drv,
         .trans_queue_depth = 10,

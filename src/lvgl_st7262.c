@@ -28,7 +28,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     const esp_lcd_rgb_panel_config_t tft_panel_config = {
         .clk_src = LCD_CLK_SRC_PLL160M,
         .timings = {
-            .pclk_hz = 16000000,
+            .pclk_hz = ST7262_PCLK_HZ,
             .h_res = LCD_WIDTH,
             .v_res = LCD_HEIGHT,
             .hsync_pulse_width = ST7262_HSYNC_PULSE_WIDTH,

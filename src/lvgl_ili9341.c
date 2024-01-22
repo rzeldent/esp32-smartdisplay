@@ -48,7 +48,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .cs_gpio_num = ILI9341_CS,
         .dc_gpio_num = ILI9341_DC,
         .spi_mode = SPI_MODE0,
-        .pclk_hz = 24000000,
+        .pclk_hz = ILI9341_PCLK_HZ,
         .trans_queue_depth = 10,
         .on_color_trans_done = ili9341_color_trans_done,
         .user_ctx = drv,
