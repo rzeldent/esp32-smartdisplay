@@ -32,31 +32,40 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
     // Create I2C bus
     const i2c_config_t i2c_config = {
         .mode = I2C_MODE_MASTER,
-        .sda_io_num = CST816S_I2C_SDA,
-        .scl_io_num = CST816S_I2C_SCL,
-        .sda_pullup_en = GPIO_PULLUP_ENABLE,
-        .scl_pullup_en = GPIO_PULLUP_ENABLE,
-        .master = {.clk_speed = 400000}};
+        .sda_io_num = CST816S_I2C_CONFIG_SDA_IO_NUM,
+        .scl_io_num = CST816S_I2C_CONFIG_SCL_IO_NUM,
+        .sda_pullup_en = CST816S_I2C_CONFIG_SDA_PULLUP_EN,
+        .scl_pullup_en = CST816S_I2C_CONFIG_SCL_PULLUP_EN,
+        .master = {
+            .clk_speed = CST816S_I2C_CONFIG_MASTER_CLK_SPEED},
+        .clk_flags = CST816S_I2C_CONFIG_CLK_FLAGS};
     ESP_ERROR_CHECK(i2c_param_config(CST816S_I2C_HOST, &i2c_config));
     ESP_ERROR_CHECK(i2c_driver_install(CST816S_I2C_HOST, i2c_config.mode, 0, 0, 0));
 
     // Create IO handle
     const esp_lcd_panel_io_i2c_config_t io_i2c_config = {
-        .dev_addr = ESP_LCD_TOUCH_IO_I2C_CST816S_ADDRESS,
-        .control_phase_bytes = 1,
+        .dev_addr = CST816S_IO_I2C_CONFIG_DEV_ADDR,
+        .control_phase_bytes = CST816S_IO_I2C_CONFIG_CONTROL_PHASE_BYTES,
         .user_ctx = drv,
-        .lcd_cmd_bits = 8,
+        .dc_bit_offset = CST816S_IO_I2C_CONFIG_DC_BIT_OFFSET,
+        .lcd_cmd_bits = CST816S_IO_I2C_CONFIG_LCD_CMD_BITS,
+        .lcd_param_bits = CST816S_IO_I2C_CONFIG_LCD_PARAM_BITS,
         .flags = {
-            .disable_control_phase = 1}};
+            .dc_low_on_data = CST816S_IO_I2C_CONFIG_FLAGS_DC_LOW_ON_DATA,
+            .disable_control_phase = CST816S_IO_I2C_CONFIG_FLAGS_DISABLE_CONTROL_PHASE}};
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)CST816S_I2C_HOST, &io_i2c_config, &io_handle));
 
     // Create touch configuration
     const esp_lcd_touch_config_t touch_config = {
-        .x_max = LCD_WIDTH,
-        .y_max = LCD_HEIGHT,
-        .rst_gpio_num = CST816S_RST,
-        .int_gpio_num = CST816S_INT,
+        .x_max = CST816S_TOUCH_CONFIG_X_MAX,
+        .y_max = CST816S_TOUCH_CONFIG_Y_MAX,
+        .rst_gpio_num = CST816S_TOUCH_CONFIG_RST_GPIO_NUM,
+        .int_gpio_num = CST816S_TOUCH_CONFIG_INT_GPIO_NUM,
+        .levels = {
+            .reset = CST816S_TOUCH_CONFIG_LEVELS_RESET,
+            .interrupt = CST816S_TOUCH_CONFIG_LEVELS_INTERRUPT},
+        .flags = {.swap_xy = CST816S_TOUCH_CONFIG_FLAGS_SWAP_XY, .mirror_x = CST816S_TOUCH_CONFIG_FLAGS_MIRROR_X, .mirror_y = CST816S_TOUCH_CONFIG_FLAGS_MIRROR_Y},
         .user_data = io_handle};
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_i2c_cst816s(io_handle, &touch_config, &touch_handle));
