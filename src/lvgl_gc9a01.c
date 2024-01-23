@@ -64,12 +64,12 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
 
     // Create gc9a01 panel handle
     const esp_lcd_panel_dev_config_t panel_dev_config = {
-        .reset_gpio_num = GC9A01_DEV_CONFIGRESET_GPIO_NUM,
-        .color_space = GC9A01_DEV_CONFIGCOLOR_SPACE,
-        .bits_per_pixel = GC9A01_DEV_CONFIGBITS_PER_PIXEL,
+        .reset_gpio_num = GC9A01_DEV_CONFIG_RESET_GPIO_NUM,
+        .color_space = GC9A01_DEV_CONFIG_COLOR_SPACE,
+        .bits_per_pixel = GC9A01_DEV_CONFIG_BITS_PER_PIXEL,
         .flags = {
-            .reset_active_high = GC9A01_DEV_CONFIGFLAGS_RESET_ACTIVE_HIGH},
-        .vendor_config = GC9A01_DEV_CONFIGVENDOR_CONFIG};
+            .reset_active_high = GC9A01_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
+        .vendor_config = GC9A01_DEV_CONFIG_VENDOR_CONFIG};
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_gc9a01(io_handle, &panel_dev_config, &panel_handle));
 
