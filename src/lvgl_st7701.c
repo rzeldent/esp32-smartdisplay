@@ -25,11 +25,11 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     // Install 3-wire SPI panel IO
     const spi_line_config_t line_config = {
         .cs_io_type = IO_TYPE_GPIO,
-        .cs_gpio_num = ST7701_CS,
+        .cs_gpio_num = ST7701_LINE_CONFIG_CS_GPIO_NUM,
         .scl_io_type = IO_TYPE_GPIO,
-        .scl_gpio_num = ST7701_SPI_SCLK,
+        .scl_gpio_num = ST7701_LINE_CONFIG_SCL_GPIO_NUM,
         .sda_io_type = IO_TYPE_GPIO,
-        .sda_gpio_num = ST7701_SPI_MOSI,
+        .sda_gpio_num = ST7701_LINE_CONFIG_SDA_GPIO_NUM,
         .io_expander = NULL};
     esp_lcd_panel_io_3wire_spi_config_t io_config = ST7701_PANEL_IO_3WIRE_SPI_CONFIG(line_config, 0);
     esp_lcd_panel_io_handle_t io_handle;
