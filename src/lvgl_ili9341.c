@@ -37,10 +37,10 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     // Create SPI bus
     const spi_bus_config_t spi_bus_config = {
         .mosi_io_num = ILI9341_SPI_BUS_MOSI_IO_NUM,
-        .miso_io_num = DILI9341_SPI_BUS_MISO_IO_NUM,
-        .sclk_io_num = DILI9341_SPI_BUS_SCLK_IO_NUM,
+        .miso_io_num = ILI9341_SPI_BUS_MISO_IO_NUM,
+        .sclk_io_num = ILI9341_SPI_BUS_SCLK_IO_NUM,
         .quadwp_io_num = ILI9341_SPI_BUS_QUADWP_IO_NUM,
-        .quadhd_io_num = DILI9341_SPI_BUS_QUADHD_IO_NUM};
+        .quadhd_io_num = ILI9341_SPI_BUS_QUADHD_IO_NUM};
     ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(ILI9341_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
 
     // Attach the LCD controller to the SPI bus
@@ -49,14 +49,14 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .dc_gpio_num = ILI9341_SPI_CONFIG_DC_GPIO_NUM,
         .spi_mode = ILI9341_SPI_CONFIG_SPI_MODE,
         .pclk_hz = ILI9341_SPI_CONFIG_PCLK_HZ,
-        .trans_queue_depth = DILI9341_SPI_CONFIG_TRANS_QUEUE_DEPTH,
+        .trans_queue_depth = ILI9341_SPI_CONFIG_TRANS_QUEUE_DEPTH,
         .on_color_trans_done = ili9341_color_trans_done,
         .user_ctx = drv,
-        .lcd_cmd_bits = DILI9341_SPI_CONFIG_LCD_CMD_BITS,
-        .lcd_param_bits = DILI9341_SPI_CONFIG_LCD_PARAM_BITS,
+        .lcd_cmd_bits = ILI9341_SPI_CONFIG_LCD_CMD_BITS,
+        .lcd_param_bits = ILI9341_SPI_CONFIG_LCD_PARAM_BITS,
         .flags = {
             .dc_as_cmd_phase = ILI9341_SPI_CONFIG_FLAGS_DC_AS_CMD_PHASE,
-            .dc_low_on_data = DILI9341_SPI_CONFIG_FLAGS_DC_LOW_ON_DATA,
+            .dc_low_on_data = ILI9341_SPI_CONFIG_FLAGS_DC_LOW_ON_DATA,
             .octal_mode = ILI9341_SPI_CONFIG_FLAGS_OCTAL_MODE,
             .lsb_first = ILI9341_SPI_CONFIG_FLAGS_LSB_FIRST}};
     esp_lcd_panel_io_handle_t io_handle;
@@ -64,11 +64,11 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
 
     // Create ili9341 panel handle
     const esp_lcd_panel_dev_config_t panel_dev_config = {
-        .reset_gpio_num = DILI9341_DEV_CONFIG_RESET_GPIO_NUM,
-        .color_space = DILI9341_DEV_CONFIG_COLOR_SPACE,
-        .bits_per_pixel = DILI9341_DEV_CONFIG_BITS_PER_PIXEL,
+        .reset_gpio_num = ILI9341_DEV_CONFIG_RESET_GPIO_NUM,
+        .color_space = ILI9341_DEV_CONFIG_COLOR_SPACE,
+        .bits_per_pixel = ILI9341_DEV_CONFIG_BITS_PER_PIXEL,
         .flags = {
-            .reset_active_high = DILI9341_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
+            .reset_active_high = ILI9341_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
         .vendor_config = ILI9341_VENDOR_CONFIG};
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_ili9341(io_handle, &panel_dev_config, &panel_handle));
