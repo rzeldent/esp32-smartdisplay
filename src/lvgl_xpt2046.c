@@ -40,10 +40,10 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
 
     // Attach the touch controller to the SPI bus
     const esp_lcd_panel_io_spi_config_t io_spi_config = {
-        .cs_gpio_num = DXPT2046_SPI_CONFIG_CS_GPIO_NUM,
-        .dc_gpio_num = DXPT2046_SPI_CONFIG_DC_GPIO_NUM,
-        .spi_mode = DXPT2046_SPI_CONFIG_SPI_MODE,
-        .pclk_hz = DXPT2046_SPI_CONFIG_PCLK_HZ,
+        .cs_gpio_num = XPT2046_SPI_CONFIG_CS_GPIO_NUM,
+        .dc_gpio_num = XPT2046_SPI_CONFIG_DC_GPIO_NUM,
+        .spi_mode = XPT2046_SPI_CONFIG_SPI_MODE,
+        .pclk_hz = XPT2046_SPI_CONFIG_PCLK_HZ,
         .user_ctx = drv,
         .trans_queue_depth = XPT2046_SPI_CONFIG_TRANS_QUEUE_DEPTH,
         .lcd_cmd_bits = XPT2046_SPI_CONFIG_LCD_CMD_BITS,
