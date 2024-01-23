@@ -24,7 +24,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     drv->sw_rotate = 1;
     drv->rotated = LV_DISP_ROT_NONE;
 
-// Create direct_io panel handle
+    // Create direct_io panel handle
     const esp_lcd_rgb_panel_config_t tft_panel_config = {
         .clk_src = ST7262_PANEL_CONFIG_CLK_SRC,
         .timings = {
@@ -40,11 +40,11 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
             .flags = {
                 .hsync_idle_low = ST7262_PANEL_CONFIG_TIMINGS_FLAGS_HSYNC_IDLE_LOW,
                 .vsync_idle_low = ST7262_PANEL_CONFIG_TIMINGS_FLAGS_VSYNC_IDLE_LOW,
-                .de_idle_high= ST7262_PANEL_CONFIG_TIMINGS_FLAGS_DE_IDLE_HIGH,
+                .de_idle_high = ST7262_PANEL_CONFIG_TIMINGS_FLAGS_DE_IDLE_HIGH,
                 .pclk_active_neg = ST7262_PANEL_CONFIG_TIMINGS_FLAGS_PCLK_ACTIVE_NEG,
-                .pclk_idle_high =ST7262_PANEL_CONFIG_TIMINGS_FLAGS_PCLK_IDLE_HIGH}},
+                .pclk_idle_high = ST7262_PANEL_CONFIG_TIMINGS_FLAGS_PCLK_IDLE_HIGH}},
         .data_width = ST7262_PANEL_CONFIG_DATA_WIDTH,
-        .sram_trans_align  =ST7262_PANEL_CONFIG_SRAM_TRANS_ALIGN,
+        .sram_trans_align = ST7262_PANEL_CONFIG_SRAM_TRANS_ALIGN,
         .psram_trans_align = ST7262_PANEL_CONFIG_PSRAM_TRANS_ALIGN,
         .hsync_gpio_num = ST7262_PANEL_CONFIG_HSYNC_GPIO_NUM,
         .vsync_gpio_num = ST7262_PANEL_CONFIG_VSYNC_GPIO_NUM,
@@ -58,10 +58,8 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .disp_gpio_num = ST7262_PANEL_CONFIG_DISP_GPIO_NUM,
         .on_frame_trans_done = direct_io_frame_trans_done,
         .user_ctx = drv,
-        .flags = {
-            .disp_active_low = ST7262_PANEL_CONFIG_FLAGS_DISP_ACTIVE_LOW,
-            .relax_on_idle = ST7262_PANEL_CONFIG_FLAGS_RELAX_ON_IDLE,
-            .fb_in_psram = ST7262_PANEL_CONFIG_FLAGS_FB_IN_PSRAM}};
+        .flags = {.disp_active_low = ST7262_PANEL_CONFIG_FLAGS_DISP_ACTIVE_LOW, .relax_on_idle = ST7262_PANEL_CONFIG_FLAGS_RELAX_ON_IDLE, .fb_in_psram = ST7262_PANEL_CONFIG_FLAGS_FB_IN_PSRAM}
+    };
 
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&tft_panel_config, &panel_handle));

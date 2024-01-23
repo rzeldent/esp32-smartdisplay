@@ -37,53 +37,58 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
 
     // Create direct_io panel handle
     esp_lcd_rgb_panel_config_t tft_panel_config = {
-        .clk_src = LCD_CLK_SRC_PLL160M,
+        .clk_src = ST7701_PANEL_CONFIG_CLK_SRC,
         .timings = {
-            .pclk_hz = ST7701_PCLK_HZ,
-            .h_res = LCD_WIDTH,
-            .v_res = LCD_HEIGHT,
-            .hsync_pulse_width = ST7701_HSYNC_PULSE_WIDTH,
-            .hsync_back_porch = ST7701_HSYNC_BACK_PORCH,
-            .hsync_front_porch = ST7701_HSYNC_FRONT_PORCH,
-            .vsync_pulse_width = ST7701_VSYNC_PULSE_WIDTH,
-            .vsync_back_porch = ST7701_VSYNC_BACK_PORCH,
-            .vsync_front_porch = ST7701_VSYNC_FRONT_PORCH,
+            .pclk_hz = ST7701_PANEL_CONFIG_TIMINGS_PCLK_HZ,
+            .h_res = ST7701_PANEL_CONFIG_TIMINGS_H_RES,
+            .v_res = ST7701_PANEL_CONFIG_TIMINGS_V_RES,
+            .hsync_pulse_width = ST7701_PANEL_CONFIG_TIMINGS_HSYNC_PULSE_WIDTH,
+            .hsync_back_porch = ST7701_PANEL_CONFIG_TIMINGS_HSYNC_BACK_PORCH,
+            .hsync_front_porch = ST7701_PANEL_CONFIG_TIMINGS_HSYNC_FRONT_PORCH,
+            .vsync_pulse_width = ST7701_PANEL_CONFIG_TIMINGS_VSYNC_PULSE_WIDTH,
+            .vsync_back_porch = ST7701_PANEL_CONFIG_TIMINGS_VSYNC_BACK_PORCH,
+            .vsync_front_porch = ST7701_PANEL_CONFIG_TIMINGS_VSYNC_FRONT_PORCH,
             .flags = {
-                .hsync_idle_low = ST7701_HSYNC_IDLE_LOW,
-                .vsync_idle_low = ST7701_VSYNC_IDLE_LOW,
-                .de_idle_high = ST7701_DE_IDLE_HIGH,
-                .pclk_active_neg = ST7701_PCLK_ACTIVE_NEG,
-                .pclk_idle_high = ST7701_PCLK_IDLE_HIGH}},
-        .data_width = 16,
-        .psram_trans_align = 64,
-        .hsync_gpio_num = ST7701_HSYNC,
-        .vsync_gpio_num = ST7701_VSYNC,
-        .de_gpio_num = ST7701_DE,
-        .pclk_gpio_num = ST7701_PCLK,
-        .disp_gpio_num = GPIO_NUM_NC,
+                .hsync_idle_low = ST7701_PANEL_CONFIG_TIMINGS_FLAGS_HSYNC_IDLE_LOW,
+                .vsync_idle_low = ST7701_PANEL_CONFIG_TIMINGS_FLAGS_VSYNC_IDLE_LOW,
+                .de_idle_high = ST7701_PANEL_CONFIG_TIMINGS_FLAGS_DE_IDLE_HIGH,
+                .pclk_active_neg = ST7701_PANEL_CONFIG_TIMINGS_FLAGS_PCLK_ACTIVE_NEG,
+                .pclk_idle_high = ST7701_PANEL_CONFIG_TIMINGS_FLAGS_PCLK_IDLE_HIGH}},
+        .data_width = ST7701_PANEL_CONFIG_DATA_WIDTH,
+        .sram_trans_align = ST7701_PANEL_CONFIG_SRAM_TRANS_ALIGN,
+        .psram_trans_align = ST7701_PANEL_CONFIG_PSRAM_TRANS_ALIGN,
+        .hsync_gpio_num = ST7701_PANEL_CONFIG_HSYNC_GPIO_NUM,
+        .vsync_gpio_num = ST7701_PANEL_CONFIG_VSYNC_GPIO_NUM,
+        .de_gpio_num = ST7701_PANEL_CONFIG_DE_GPIO_NUM,
+        .pclk_gpio_num = ST7701_PANEL_CONFIG_PCLK_GPIO_NUM,
 #if LV_COLOR_16_SWAP == 0
-        .data_gpio_nums = {ST7701_R0, ST7701_R1, ST7701_R2, ST7701_R3, ST7701_R4, ST7701_G0, ST7701_G1, ST7701_G2, ST7701_G3, ST7701_G4, ST7701_G5, ST7701_B0, ST7701_B1, ST7701_B2, ST7701_B3, ST7701_B4},
+        .data_gpio_nums = {ST7701_PANEL_CONFIG_DATA_GPIO_R0, ST7701_PANEL_CONFIG_DATA_GPIO_R1, ST7701_PANEL_CONFIG_DATA_GPIO_R2, ST7701_PANEL_CONFIG_DATA_GPIO_R3, ST7701_PANEL_CONFIG_DATA_GPIO_R4, ST7701_PANEL_CONFIG_DATA_GPIO_G0, ST7701_PANEL_CONFIG_DATA_GPIO_G1, ST7701_PANEL_CONFIG_DATA_GPIO_G2, ST7701_PANEL_CONFIG_DATA_GPIO_G3, ST7701_PANEL_CONFIG_DATA_GPIO_G4, ST7701_PANEL_CONFIG_DATA_GPIO_G5, ST7701_PANEL_CONFIG_DATA_GPIO_B0, ST7701_PANEL_CONFIG_DATA_GPIO_B1, ST7701_PANEL_CONFIG_DATA_GPIO_B2, ST7701_PANEL_CONFIG_DATA_GPIO_B3, ST7701_PANEL_CONFIG_DATA_GPIO_B4},
 #else
-        .data_gpio_nums = {ST7701_G3, ST7701_G4, ST7701_G5, ST7701_B0, ST7701_B1, ST7701_B2, ST7701_B3, ST7701_B4, ST7701_R0, ST7701_R1, ST7701_R2, ST7701_R3, ST7701_R4, ST7701_G0, ST7701_G1, ST7701_G2},
+        .data_gpio_nums = {ST7701_PANEL_CONFIG_DATA_GPIO_G3, ST7701_PANEL_CONFIG_DATA_GPIO_G4, ST7701_PANEL_CONFIG_DATA_GPIO_G5, ST7701_PANEL_CONFIG_DATA_GPIO_B0, ST7701_PANEL_CONFIG_DATA_GPIO_B1, ST7701_PANEL_CONFIG_DATA_GPIO_B2, ST7701_PANEL_CONFIG_DATA_GPIO_B3, ST7701_PANEL_CONFIG_DATA_GPIO_B4, ST7701_PANEL_CONFIG_DATA_GPIO_R0, ST7701_PANEL_CONFIG_DATA_GPIO_R1, ST7701_PANEL_CONFIG_DATA_GPIO_R2, ST7701_PANEL_CONFIG_DATA_GPIO_R3, ST7701_PANEL_CONFIG_DATA_GPIO_R4, ST7701_PANEL_CONFIG_DATA_GPIO_G0, ST7701_PANEL_CONFIG_DATA_GPIO_G1, ST7701_PANEL_CONFIG_DATA_GPIO_G2},
 #endif
+        .disp_gpio_num = ST7701_PANEL_CONFIG_DISP_GPIO_NUM,
         .on_frame_trans_done = direct_io_frame_trans_done,
         .user_ctx = drv,
-        .flags = {.fb_in_psram = 1}
-    };
+        .flags = {
+            .disp_active_low = ST7701_PANEL_CONFIG_FLAGS_DISP_ACTIVE_LOW,
+            .relax_on_idle = ST7701_PANEL_CONFIG_FLAGS_RELAX_ON_IDLE,
+            .fb_in_psram = ST7701_PANEL_CONFIG_FLAGS_FB_IN_PSRAM}};
 
     const st7701_vendor_config_t vendor_config = {
+        .init_cmds = ST7701_VENDOR_CONFIG_INIT_CMDS,
+        .init_cmds_size = ST7701_VENDOR_CONFIG_INIT_CMDS_SIZE,
+        .flags = {
+            .mirror_by_cmd = ST7701_VENDOR_CONFIG_FLAGS_MIRROR_BY_CMD,
+            .auto_del_panel_io = ST7701_VENDOR_CONFIG_FLAGS_AUTO_DEL_PANEL_IO},
         .rgb_config = &tft_panel_config};
 
     const esp_lcd_panel_dev_config_t panel_config = {
-        .reset_gpio_num = ST7701_RST,
-#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
-        .color_space = ESP_LCD_COLOR_SPACE_BGR,
-#else
-        .rgb_endian = LCD_RGB_ENDIAN_BGR,
-#endif
-        .bits_per_pixel = 16,
-        .vendor_config = &vendor_config
-    };
+        .reset_gpio_num = ST7701_DEV_CONFIG_RESET_GPIO_NUM,
+        .color_space = ST7701_DEV_CONFIG_COLOR_SPACE,
+        .bits_per_pixel = ST7701_DEV_CONFIG_BITS_PER_PIXEL,
+        .flags = {
+            .reset_active_high = ST7701_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
+        .vendor_config = &vendor_config};
 
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7701(io_handle, &panel_config, &panel_handle));
