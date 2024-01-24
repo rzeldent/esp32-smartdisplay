@@ -23,15 +23,26 @@ static void direct_io_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_col
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
     // Install 3-wire SPI panel IO
-    const spi_line_config_t line_config = {
-        .cs_io_type = IO_TYPE_GPIO,
-        .cs_gpio_num = ST7701_LINE_CONFIG_CS_GPIO_NUM,
-        .scl_io_type = IO_TYPE_GPIO,
-        .scl_gpio_num = ST7701_LINE_CONFIG_SCL_GPIO_NUM,
-        .sda_io_type = IO_TYPE_GPIO,
-        .sda_gpio_num = ST7701_LINE_CONFIG_SDA_GPIO_NUM,
-        .io_expander = NULL};
-    esp_lcd_panel_io_3wire_spi_config_t io_config = ST7701_PANEL_IO_3WIRE_SPI_CONFIG(line_config, 0);
+    esp_lcd_panel_io_3wire_spi_config_t io_config = {
+        .line_config = {
+            .cs_io_type = IO_TYPE_GPIO,
+            .cs_gpio_num = ST7701_IO_3WIRE_SPI_LINE_CONFIG_CS_GPIO_NUM,
+            .scl_io_type = IO_TYPE_GPIO,
+            .scl_gpio_num = ST7701_IO_3WIRE_SPI_LINE_CONFIG_SCL_GPIO_NUM,
+            .sda_io_type = IO_TYPE_GPIO,
+            .sda_gpio_num = ST7701_IO_3WIRE_SPI_LINE_CONFIG_SDA_GPIO_NUM},
+        .expect_clk_speed = ST7701_IO_3WIRE_SPI_EXPECT_CLK_SPEED,
+        .spi_mode = ST7701_IO_3WIRE_SPI_SPI_MODE,
+        .lcd_cmd_bytes = ST7701_IO_3WIRE_SPI_LCD_CMD_BYTES,
+        .lcd_param_bytes = ST7701_IO_3WIRE_SPI_LCD_PARAM_BYTES,
+        .flags = {
+            .use_dc_bit = ST7701_IO_3WIRE_SPI_FLAGS_USE_DC_BIT,
+            .dc_zero_on_data = ST7701_IO_3WIRE_SPI_FLAGS_DC_ZERO_ON_DATA,
+            .lsb_first = ST7701_IO_3WIRE_SPI_FLAGS_LSB_FIRST,
+            .cs_high_active = ST7701_IO_3WIRE_SPI_FLAGS_CS_HIGH_ACTIVE,
+            .del_keep_cs_inactive = ST7701_IO_3WIRE_SPI_FLAGS_DEL_KEEP_CS_INACTIVE}
+    };
+
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_3wire_spi(&io_config, &io_handle));
 
@@ -69,10 +80,8 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .disp_gpio_num = ST7701_PANEL_CONFIG_DISP_GPIO_NUM,
         .on_frame_trans_done = direct_io_frame_trans_done,
         .user_ctx = drv,
-        .flags = {
-            .disp_active_low = ST7701_PANEL_CONFIG_FLAGS_DISP_ACTIVE_LOW,
-            .relax_on_idle = ST7701_PANEL_CONFIG_FLAGS_RELAX_ON_IDLE,
-            .fb_in_psram = ST7701_PANEL_CONFIG_FLAGS_FB_IN_PSRAM}};
+        .flags = {.disp_active_low = ST7701_PANEL_CONFIG_FLAGS_DISP_ACTIVE_LOW, .relax_on_idle = ST7701_PANEL_CONFIG_FLAGS_RELAX_ON_IDLE, .fb_in_psram = ST7701_PANEL_CONFIG_FLAGS_FB_IN_PSRAM}
+    };
 
     const st7701_vendor_config_t vendor_config = {
         .init_cmds = ST7701_VENDOR_CONFIG_INIT_CMDS,
