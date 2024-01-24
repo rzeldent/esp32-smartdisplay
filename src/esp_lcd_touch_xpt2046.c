@@ -1,4 +1,4 @@
-#ifdef TOUCH_USES_XPT2046
+#ifdef BOARD_HAS_XPT2046
 
 /*
  * SPDX-FileCopyrightText: 2022 atanisoft (github.com/atanisoft)

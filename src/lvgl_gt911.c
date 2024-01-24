@@ -1,4 +1,4 @@
-#ifdef TOUCH_USES_GT911
+#ifdef BOARD_HAS_GT911
 
 #include <esp32_smartdisplay.h>
 #include "driver/i2c.h"

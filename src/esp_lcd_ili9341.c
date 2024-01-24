@@ -1,4 +1,4 @@
-#ifdef LCD_USES_ILI9341
+#ifdef BOARD_HAS_ILI9341
 
 /*
  * SPDX-FileCopyrightText: 2022-2023 Espressif Systems (Shanghai) CO LTD

@@ -1,4 +1,4 @@
-#ifdef TOUCH_USES_GT911
+#ifdef BOARD_HAS_GT911
 
 /*
  * SPDX-FileCopyrightText: 2015-2023 Espressif Systems (Shanghai) CO LTD

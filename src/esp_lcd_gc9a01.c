@@ -1,4 +1,4 @@
-#ifdef LCD_USES_GC9A01
+#ifdef BOARD_HAS_GC9A01
 
 /*
  * SPDX-FileCopyrightText: 2021-2023 Espressif Systems (Shanghai) CO LTD

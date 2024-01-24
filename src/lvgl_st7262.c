@@ -1,4 +1,4 @@
-#ifdef LCD_USES_ST7262
+#ifdef BOARD_HAS_ST7262
 
 #include <esp32_smartdisplay.h>
 #include <esp_lcd_panel_rgb.h>

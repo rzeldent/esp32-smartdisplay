@@ -1,4 +1,4 @@
-#ifdef TOUCH_USES_CST816S
+#ifdef BOARD_HAS_CST816S
 
 #include <esp32_smartdisplay.h>
 #include "driver/i2c.h"

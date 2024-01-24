@@ -1,4 +1,4 @@
-#ifdef TOUCH_USES_CST816S
+#ifdef BOARD_HAS_CST816S
 
 /*
  * SPDX-FileCopyrightText: 2015-2023 Espressif Systems (Shanghai) CO LTD

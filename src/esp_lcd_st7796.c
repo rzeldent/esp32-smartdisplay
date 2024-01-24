@@ -1,4 +1,4 @@
-#ifdef LCD_USES_ST7796
+#ifdef BOARD_HAS_ST7796
 
 /*
  * SPDX-FileCopyrightText: 2023 Espressif Systems (Shanghai) CO LTD

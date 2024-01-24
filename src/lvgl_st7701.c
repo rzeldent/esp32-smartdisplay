@@ -1,4 +1,4 @@
-#ifdef LCD_USES_ST7701
+#ifdef BOARD_HAS_ST7701
 
 #include <esp32_smartdisplay.h>
 #include <esp_lcd_st7701.h>
