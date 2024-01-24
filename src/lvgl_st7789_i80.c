@@ -1,20 +1,27 @@
 #ifdef LCD_ST7789_I80
 
 #include <esp32_smartdisplay.h>
-#include <esp_lcd_panel_rgb.h>
+#include <esp_lcd_panel_io.h>
+#include <esp_lcd_panel_vendor.h>
 #include <esp_lcd_panel_ops.h>
 
-static bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx)
+static bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
     lv_disp_drv_t *disp_driver = user_ctx;
     lv_disp_flush_ready(disp_driver);
     return false;
 }
 
-static void direct_io_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *color_map)
+static void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *color_map)
 {
     esp_lcd_panel_handle_t panel_handle = drv->user_data;
-    // LV_COLOR_16_SWAP is handled by mapping of the data
+#if LV_COLOR_16_SWAP != 1
+#warning "LV_COLOR_16_SWAP should be 1 for max performance"
+    ushort pixels = lv_area_get_size(area);
+    lv_color16_t *p = color_map;
+    while (pixels--)
+        p++->full = (uint16_t)((p->full >> 8) | (p->full << 8));
+#endif
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, color_map));
 };
 
@@ -24,71 +31,63 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     drv->sw_rotate = 1;
     drv->rotated = LV_DISP_ROT_NONE;
 
-    esp_lcd_i80_bus_handle_t i80_bus = NULL;
-    esp_lcd_i80_bus_config_t bus_config = {
-        .clk_src = LCD_CLK_SRC_DEFAULT,
-        .dc_gpio_num = EXAMPLE_PIN_NUM_DC,
-        .wr_gpio_num = EXAMPLE_PIN_NUM_PCLK,
+    const esp_lcd_i80_bus_config_t bus_config = {
+        .clk_src = ST7789_I80_BUS_CONFIG_CLK_SRC,
+        .dc_gpio_num = ST7789_I80_BUS_CONFIG_DC,
+        .wr_gpio_num = ST7789_I80_BUS_CONFIG_WR,
         .data_gpio_nums = {
-            EXAMPLE_PIN_NUM_DATA0,
-            EXAMPLE_PIN_NUM_DATA1,
-            EXAMPLE_PIN_NUM_DATA2,
-            EXAMPLE_PIN_NUM_DATA3,
-            EXAMPLE_PIN_NUM_DATA4,
-            EXAMPLE_PIN_NUM_DATA5,
-            EXAMPLE_PIN_NUM_DATA6,
-            EXAMPLE_PIN_NUM_DATA7,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D0,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D1,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D2,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D3,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D4,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D5,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D6,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D7,
         },
-        .bus_width = 8,
-        .max_transfer_bytes = EXAMPLE_LCD_H_RES * 100 * sizeof(uint16_t), // transfer 100 lines of pixels (assume pixel is RGB565) at most in one transaction
-        .psram_trans_align = EXAMPLE_PSRAM_DATA_ALIGNMENT,
-        .sram_trans_align = 4,
-    };
+        .bus_width = ST7789_I80_BUS_CONFIG_BUS_WIDTH,
+        // transfer 100 lines of pixels (assume pixel is RGB565) at most in one transaction
+        .max_transfer_bytes = ST7789_I80_BUS_CONFIG_MAX_TRANSFER_BYTES,
+        .psram_trans_align = ST7789_I80_BUS_CONFIG_PSRAM_TRANS_ALIGN,
+        .sram_trans_align = ST7789_I80_BUS_CONFIG_SRAM_TRANS_ALIGN};
+    esp_lcd_i80_bus_handle_t i80_bus;
     ESP_ERROR_CHECK(esp_lcd_new_i80_bus(&bus_config, &i80_bus));
 
     // Create direct_io panel handle
-    const esp_lcd_rgb_panel_config_t tft_panel_config = {
-        .clk_src = ST7789_PANEL_CONFIG_CLK_SRC,
-        .timings = {
-            .pclk_hz = ST7789_PANEL_CONFIG_TIMINGS_PCLK_HZ,
-            .h_res = ST7789_PANEL_CONFIG_TIMINGS_H_RES,
-            .v_res = ST7789_PANEL_CONFIG_TIMINGS_V_RES,
-            .hsync_pulse_width = ST7789_PANEL_CONFIG_TIMINGS_HSYNC_PULSE_WIDTH,
-            .hsync_back_porch = ST7789_PANEL_CONFIG_TIMINGS_HSYNC_BACK_PORCH,
-            .hsync_front_porch = ST7789_PANEL_CONFIG_TIMINGS_HSYNC_FRONT_PORCH,
-            .vsync_pulse_width = ST7789_PANEL_CONFIG_TIMINGS_VSYNC_PULSE_WIDTH,
-            .vsync_back_porch = ST7789_PANEL_CONFIG_TIMINGS_VSYNC_BACK_PORCH,
-            .vsync_front_porch = ST7789_PANEL_CONFIG_TIMINGS_VSYNC_FRONT_PORCH,
-            .flags = {
-                .hsync_idle_low = ST7789_PANEL_CONFIG_TIMINGS_FLAGS_HSYNC_IDLE_LOW,
-                .vsync_idle_low = ST7789_PANEL_CONFIG_TIMINGS_FLAGS_VSYNC_IDLE_LOW,
-                .de_idle_high = ST7789_PANEL_CONFIG_TIMINGS_FLAGS_DE_IDLE_HIGH,
-                .pclk_active_neg = ST7789_PANEL_CONFIG_TIMINGS_FLAGS_PCLK_ACTIVE_NEG,
-                .pclk_idle_high = ST7789_PANEL_CONFIG_TIMINGS_FLAGS_PCLK_IDLE_HIGH}},
-        .data_width = ST7789_PANEL_CONFIG_DATA_WIDTH,
-        .sram_trans_align = ST7789_PANEL_CONFIG_SRAM_TRANS_ALIGN,
-        .psram_trans_align = ST7789_PANEL_CONFIG_PSRAM_TRANS_ALIGN,
-        .hsync_gpio_num = ST7789_PANEL_CONFIG_HSYNC_GPIO_NUM,
-        .vsync_gpio_num = ST7789_PANEL_CONFIG_VSYNC_GPIO_NUM,
-        .de_gpio_num = ST7789_PANEL_CONFIG_DE_GPIO_NUM,
-        .pclk_gpio_num = ST7789_PANEL_CONFIG_PCLK_GPIO_NUM,
-#if LV_COLOR_16_SWAP == 0
-        .data_gpio_nums = {ST7789_PANEL_CONFIG_DATA_GPIO_R0, ST7789_PANEL_CONFIG_DATA_GPIO_R1, ST7789_PANEL_CONFIG_DATA_GPIO_R2, ST7789_PANEL_CONFIG_DATA_GPIO_R3, ST7789_PANEL_CONFIG_DATA_GPIO_R4, ST7789_PANEL_CONFIG_DATA_GPIO_G0, ST7789_PANEL_CONFIG_DATA_GPIO_G1, ST7789_PANEL_CONFIG_DATA_GPIO_G2, ST7789_PANEL_CONFIG_DATA_GPIO_G3, ST7789_PANEL_CONFIG_DATA_GPIO_G4, ST7789_PANEL_CONFIG_DATA_GPIO_G5, ST7789_PANEL_CONFIG_DATA_GPIO_B0, ST7789_PANEL_CONFIG_DATA_GPIO_B1, ST7789_PANEL_CONFIG_DATA_GPIO_B2, ST7789_PANEL_CONFIG_DATA_GPIO_B3, ST7789_PANEL_CONFIG_DATA_GPIO_B4},
-#else
-        .data_gpio_nums = {ST7789_PANEL_CONFIG_DATA_GPIO_G3, ST7789_PANEL_CONFIG_DATA_GPIO_G4, ST7789_PANEL_CONFIG_DATA_GPIO_G5, ST7789_PANEL_CONFIG_DATA_GPIO_B0, ST7789_PANEL_CONFIG_DATA_GPIO_B1, ST7789_PANEL_CONFIG_DATA_GPIO_B2, ST7789_PANEL_CONFIG_DATA_GPIO_B3, ST7789_PANEL_CONFIG_DATA_GPIO_B4, ST7789_PANEL_CONFIG_DATA_GPIO_R0, ST7789_PANEL_CONFIG_DATA_GPIO_R1, ST7789_PANEL_CONFIG_DATA_GPIO_R2, ST7789_PANEL_CONFIG_DATA_GPIO_R3, ST7789_PANEL_CONFIG_DATA_GPIO_R4, ST7789_PANEL_CONFIG_DATA_GPIO_G0, ST7789_PANEL_CONFIG_DATA_GPIO_G1, ST7789_PANEL_CONFIG_DATA_GPIO_G2},
-#endif
-        .disp_gpio_num = ST7789_PANEL_CONFIG_DISP_GPIO_NUM,
-        .on_frame_trans_done = direct_io_frame_trans_done,
+    esp_lcd_panel_io_i80_config_t io_config = {
+        .cs_gpio_num = ST7789_IO_I80_CONFIG_CS_GPIO_NUM,
+        .pclk_hz = ST7789_IO_I80_CONFIG_PCLK_HZ,
+        .on_color_trans_done = st7789_color_trans_done,
         .user_ctx = drv,
-        .flags = {.disp_active_low = ST7789_PANEL_CONFIG_FLAGS_DISP_ACTIVE_LOW, .relax_on_idle = ST7789_PANEL_CONFIG_FLAGS_RELAX_ON_IDLE, .fb_in_psram = ST7789_PANEL_CONFIG_FLAGS_FB_IN_PSRAM}
-    };
+        .trans_queue_depth = ST7789_IO_I80_CONFIG_TRANS_QUEUE_DEPTH,
+        .lcd_cmd_bits = ST7789_IO_I80_CONFIG_LCD_CMD_BITS,
+        .lcd_param_bits = ST7789_IO_I80_CONFIG_LCD_PARAM_BITS,
+        .dc_levels = {
+            .dc_idle_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_IDLE_LEVEL,
+            .dc_cmd_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_CMD_LEVEL,
+            .dc_dummy_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_DUMMY_LEVEL,
+            .dc_data_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_DATA_LEVEL,
+        },
+        .flags = {.cs_active_high = ST7789_IO_I80_CONFIG_FLAGS_CS_ACTIVE_HIGH, .reverse_color_bits = ST7789_IO_I80_CONFIG_FLAGS_REVERSE_COLOR_BITS, .swap_color_bytes = ST7789_IO_I80_CONFIG_FLAGS_SWAP_COLOR_BYTES, .pclk_active_neg = ST7789_IO_I80_CONFIG_FLAGS_PCLK_ACTIVE_NEG, .pclk_idle_low = ST7789_IO_I80_CONFIG_FLAGS_PCLK_IDLE_LOW}};
+    esp_lcd_panel_io_handle_t io_handle;
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_i80(i80_bus, &io_config, &io_handle));
 
+    // Create ST7789 panel handle
+    const esp_lcd_panel_dev_config_t panel_dev_config = {
+        .reset_gpio_num = ST7789_DEV_CONFIG_RESET_GPIO_NUM,
+        .color_space = ST7789_DEV_CONFIG_COLOR_SPACE,
+        .bits_per_pixel = ST7789_DEV_CONFIG_BITS_PER_PIXEL,
+        .flags = {
+            .reset_active_high = ST7789_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
+        .vendor_config = ST7789_DEV_CONFIG_VENDOR_CONFIG};
     esp_lcd_panel_handle_t panel_handle;
-    ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&tft_panel_config, &panel_handle));
+    ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle, &panel_dev_config, &panel_handle));
+
+
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
     drv->user_data = panel_handle;
-    drv->flush_cb = direct_io_lv_flush;
+    drv->flush_cb = st7789_lv_flush;
 }
 
 #endif
