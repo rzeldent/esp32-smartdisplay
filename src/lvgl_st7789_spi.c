@@ -1,4 +1,4 @@
-#ifdef BOARD_HAS_ST7789
+#ifdef LCD_ST7789_SPI
 
 #include <esp32_smartdisplay.h>
 #include <driver/spi_master.h>

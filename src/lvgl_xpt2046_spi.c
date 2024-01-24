@@ -1,4 +1,4 @@
-#ifdef BOARD_HAS_XPT2046
+#ifdef TOUCH_XPT2046_SPI
 
 #include <esp32_smartdisplay.h>
 #include <driver/spi_master.h>

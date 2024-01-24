@@ -1,4 +1,4 @@
-#ifdef BOARD_HAS_ST7789_PAR
+#ifdef LCD_ST7789_I80
 
 #include <esp32_smartdisplay.h>
 #include <esp_lcd_panel_rgb.h>

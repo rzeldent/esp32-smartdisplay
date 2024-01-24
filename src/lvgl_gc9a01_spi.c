@@ -1,4 +1,4 @@
-#ifdef BOARD_HAS_GC9A01
+#ifdef LCD_GC9A01_SPI
 
 #include <esp32_smartdisplay.h>
 #include <driver/spi_master.h>

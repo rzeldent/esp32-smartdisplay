@@ -1,4 +1,4 @@
-#ifdef BOARD_HAS_ILI9341
+#ifdef LCD_ILI9341_SPI
 
 #include <esp32_smartdisplay.h>
 #include <driver/spi_master.h>
