@@ -1,5 +1,7 @@
 #ifdef LCD_ST7789_I80
 
+#warning Still under development. Will most probably NOT function!
+
 #include <esp32_smartdisplay.h>
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_vendor.h>
@@ -43,7 +45,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
             ST7789_I80_BUS_CONFIG_DATA_GPIO_D4,
             ST7789_I80_BUS_CONFIG_DATA_GPIO_D5,
             ST7789_I80_BUS_CONFIG_DATA_GPIO_D6,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D7,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D7
         },
         .bus_width = ST7789_I80_BUS_CONFIG_BUS_WIDTH,
         // transfer 100 lines of pixels (assume pixel is RGB565) at most in one transaction
@@ -66,7 +68,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
             .dc_idle_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_IDLE_LEVEL,
             .dc_cmd_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_CMD_LEVEL,
             .dc_dummy_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_DUMMY_LEVEL,
-            .dc_data_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_DATA_LEVEL,
+            .dc_data_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_DATA_LEVEL
         },
         .flags = {.cs_active_high = ST7789_IO_I80_CONFIG_FLAGS_CS_ACTIVE_HIGH, .reverse_color_bits = ST7789_IO_I80_CONFIG_FLAGS_REVERSE_COLOR_BITS, .swap_color_bytes = ST7789_IO_I80_CONFIG_FLAGS_SWAP_COLOR_BYTES, .pclk_active_neg = ST7789_IO_I80_CONFIG_FLAGS_PCLK_ACTIVE_NEG, .pclk_idle_low = ST7789_IO_I80_CONFIG_FLAGS_PCLK_IDLE_LOW}};
     esp_lcd_panel_io_handle_t io_handle;
@@ -83,9 +85,10 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle, &panel_dev_config, &panel_handle));
 
-
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    // IPS
+    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
     drv->user_data = panel_handle;
     drv->flush_cb = st7789_lv_flush;
 }
