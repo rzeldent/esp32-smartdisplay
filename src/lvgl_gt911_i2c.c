@@ -9,18 +9,19 @@ static void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
     esp_lcd_touch_handle_t touch_handle = drv->user_data;
 
-    uint16_t touchpad_x[1] = {0};
-    uint16_t touchpad_y[1] = {0};
-    uint8_t touchpad_cnt = 0;
+    uint16_t touch_x[1] = {0};
+    uint16_t touch_y[1] = {0};
+    uint16_t touch_strength[1] = {0};
+    uint8_t touch_cnt = 0;
 
     // Read touch controller data
     ESP_ERROR_CHECK(esp_lcd_touch_read_data(touch_handle));
     // Get coordinates
-    bool pressed = esp_lcd_touch_get_coordinates(touch_handle, touchpad_x, touchpad_y, NULL, &touchpad_cnt, 1);
-    if (pressed && touchpad_cnt > 0)
+    bool pressed = esp_lcd_touch_get_coordinates(touch_handle, touch_x, touch_y, touch_strength, &touch_cnt, 1);
+    if (pressed && touch_cnt > 0)
     {
-        data->point.x = touchpad_x[0];
-        data->point.y = touchpad_y[0];
+        data->point.x = touch_x[0];
+        data->point.y = touch_y[0];
         data->state = LV_INDEV_STATE_PRESSED;
     }
     else
