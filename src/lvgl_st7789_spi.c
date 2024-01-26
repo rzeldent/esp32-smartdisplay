@@ -74,6 +74,11 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
 
+#ifdef LCD_IPS
+    // If LCD is IPS invert the colors
+    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
+#endif
+
     drv->user_data = panel_handle;
     drv->flush_cb = st7789_lv_flush;
 }
