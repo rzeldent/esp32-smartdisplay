@@ -33,10 +33,11 @@ void lvgl_log(const char *buf)
 // Top of the display is top left when connector is at the bottom
 static void lvgl_update_callback(lv_disp_drv_t *drv)
 {
+  log_d("lvgl_update_callback");
   esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
 #ifdef BOARD_HAS_TOUCH
   esp_lcd_touch_handle_t touch_handle = indev_drv.user_data;
-#endif  
+#endif
   switch (drv->rotated)
   {
   case LV_DISP_ROT_NONE:
@@ -97,6 +98,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 // Set backlight intensity
 void smartdisplay_lcd_set_backlight(float duty)
 {
+  log_d("smartdisplay_lcd_set_backlight. duty:%d", duty);
   if (duty > 1.0)
     duty = 1.0f;
   if (duty < 0.0)
@@ -149,6 +151,7 @@ void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_
 #ifdef BOARD_HAS_RGB_LED
 void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 {
+  log_d("smartdisplay_led_set_rgb. R:%d, G:%d, B:%d", r, b, b);
   digitalWrite(RGB_LED_R, !r);
   digitalWrite(RGB_LED_G, !g);
   digitalWrite(RGB_LED_B, !b);
@@ -159,11 +162,13 @@ void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 // See: https://www.maximintegrated.com/en/design/technical-documents/app-notes/5/5296.html
 void lvgl_touch_calibration_transform(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
+  log_d("lvgl_touch_calibration_transform");
   // Call low level read from the driver
   driver_touch_read_cb(drv, data);
   // Check if transformation is required
   if (touch_calibration_data.valid && data->state == LV_INDEV_STATE_PRESSED)
   {
+    log_d("Transformation applied");
     lv_point_t pt = {
         .x = roundf(data->point.x * touch_calibration_data.alphaX + data->point.y * touch_calibration_data.betaX + touch_calibration_data.deltaX),
         .y = roundf(data->point.x * touch_calibration_data.alphaY + data->point.y * touch_calibration_data.betaY + touch_calibration_data.deltaY)};
@@ -174,6 +179,7 @@ void lvgl_touch_calibration_transform(lv_indev_drv_t *drv, lv_indev_data_t *data
 
 touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3])
 {
+  log_d("smartdisplay_compute_touch_calibration");
   touch_calibration_data.valid = false;
   const float delta = ((touch[0].x - touch[2].x) * (touch[1].y - touch[2].y)) - ((touch[1].x - touch[2].x) * (touch[0].y - touch[2].y));
   touch_calibration_data_t touch_calibration_data = {
@@ -193,6 +199,7 @@ touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t
 
 void smartdisplay_init()
 {
+  log_d("smartdisplay_init");
 #ifdef BOARD_HAS_RGB_LED
   // Setup RGB LED.  High is off
   pinMode(RGB_LED_R, OUTPUT);

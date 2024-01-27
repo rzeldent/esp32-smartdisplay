@@ -23,6 +23,7 @@ static void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
         data->point.x = touch_x[0];
         data->point.y = touch_y[0];
         data->state = LV_INDEV_STATE_PRESSED;
+        log_d("Pressed at: (%d,%d)", data->point.x, data->point.y);
     }
     else
         data->state = LV_INDEV_STATE_RELEASED;
@@ -30,6 +31,7 @@ static void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 
 void lvgl_touch_init(lv_indev_drv_t *drv)
 {
+    log_d("lvgl_touch_init");
     // Create I2C bus
     const i2c_config_t i2c_config = {
         .mode = I2C_MODE_MASTER,
@@ -41,7 +43,9 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
             .clk_speed = GT911_I2C_CONFIG_MASTER_CLK_SPEED},
         .clk_flags = GT911_I2C_CONFIG_CLK_FLAGS};
     ESP_ERROR_CHECK(i2c_param_config(GT911_I2C_HOST, &i2c_config));
+    log_d("i2c_param_config. host: %d", GT911_I2C_HOST);
     ESP_ERROR_CHECK(i2c_driver_install(GT911_I2C_HOST, i2c_config.mode, 0, 0, 0));
+    log_d("i2c_driver_install host: %d", GT911_I2C_HOST);
 
     // Create IO handle
     const esp_lcd_panel_io_i2c_config_t io_i2c_config = {
@@ -57,6 +61,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
 
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)GT911_I2C_HOST, &io_i2c_config, &io_handle));
+    log_d("esp_lcd_new_panel_io_i2c. host: %d", GT911_I2C_HOST);
 
     // Create touch configuration
     const esp_lcd_touch_config_t touch_config = {
@@ -72,6 +77,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
 
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_i2c_gt911(io_handle, &touch_config, &touch_handle));
+    log_d("esp_lcd_touch_new_i2c_gt911. host: %d", GT911_I2C_HOST);
 
     drv->type = LV_INDEV_TYPE_POINTER;
     drv->user_data = touch_handle;

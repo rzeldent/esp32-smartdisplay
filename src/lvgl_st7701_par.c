@@ -22,6 +22,7 @@ static void direct_io_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_col
 
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
+    log_d("lvgl_lcd_init");
     // Install 3-wire SPI panel IO
     esp_lcd_panel_io_3wire_spi_config_t io_config = {
         .line_config = {

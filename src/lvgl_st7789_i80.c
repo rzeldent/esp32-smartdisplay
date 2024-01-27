@@ -29,6 +29,7 @@ static void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color1
 
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
+    log_d("lvgl_lcd_init");
     // Hardware rotation is NOT supported
     drv->sw_rotate = 1;
     drv->rotated = LV_DISP_ROT_NONE;
