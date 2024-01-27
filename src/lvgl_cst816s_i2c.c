@@ -71,7 +71,8 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
         .levels = {
             .reset = CST816S_TOUCH_CONFIG_LEVELS_RESET,
             .interrupt = CST816S_TOUCH_CONFIG_LEVELS_INTERRUPT},
-        .flags = {.swap_xy = CST816S_TOUCH_CONFIG_FLAGS_SWAP_XY, .mirror_x = CST816S_TOUCH_CONFIG_FLAGS_MIRROR_X, .mirror_y = CST816S_TOUCH_CONFIG_FLAGS_MIRROR_Y},
+        // Unfortunately not supported
+        //.flags = {.swap_xy = CST816S_TOUCH_CONFIG_FLAGS_SWAP_XY, .mirror_x = CST816S_TOUCH_CONFIG_FLAGS_MIRROR_X, .mirror_y = CST816S_TOUCH_CONFIG_FLAGS_MIRROR_Y},
         .user_data = io_handle};
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_i2c_cst816s(io_handle, &touch_config, &touch_handle));
