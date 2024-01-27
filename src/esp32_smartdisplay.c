@@ -255,8 +255,6 @@ void smartdisplay_init()
   // Initialize specific driver
   lvgl_lcd_init(&disp_drv);
   lv_disp_t *display = lv_disp_drv_register(&disp_drv);
-  // Turn backlight on (50%)
-  smartdisplay_lcd_set_backlight(0.5f);
   // Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on (50%)
