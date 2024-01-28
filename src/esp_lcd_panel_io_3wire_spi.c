@@ -1,3 +1,5 @@
+#ifdef LCD_ST7701_PAR
+
 /*
  * SPDX-FileCopyrightText: 2023 Espressif Systems (Shanghai) CO LTD
  *
@@ -446,3 +448,5 @@ static esp_err_t spi_write_package(esp_lcd_panel_io_3wire_spi_t *panel_io, bool 
 
     return ESP_OK;
 }
+
+#endif

@@ -1,4 +1,4 @@
-#ifdef TOUCH_USES_CST816S
+#ifdef TOUCH_CST816S_I2C
 
 /*
  * SPDX-FileCopyrightText: 2015-2023 Espressif Systems (Shanghai) CO LTD

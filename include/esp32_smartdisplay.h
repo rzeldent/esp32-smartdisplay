@@ -34,7 +34,7 @@ extern "C"
     void smartdisplay_init();
 #ifdef BOARD_HAS_TOUCH
     // Touch calibration
-    touch_calibration_data_t touch_calibration_data;
+    extern touch_calibration_data_t touch_calibration_data;
     touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3]);
 #endif    
     // Set the brightness of the backlight display

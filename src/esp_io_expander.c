@@ -1,3 +1,5 @@
+#ifdef LCD_ST7701_PAR
+
 /*
  * SPDX-FileCopyrightText: 2015-2022 Espressif Systems (Shanghai) CO LTD
  *
@@ -226,3 +228,6 @@ static esp_err_t read_reg(esp_io_expander_handle_t handle, reg_type_t reg, uint3
 
     return ESP_OK;
 }
+
+
+#endif

@@ -1,4 +1,4 @@
-#ifdef LCD_USES_ST7701
+#ifdef LCD_ST7701_PAR
 
 /*
  * SPDX-FileCopyrightText: 2023 Espressif Systems (Shanghai) CO LTD

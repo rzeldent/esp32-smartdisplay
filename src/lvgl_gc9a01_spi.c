@@ -1,4 +1,4 @@
-#ifdef LCD_USES_GC9A01
+#ifdef LCD_GC9A01_SPI
 
 #include <esp32_smartdisplay.h>
 #include <driver/spi_master.h>
@@ -30,38 +30,47 @@ void gc9a01_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *co
 
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
+    log_d("lvgl_lcd_init");
     // Hardware rotation is supported
     drv->sw_rotate = 0;
     drv->rotated = LV_DISP_ROT_NONE;
 
     // Create SPI bus
     const spi_bus_config_t spi_bus_config = {
-        .mosi_io_num = GC9A01_SPI_HOST,
-        .sclk_io_num = GC9A01_SPI_SCLK,
-        .quadwp_io_num = -1,
-        .quadhd_io_num = -1};
-    ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(GC9A01_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
+        .mosi_io_num = GC9A01_SPI_BUS_MOSI_IO_NUM,
+        .mosi_io_num = GC9A01_SPI_BUS_MISO_IO_NUM,
+        .sclk_io_num = GC9A01_SPI_BUS_SCLK_IO_NUM,
+        .quadwp_io_num = GC9A01_SPI_BUS_QUADWP_IO_NUM,
+        .quadhd_io_num = GC9A01_SPI_BUS_QUADHD_IO_NUM};
+    ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(GC9A01_SPI_HOST, &spi_bus_config, GC9A01_SPI_DMA_CHANNEL));
 
     // Attach the LCD controller to the SPI bus
     const esp_lcd_panel_io_spi_config_t io_config = {
-        .cs_gpio_num = GC9A01_CS,
-        .dc_gpio_num = GC9A01_DC,
-        .spi_mode = SPI_MODE0,
-        .pclk_hz = 80000000,
-        .trans_queue_depth = 10,
+        .cs_gpio_num = GC9A01_SPI_CONFIG_CS_GPIO_NUM,
+        .dc_gpio_num = GC9A01_SPI_CONFIG_DC_GPIO_NUM,
+        .spi_mode = GC9A01_SPI_CONFIG_SPI_MODE,
+        .pclk_hz = GC9A01_SPI_CONFIG_PCLK_HZ,
+        .trans_queue_depth = GC9A01_SPI_CONFIG_TRANS_QUEUE_DEPTH,
         .user_ctx = drv,
         .on_color_trans_done = gc9a01_color_trans_done,
-        .lcd_cmd_bits = 8,
-        .lcd_param_bits = 8};
+        .lcd_cmd_bits = GC9A01_SPI_CONFIG_LCD_CMD_BITS,
+        .lcd_param_bits = GC9A01_SPI_CONFIG_LCD_PARAM_BITS,
+        .flags = {
+            .dc_as_cmd_phase = GC9A01_SPI_CONFIG_FLAGS_DC_AS_CMD_PHASE,
+            .dc_low_on_data = GC9A01_SPI_CONFIG_FLAGS_DC_LOW_ON_DATA,
+            .octal_mode = GC9A01_SPI_CONFIG_FLAGS_OCTAL_MODE,
+            .lsb_first = GC9A01_SPI_CONFIG_FLAGS_LSB_FIRST}};
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)GC9A01_SPI_HOST, &io_config, &io_handle));
 
     // Create gc9a01 panel handle
     const esp_lcd_panel_dev_config_t panel_dev_config = {
-        .reset_gpio_num = -1,
-        .color_space = ESP_LCD_COLOR_SPACE_BGR,
-        .bits_per_pixel = 16,
-        .vendor_config = GC9A01_VENDOR_CONFIG};
+        .reset_gpio_num = GC9A01_DEV_CONFIG_RESET_GPIO_NUM,
+        .color_space = GC9A01_DEV_CONFIG_COLOR_SPACE,
+        .bits_per_pixel = GC9A01_DEV_CONFIG_BITS_PER_PIXEL,
+        .flags = {
+            .reset_active_high = GC9A01_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
+        .vendor_config = GC9A01_DEV_CONFIG_VENDOR_CONFIG};
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_gc9a01(io_handle, &panel_dev_config, &panel_handle));
 
