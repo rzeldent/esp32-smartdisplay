@@ -201,7 +201,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
     log_d("GT911 productId: %s", gt_info.productId);                                            // 0x8140 - 0x8143
     log_d("GT911 fwId: %04x", gt_info.fwId);                                                    // 0x8144 - 0x8145
     log_d("GT911 xResolution/yResolution: (%d, %d)", gt_info.xResolution, gt_info.yResolution); // 0x8146 - 0x8147 // 0x8148 - 0x8149
-    log_d("GT911 fwId: %02x", gt_info.vendorId);                                                // 0x814A
+    log_d("GT911 vendorId: %02x", gt_info.vendorId);                                                // 0x814A
     /*
     if (gt_info.xResolution != GT911_TOUCH_CONFIG_X_MAX || gt_info.yResolution != GT911_TOUCH_CONFIG_Y_MAX)
     {
