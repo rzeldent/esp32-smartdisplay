@@ -71,6 +71,9 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .flags = {
             .reset_active_high = ILI9341_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
         .vendor_config = ILI9341_DEV_CONFIG_VENDOR_CONFIG};
+    if (panel_dev_config.vendor_config)
+        log_d("Initialization with vendor config");
+
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_ili9341(io_handle, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
