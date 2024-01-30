@@ -106,7 +106,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 // Set backlight intensity
 void smartdisplay_lcd_set_backlight(float duty)
 {
-  log_d("smartdisplay_lcd_set_backlight. duty:%d", duty);
+  log_d("smartdisplay_lcd_set_backlight. duty:%f", duty);
   if (duty > 1.0)
     duty = 1.0f;
   if (duty < 0.0)
