@@ -39,14 +39,14 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .dc_gpio_num = ST7789_I80_BUS_CONFIG_DC,
         .wr_gpio_num = ST7789_I80_BUS_CONFIG_WR,
         .data_gpio_nums = {
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D0,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D1,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D2,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D3,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D4,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D5,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D6,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D7
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D8,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D9,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D10,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D11,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D12,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D13,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D14,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D15
         },
         .bus_width = ST7789_I80_BUS_CONFIG_BUS_WIDTH,
         // transfer 100 lines of pixels (assume pixel is RGB565) at most in one transaction
