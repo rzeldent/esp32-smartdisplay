@@ -4,9 +4,6 @@
 #include <Arduino.h>
 #include <lvgl.h>
 
-// LVGL lines buffered
-#define LVGL_PIXEL_BUFFER_LINES 16
-
 // Use last PWM_CHANNEL for backlight
 #define PWM_CHANNEL_BCKL (SOC_LEDC_CHANNEL_NUM - 1)
 #define PWM_FREQ_BCKL 20000
