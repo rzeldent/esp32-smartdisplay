@@ -41,7 +41,10 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .miso_io_num = ST7796_SPI_BUS_MISO_IO_NUM,
         .sclk_io_num = ST7796_SPI_BUS_SCLK_IO_NUM,
         .quadwp_io_num = ST7796_SPI_BUS_QUADWP_IO_NUM,
-        .quadhd_io_num = ST7796_SPI_BUS_QUADHD_IO_NUM};
+        .quadhd_io_num = ST7796_SPI_BUS_QUADHD_IO_NUM,
+        .max_transfer_sz = ST7796_SPI_BUS_MAX_TRANSFER_SZ,
+        .flags = ST7796_SPI_BUS_FLAGS,
+        .intr_flags = ST7796_SPI_BUS_INTR_FLAGS};
     ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(ST7796_SPI_HOST, &spi_bus_config, ST7796_SPI_DMA_CHANNEL));
 
     // Attach the LCD controller to the SPI bus

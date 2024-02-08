@@ -41,7 +41,10 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .miso_io_num = ILI9341_SPI_BUS_MISO_IO_NUM,
         .sclk_io_num = ILI9341_SPI_BUS_SCLK_IO_NUM,
         .quadwp_io_num = ILI9341_SPI_BUS_QUADWP_IO_NUM,
-        .quadhd_io_num = ILI9341_SPI_BUS_QUADHD_IO_NUM};
+        .quadhd_io_num = ILI9341_SPI_BUS_QUADHD_IO_NUM,
+        .max_transfer_sz = ILI9341_SPI_BUS_MAX_TRANSFER_SZ,
+        .flags = ILI9341_SPI_BUS_FLAGS,
+        .intr_flags = ILI9341_SPI_BUS_INTR_FLAGS};
     ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(ILI9341_SPI_HOST, &spi_bus_config, ILI9341_SPI_DMA_CHANNEL));
 
     // Attach the LCD controller to the SPI bus
