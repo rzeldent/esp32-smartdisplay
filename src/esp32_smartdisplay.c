@@ -106,7 +106,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 // Set backlight intensity
 void smartdisplay_lcd_set_backlight(float duty)
 {
-  log_d("smartdisplay_lcd_set_backlight. duty:%d", duty);
+  log_d("smartdisplay_lcd_set_backlight. duty:%2f", duty);
   if (duty > 1.0)
     duty = 1.0f;
   if (duty < 0.0)
@@ -249,9 +249,8 @@ void smartdisplay_init()
   disp_drv.ver_res = LCD_HEIGHT;
   // Create drawBuffer
   disp_drv.draw_buf = (lv_disp_draw_buf_t *)malloc(sizeof(lv_disp_draw_buf_t));
-  uint drawBufferPixels = LCD_WIDTH * LVGL_PIXEL_BUFFER_LINES;
-  void *drawBuffer = heap_caps_malloc(sizeof(lv_color16_t) * drawBufferPixels, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
-  lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, drawBufferPixels);
+  void *drawBuffer = heap_caps_malloc(sizeof(lv_color_t) * LVGL_BUFFER_PIXELS, LVGL_BUFFER_MALLOC_FLAGS);
+  lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, LVGL_BUFFER_PIXELS);
   // Initialize specific driver
   lvgl_lcd_init(&disp_drv);
   lv_disp_t *display = lv_disp_drv_register(&disp_drv);

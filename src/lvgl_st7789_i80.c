@@ -34,19 +34,22 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     drv->sw_rotate = 1;
     drv->rotated = LV_DISP_ROT_NONE;
 
+    pinMode(ST7789_RD_GPIO, OUTPUT);
+    digitalWrite(ST7789_RD_GPIO, HIGH);
+
     const esp_lcd_i80_bus_config_t bus_config = {
         .clk_src = ST7789_I80_BUS_CONFIG_CLK_SRC,
         .dc_gpio_num = ST7789_I80_BUS_CONFIG_DC,
         .wr_gpio_num = ST7789_I80_BUS_CONFIG_WR,
         .data_gpio_nums = {
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D0,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D1,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D2,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D3,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D4,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D5,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D6,
-            ST7789_I80_BUS_CONFIG_DATA_GPIO_D7
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D8,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D9,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D10,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D11,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D12,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D13,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D14,
+            ST7789_I80_BUS_CONFIG_DATA_GPIO_D15
         },
         .bus_width = ST7789_I80_BUS_CONFIG_BUS_WIDTH,
         // transfer 100 lines of pixels (assume pixel is RGB565) at most in one transaction
@@ -71,7 +74,12 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
             .dc_dummy_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_DUMMY_LEVEL,
             .dc_data_level = ST7789_IO_I80_CONFIG_DC_LEVELS_DC_DATA_LEVEL
         },
-        .flags = {.cs_active_high = ST7789_IO_I80_CONFIG_FLAGS_CS_ACTIVE_HIGH, .reverse_color_bits = ST7789_IO_I80_CONFIG_FLAGS_REVERSE_COLOR_BITS, .swap_color_bytes = ST7789_IO_I80_CONFIG_FLAGS_SWAP_COLOR_BYTES, .pclk_active_neg = ST7789_IO_I80_CONFIG_FLAGS_PCLK_ACTIVE_NEG, .pclk_idle_low = ST7789_IO_I80_CONFIG_FLAGS_PCLK_IDLE_LOW}};
+        .flags = {
+            .cs_active_high = ST7789_IO_I80_CONFIG_FLAGS_CS_ACTIVE_HIGH,
+            .reverse_color_bits = ST7789_IO_I80_CONFIG_FLAGS_REVERSE_COLOR_BITS,
+            .swap_color_bytes = ST7789_IO_I80_CONFIG_FLAGS_SWAP_COLOR_BYTES,
+            .pclk_active_neg = ST7789_IO_I80_CONFIG_FLAGS_PCLK_ACTIVE_NEG,
+            .pclk_idle_low = ST7789_IO_I80_CONFIG_FLAGS_PCLK_IDLE_LOW}};
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_i80(i80_bus, &io_config, &io_handle));
 
