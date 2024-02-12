@@ -236,13 +236,13 @@ void smartdisplay_init()
   lv_init();
   // Setup backlight
   pinMode(GPIO_BCKL, OUTPUT);
+  digitalWrite(GPIO_BCKL, LOW);
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
   ledcAttach(GPIO_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
 #else
   ledcSetup(PWM_CHANNEL_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
   ledcAttachPin(GPIO_BCKL, PWM_CHANNEL_BCKL);
 #endif
-  digitalWrite(GPIO_BCKL, LOW);
   // Setup TFT display
   lv_disp_drv_init(&disp_drv);
   disp_drv.hor_res = LCD_WIDTH;
