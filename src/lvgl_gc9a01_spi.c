@@ -38,7 +38,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     // Create SPI bus
     const spi_bus_config_t spi_bus_config = {
         .mosi_io_num = GC9A01_SPI_BUS_MOSI_IO_NUM,
-        .mosi_io_num = GC9A01_SPI_BUS_MISO_IO_NUM,
+        .miso_io_num = GC9A01_SPI_BUS_MISO_IO_NUM,
         .sclk_io_num = GC9A01_SPI_BUS_SCLK_IO_NUM,
         .quadwp_io_num = GC9A01_SPI_BUS_QUADWP_IO_NUM,
         .quadhd_io_num = GC9A01_SPI_BUS_QUADHD_IO_NUM,
