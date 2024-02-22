@@ -193,13 +193,13 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)GT911_I2C_HOST, &io_i2c_config, &io_handle));
 
-    /*
-    // Read the information of the GT911. Unfortunately not supported by all GT911 controllers
+    // Read the information of the GT911
     ESP_ERROR_CHECK(esp_lcd_panel_io_rx_param(io_handle, 0x8140, &gt_info, sizeof(struct GTInfo)));
     log_d("GT911 productId: %s", gt_info.productId);                                            // 0x8140 - 0x8143
     log_d("GT911 fwId: %04x", gt_info.fwId);                                                    // 0x8144 - 0x8145
     log_d("GT911 xResolution/yResolution: (%d, %d)", gt_info.xResolution, gt_info.yResolution); // 0x8146 - 0x8147 // 0x8148 - 0x8149
-    log_d("GT911 vendorId: %02x", gt_info.vendorId);                                                // 0x814A
+    log_d("GT911 vendorId: %02x", gt_info.vendorId);                                            // 0x814A
+    /*
     if (gt_info.xResolution != GT911_TOUCH_CONFIG_X_MAX || gt_info.yResolution != GT911_TOUCH_CONFIG_Y_MAX)
     {
         log_w("Resolution does not match configuration (%d,%d)", GT911_TOUCH_CONFIG_X_MAX, GT911_TOUCH_CONFIG_Y_MAX);
