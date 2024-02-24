@@ -43,9 +43,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
             .clk_speed = CST816S_I2C_CONFIG_MASTER_CLK_SPEED},
         .clk_flags = CST816S_I2C_CONFIG_CLK_FLAGS};
     ESP_ERROR_CHECK(i2c_param_config(CST816S_I2C_HOST, &i2c_config));
-    log_d("i2c_param_config. host: %d", CST816S_I2C_HOST);
     ESP_ERROR_CHECK(i2c_driver_install(CST816S_I2C_HOST, i2c_config.mode, 0, 0, 0));
-    log_d("i2c_driver_install host: %d", CST816S_I2C_HOST);
 
     // Create IO handle
     const esp_lcd_panel_io_i2c_config_t io_i2c_config = {
@@ -60,7 +58,6 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
             .disable_control_phase = CST816S_IO_I2C_CONFIG_FLAGS_DISABLE_CONTROL_PHASE}};
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)CST816S_I2C_HOST, &io_i2c_config, &io_handle));
-    log_d("esp_lcd_new_panel_io_i2c: %d", CST816S_I2C_HOST);
 
     // Create touch configuration
     const esp_lcd_touch_config_t touch_config = {
@@ -76,7 +73,6 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
         .user_data = io_handle};
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_i2c_cst816s(io_handle, &touch_config, &touch_handle));
-    log_d("esp_lcd_touch_new_i2c_cst816s");
 
     drv->type = LV_INDEV_TYPE_POINTER;
     drv->user_data = touch_handle;
