@@ -27,9 +27,7 @@
             "-D'ESP_LCD_GC9A01_VER_MAJOR=1'",
             "-D'ESP_LCD_GC9A01_VER_MINOR=2'",
             "-D'ESP_LCD_GC9A01_VER_PATCH=0'",
-            "-D'CONFIG_ESP_LCD_TOUCH_MAX_POINTS=1'",
-            "-D'CONFIG_XPT2046_CONVERT_ADC_TO_COORDS'",
-            "-D'CONFIG_XPT2046_Z_THRESHOLD=600'"
+            "-D'CONFIG_ESP_LCD_TOUCH_MAX_POINTS=1'"
         ]
     },
     "authors": [
