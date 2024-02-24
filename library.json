@@ -42,6 +42,7 @@
     "frameworks": "arduino",
     "platforms": "espressif32",
     "dependencies": {
-        "lvgl/lvgl": "^8.3.9"
+        "lvgl/lvgl": "^8.3.9",
+        "esp_lcd_touch_xpt2046": "https://github.com/rzeldent/esp_lcd_touch_xpt2046.git#develop"
     }
 }
