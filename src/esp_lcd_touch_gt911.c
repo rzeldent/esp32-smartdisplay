@@ -1,4 +1,4 @@
-#ifdef TOUCH_GT911_I2C
+#if 0
 
 /*
  * SPDX-FileCopyrightText: 2015-2023 Espressif Systems (Shanghai) CO LTD

@@ -41,6 +41,7 @@
     "platforms": "espressif32",
     "dependencies": {
         "lvgl/lvgl": "^8.3.9",
-        "esp_lcd_touch_xpt2046": "https://github.com/rzeldent/esp_lcd_touch_xpt2046.git#develop"
+        "esp_lcd_touch_xpt2046": "https://github.com/rzeldent/esp_lcd_touch_xpt2046.git#develop",
+        "esp_lcd_touch_gt911": "https://github.com/rzeldent/esp_lcd_touch_gt911.git#develop"
     }
 }

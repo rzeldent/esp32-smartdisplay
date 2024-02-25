@@ -5,6 +5,7 @@
 #include "esp_lcd_touch.h"
 #include "esp_lcd_touch_gt911.h"
 
+/*
 // The driver should take care of setting the config, but does not.
 
 struct __attribute__((packed)) GTInfo
@@ -130,6 +131,7 @@ struct GTInfo gt_info= {
     .xResolution = GT911_TOUCH_CONFIG_X_MAX,
     .yResolution = GT911_TOUCH_CONFIG_Y_MAX
 };
+*/
 
 static void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
@@ -146,8 +148,11 @@ static void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
     bool pressed = esp_lcd_touch_get_coordinates(touch_handle, touch_x, touch_y, touch_strength, &touch_cnt, 1);
     if (pressed && touch_cnt > 0)
     {
-        data->point.x = (touch_x[0] * GT911_TOUCH_CONFIG_X_MAX) / gt_info.xResolution;
-        data->point.y = (touch_y[0] * GT911_TOUCH_CONFIG_Y_MAX) / gt_info.yResolution;
+        // data->point.x = (touch_x[0] * GT911_TOUCH_CONFIG_X_MAX) / gt_info.xResolution;
+        // data->point.y = (touch_y[0] * GT911_TOUCH_CONFIG_Y_MAX) / gt_info.yResolution;
+        data->point.x = touch_x[0];
+        data->point.y = touch_y[0];
+
         data->state = LV_INDEV_STATE_PRESSED;
         log_d("Pressed at: (%d,%d), strength: %d", data->point.x, data->point.y, touch_strength[0]);
     }
@@ -178,7 +183,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
         .scl_pullup_en = GT911_I2C_CONFIG_SCL_PULLUP_EN,
         .master = {
             .clk_speed = GT911_I2C_CONFIG_MASTER_CLK_SPEED},
-        .clk_flags = GT911_I2C_CONFIG_CLK_FLAGS}; 
+        .clk_flags = GT911_I2C_CONFIG_CLK_FLAGS};
     ESP_ERROR_CHECK(i2c_param_config(GT911_I2C_HOST, &i2c_config));
     ESP_ERROR_CHECK(i2c_driver_install(GT911_I2C_HOST, i2c_config.mode, 0, 0, 0));
 
@@ -197,16 +202,19 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)GT911_I2C_HOST, &io_i2c_config, &io_handle));
 
-    // Read the information of the GT911
-    if (esp_lcd_panel_io_rx_param(io_handle, 0x8140, &gt_info, sizeof(struct GTInfo)) == ESP_OK)
-    {
-        log_d("GT911 productId: %s", gt_info.productId);                                            // 0x8140 - 0x8143
-        log_d("GT911 fwId: %04x", gt_info.fwId);                                                    // 0x8144 - 0x8145
-        log_d("GT911 xResolution/yResolution: (%d, %d)", gt_info.xResolution, gt_info.yResolution); // 0x8146 - 0x8147 // 0x8148 - 0x8149
-        log_d("GT911 vendorId: %02x", gt_info.vendorId);                                            // 0x814A
-    }
-    else
-        log_w("Unable to read GTInfo. Setting xResolution/yResolution to defaults: (%d, %d)", gt_info.xResolution, gt_info.yResolution);
+    /*
+        // Read the information of the GT911
+        if (esp_lcd_panel_io_rx_param(io_handle, 0x8140, &gt_info, sizeof(struct GTInfo)) == ESP_OK)
+        {
+            log_d("GT911 productId: %s", gt_info.productId);                                            // 0x8140 - 0x8143
+            log_d("GT911 fwId: %04x", gt_info.fwId);                                                    // 0x8144 - 0x8145
+            log_d("GT911 xResolution/yResolution: (%d, %d)", gt_info.xResolution, gt_info.yResolution); // 0x8146 - 0x8147 // 0x8148 - 0x8149
+            log_d("GT911 vendorId: %02x", gt_info.vendorId);                                            // 0x814A
+        }
+        else
+            log_w("Unable to read GTInfo. Setting xResolution/yResolution to defaults: (%d, %d)", gt_info.xResolution, gt_info.yResolution);
+
+    */
     /*
     if (gt_info.xResolution != GT911_TOUCH_CONFIG_X_MAX || gt_info.yResolution != GT911_TOUCH_CONFIG_Y_MAX)
     {
