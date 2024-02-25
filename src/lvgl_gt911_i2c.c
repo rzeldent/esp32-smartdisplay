@@ -149,7 +149,7 @@ static void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
         data->point.x = (touch_x[0] * GT911_TOUCH_CONFIG_X_MAX) / gt_info.xResolution;
         data->point.y = (touch_y[0] * GT911_TOUCH_CONFIG_Y_MAX) / gt_info.yResolution;
         data->state = LV_INDEV_STATE_PRESSED;
-        log_d("Pressed at: (%d,%d), strength: %d", data->point.x, data->point.y, touch_strength);
+        log_d("Pressed at: (%d,%d), strength: %d", data->point.x, data->point.y, touch_strength[0]);
     }
     else
         data->state = LV_INDEV_STATE_RELEASED;
