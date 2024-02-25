@@ -2,8 +2,8 @@
 
 #include <esp32_smartdisplay.h>
 #include <driver/spi_master.h>
-#include "esp_lcd_touch.h"
-#include "esp_lcd_touch_xpt2046.h"
+#include <esp_lcd_touch.h>
+#include <esp_lcd_touch_xpt2046.h>
 
 static void xpt2046_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
@@ -68,8 +68,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
         .levels = {
             .reset = XPT2046_TOUCH_CONFIG_LEVELS_RESET,
             .interrupt = XPT2046_TOUCH_CONFIG_LEVELS_INTERRUPT},
-        // Unfortunately not supported
-        //.flags = {.swap_xy = XPT2046_TOUCH_CONFIG_FLAGS_SWAP_XY, .mirror_x = XPT2046_TOUCH_CONFIG_FLAGS_MIRROR_X, .mirror_y = XPT2046_TOUCH_CONFIG_FLAGS_MIRROR_Y},
+        .flags = {.swap_xy = LCD_SWAP_XY, .mirror_x = LCD_MIRROR_X, .mirror_y = LCD_MIRROR_Y},
         .user_data = io_handle};
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_spi_xpt2046(io_handle, &touch_config, &touch_handle));
