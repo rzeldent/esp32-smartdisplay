@@ -87,16 +87,16 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
   case LV_DISP_ROT_90:
     ESP_ERROR_CHECK(esp_lcd_touch_set_swap_xy(touch_handle, !TOUCH_SWAP_XY));
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_SWAP_X));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_SWAP_Y));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_SWAP_Y));
     break;
   case LV_DISP_ROT_180:
     ESP_ERROR_CHECK(esp_lcd_touch_set_swap_xy(touch_handle, TOUCH_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_SWAP_X));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_SWAP_Y));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_SWAP_X));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_SWAP_Y));
     break;
   case LV_DISP_ROT_270:
     ESP_ERROR_CHECK(esp_lcd_touch_set_swap_xy(touch_handle, !TOUCH_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_SWAP_X));
+    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_SWAP_X));
     ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_SWAP_Y));
     break;
   }
