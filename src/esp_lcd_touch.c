@@ -1,3 +1,5 @@
+#ifdef BOARD_HAS_TOUCH
+
 /*
  * SPDX-FileCopyrightText: 2015-2023 Espressif Systems (Shanghai) CO LTD
  *
@@ -264,3 +266,5 @@ esp_err_t esp_lcd_touch_register_interrupt_callback_with_data(esp_lcd_touch_hand
     tp->config.user_data = user_data;
     return esp_lcd_touch_register_interrupt_callback(tp, callback);
 }
+
+#endif // BOARD_HAS_TOUCH

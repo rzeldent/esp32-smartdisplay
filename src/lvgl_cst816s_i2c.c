@@ -47,7 +47,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
 
     // Create IO handle
     const esp_lcd_panel_io_i2c_config_t io_i2c_config = {
-        .dev_addr = CST816S_IO_I2C_CONFIG_DEV_ADDR,
+        .dev_addr = CST816S_IO_I2C_CONFIG_DEV_ADDRESS,
         .control_phase_bytes = CST816S_IO_I2C_CONFIG_CONTROL_PHASE_BYTES,
         .user_ctx = drv,
         .dc_bit_offset = CST816S_IO_I2C_CONFIG_DC_BIT_OFFSET,

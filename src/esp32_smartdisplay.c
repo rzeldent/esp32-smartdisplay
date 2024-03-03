@@ -1,8 +1,11 @@
 #include <esp32_smartdisplay.h>
 #include <esp_arduino_version.h>
 #include <esp_lcd_types.h>
-#include <esp_lcd_touch.h>
 #include <esp_lcd_panel_ops.h>
+
+#ifdef BOARD_HAS_TOUCH
+#include <esp_lcd_touch.h>
+#endif
 
 // Defines for adaptive brightness adjustment
 #define BRIGHTNESS_SMOOTHING_MEASUREMENTS 100
@@ -12,12 +15,11 @@
 extern void lvgl_lcd_init(lv_disp_drv_t *drv);
 extern void lvgl_touch_init(lv_indev_drv_t *drv);
 
-static lv_disp_drv_t disp_drv;
-static lv_indev_drv_t indev_drv;
-
+lv_disp_drv_t disp_drv;
 lv_timer_t *update_brightness_timer;
 
 #ifdef BOARD_HAS_TOUCH
+lv_indev_drv_t indev_drv;
 touch_calibration_data_t touch_calibration_data;
 void (*driver_touch_read_cb)(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
 #endif
@@ -253,7 +255,7 @@ void smartdisplay_init()
   lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, LVGL_BUFFER_PIXELS);
   // Initialize specific driver
   lvgl_lcd_init(&disp_drv);
-  lv_disp_t *display = lv_disp_drv_register(&disp_drv);
+  __attribute__((unused)) lv_disp_t *display = lv_disp_drv_register(&disp_drv);
   // Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on (50%)
