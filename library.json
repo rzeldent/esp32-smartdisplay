@@ -32,8 +32,8 @@
     },
     "export": {
         "exclude": [
-            "assets/",
-            "boards/"
+            "assets/**/*",
+            "boards/**/*"
         ]
     },
     "authors": [
