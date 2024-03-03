@@ -1,9 +1,8 @@
 #ifdef TOUCH_XPT2046_SPI
 
 #include <esp32_smartdisplay.h>
-#include <driver/spi_master.h>
-#include <esp_lcd_touch.h>
 #include <esp_lcd_touch_xpt2046.h>
+#include <driver/spi_master.h>
 
 static void xpt2046_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {

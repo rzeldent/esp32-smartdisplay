@@ -1,9 +1,8 @@
 #ifdef TOUCH_GT911_I2C
 
 #include <esp32_smartdisplay.h>
-#include <driver/i2c.h>
-#include <esp_lcd_touch.h>
 #include <esp_lcd_touch_gt911.h>
+#include <driver/i2c.h>
 
 static void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
