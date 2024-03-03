@@ -30,6 +30,12 @@
             "'-D CONFIG_ESP_LCD_TOUCH_MAX_POINTS=1'"
         ]
     },
+    "export": {
+        "exclude": [
+            "assets/",
+            "boards/"
+        ]
+    },
     "authors": [
         {
             "name": "Rene Zeldenthuis",
