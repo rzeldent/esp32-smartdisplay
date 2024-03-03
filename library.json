@@ -32,6 +32,8 @@
     },
     "export": {
         "exclude": [
+            "**/.*",
+            "test/**/*",
             "assets/**/*",
             "boards/**/*"
         ]
