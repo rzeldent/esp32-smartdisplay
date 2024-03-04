@@ -74,7 +74,7 @@ extern "C"
 
     esp_err_t cst816s_reset(esp_lcd_touch_handle_t th)
     {
-        log_v("cst816s_reset. th:%08x", th);
+        log_v("cst816s_reset. th:0x%08x", th);
 
         esp_err_t res;
 
@@ -103,7 +103,7 @@ extern "C"
 
     esp_err_t cst816s_read_info(esp_lcd_touch_handle_t th)
     {
-        log_v("cst816s_read_info. th:%08x", th);
+        log_v("cst816s_read_info. th:0x%08x", th);
 
         esp_err_t res;
 
@@ -123,7 +123,7 @@ extern "C"
 
     esp_err_t cst816s_read_data(esp_lcd_touch_handle_t th)
     {
-        log_v("cst816s_read_data. th:%08x", th);
+        log_v("cst816s_read_data. th:0x%08x", th);
 
         esp_err_t res;
         cst816s_touch_event buffer;
@@ -150,7 +150,7 @@ extern "C"
 
     bool cst816s_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
     {
-        log_v("cst816s_get_xy. th:%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
+        log_v("cst816s_get_xy. th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
 
         portENTER_CRITICAL(&th->data.lock);
         *point_num = th->data.points > max_point_num ? max_point_num : th->data.points;
@@ -170,7 +170,7 @@ extern "C"
 
     esp_err_t cst816s_del(esp_lcd_touch_handle_t th)
     {
-        log_v("cst816s_del. th:%08x", th);
+        log_v("cst816s_del. th:0x%08x", th);
 
         portENTER_CRITICAL(&th->data.lock);
 
@@ -194,7 +194,7 @@ extern "C"
 
     esp_err_t esp_lcd_touch_new_i2c_gt911(const esp_lcd_panel_io_handle_t io, const esp_lcd_touch_config_t *config, esp_lcd_touch_handle_t *handle)
     {
-        log_v("esp_lcd_touch_new_spi_gt911. io:%08x, config:%08x, handle:%08x", io, config, handle);
+        log_v("esp_lcd_touch_new_spi_gt911. io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
 
         assert(io != NULL);
         assert(config != NULL);

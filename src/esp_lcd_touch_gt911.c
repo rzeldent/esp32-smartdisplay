@@ -69,7 +69,7 @@ extern "C"
 
     esp_err_t gt911_reset(esp_lcd_touch_handle_t th)
     {
-        log_v("gt911_reset. th:%08x", th);
+        log_v("gt911_reset. th:0x%08x", th);
 
         esp_err_t res;
 
@@ -98,7 +98,7 @@ extern "C"
 
     esp_err_t gt911_read_info(esp_lcd_touch_handle_t th)
     {
-        log_v("gt911_read_info. th:%08x", th);
+        log_v("gt911_read_info. th:0x%08x", th);
 
         esp_err_t res;
 
@@ -131,8 +131,9 @@ extern "C"
 
         if (info->xResolution == 0 || info->yResolution == 0)
         {
-            log_e("Invalid resolution in GT911");
-            return ESP_FAIL;
+            log_w("Invalid resolution obtained from GT911. Using supplied resolution (%d,%d)", th->config.x_max, th->config.y_max);
+            info->xResolution = th->config.x_max;
+            info->yResolution = th->config.y_max;
         }
 
         log_d("GT911 productId: %s", info->productId);                                          // 0x8140 - 0x8143
@@ -147,7 +148,7 @@ extern "C"
 
     esp_err_t gt911_enter_sleep(esp_lcd_touch_handle_t th)
     {
-        log_v("gt911_enter_sleep. th:%08x", th);
+        log_v("gt911_enter_sleep. th:0x%08x", th);
 
         esp_err_t res;
         const uint8_t data[] = {0x05}; // Sleep
@@ -159,7 +160,7 @@ extern "C"
 
     esp_err_t gt911_exit_sleep(esp_lcd_touch_handle_t th)
     {
-        log_v("gt911_exit_sleep. th:%08x", th);
+        log_v("gt911_exit_sleep. th:0x%08x", th);
 
         esp_err_t res;
         if (th->config.int_gpio_num == GPIO_NUM_NC)
@@ -191,7 +192,7 @@ extern "C"
 
     esp_err_t gt911_read_data(esp_lcd_touch_handle_t th)
     {
-        log_v("gt911_read_data. th:%08x", th);
+        log_v("gt911_read_data. th:0x%08x", th);
 
         esp_err_t res;
         gt911_touch_data buffer;
@@ -273,7 +274,7 @@ extern "C"
 
     bool gt911_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
     {
-        log_v("gt911_get_xy. th:%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
+        log_v("gt911_get_xy. th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
 
         portENTER_CRITICAL(&th->data.lock);
         *point_num = th->data.points > max_point_num ? max_point_num : th->data.points;
@@ -294,7 +295,7 @@ extern "C"
 #if (CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS > 0)
     esp_err_t gt911_get_button_state(esp_lcd_touch_handle_t th, uint8_t n, uint8_t *state)
     {
-        log_v("gt911_get_xy. th:%08x, n:%d, state:0x%08x", th, n, state);
+        log_v("gt911_get_xy. th:0x%08x, n:%d, state:0x%08x", th, n, state);
 
         if (n > th->data.buttons)
         {
@@ -312,7 +313,7 @@ extern "C"
 
     esp_err_t gt911_del(esp_lcd_touch_handle_t th)
     {
-        log_v("gt911_del. th:%08x", th);
+        log_v("gt911_del. th:0x%08x", th);
 
         portENTER_CRITICAL(&th->data.lock);
         // Remove gt911_info
@@ -339,7 +340,7 @@ extern "C"
 
     esp_err_t esp_lcd_touch_new_i2c_gt911(const esp_lcd_panel_io_handle_t io, const esp_lcd_touch_config_t *config, esp_lcd_touch_handle_t *handle)
     {
-        log_v("esp_lcd_touch_new_spi_gt911. io:%08x, config:%08x, handle:%08x", io, config, handle);
+        log_v("esp_lcd_touch_new_spi_gt911. io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
 
         assert(io != NULL);
         assert(config != NULL);

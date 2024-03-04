@@ -71,7 +71,7 @@ const lcd_init_cmd_t vendor_specific_init_default[] = {
 esp_err_t gc9a01_reset(esp_lcd_panel_t *panel)
 {
     gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
-    log_v("gc9a01_reset. ph:%08x", ph);
+    log_v("gc9a01_reset. ph:0x%08x", ph);
 
     assert(panel != NULL);
 
@@ -101,7 +101,7 @@ esp_err_t gc9a01_reset(esp_lcd_panel_t *panel)
 esp_err_t gc9a01_init(esp_lcd_panel_t *panel)
 {
     gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
-    log_v("gc9a01_init. ph:%08x", ph);
+    log_v("gc9a01_init. ph:0x%08x", ph);
 
     assert(panel != NULL);
 
@@ -161,7 +161,7 @@ esp_err_t gc9a01_init(esp_lcd_panel_t *panel)
 esp_err_t gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, int x_end, int y_end, const void *color_data)
 {
     gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
-    log_v("gc9a01_draw_bitmap. ph:%08x, x_start:%d, y_start:%d, x_end:%d, y_end:%d, color_data:%08x", ph, x_start, y_start, x_end, y_end, color_data);
+    log_v("gc9a01_draw_bitmap. ph:0x%08x, x_start:%d, y_start:%d, x_end:%d, y_end:%d, color_data:0x%08x", ph, x_start, y_start, x_end, y_end, color_data);
 
     assert(panel != NULL);
     assert(color_data != NULL);
@@ -208,7 +208,7 @@ esp_err_t gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, i
 esp_err_t gc9a01_invert_color(esp_lcd_panel_t *panel, bool invert)
 {
     gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
-    log_v("gc9a01_invert_color. ph:%08x, invert:%d", ph, invert);
+    log_v("gc9a01_invert_color. ph:0x%08x, invert:%d", ph, invert);
 
     assert(panel != NULL);
 
@@ -238,7 +238,7 @@ esp_err_t gc9a01_update_madctl(gc9a01_panel_t *ph)
 esp_err_t gc9a01_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
 {
     gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
-    log_v("gc9a01_mirror. ph:%08x, mirror_x:%d, mirror_y:%d", ph, mirror_x, mirror_y);
+    log_v("gc9a01_mirror. ph:0x%08x, mirror_x:%d, mirror_y:%d", ph, mirror_x, mirror_y);
 
     assert(panel != NULL);
 
@@ -258,7 +258,7 @@ esp_err_t gc9a01_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
 esp_err_t gc9a01_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
 {
     gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
-    log_v("gc9a01_swap_xy. ph:%08x, swap_xy:%d", ph, swap_xy);
+    log_v("gc9a01_swap_xy. ph:0x%08x, swap_xy:%d", ph, swap_xy);
 
     assert(panel != NULL);
 
@@ -273,7 +273,7 @@ esp_err_t gc9a01_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
 esp_err_t gc9a01_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
 {
     gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
-    log_v("gc9a01_set_gap. ph:%08x, x_gap:%d, y_gap:%d", ph, x_gap, y_gap);
+    log_v("gc9a01_set_gap. ph:0x%08x, x_gap:%d, y_gap:%d", ph, x_gap, y_gap);
 
     assert(panel != NULL);
 
@@ -286,7 +286,7 @@ esp_err_t gc9a01_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
 esp_err_t gc9a01_disp_off(esp_lcd_panel_t *panel, bool off)
 {
     gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
-    log_v("gc9a01_disp_off. ph:%08x, off:%d", ph, off);
+    log_v("gc9a01_disp_off. ph:0x%08x, off:%d", ph, off);
 
     assert(panel != NULL);
 
@@ -303,7 +303,7 @@ esp_err_t gc9a01_disp_off(esp_lcd_panel_t *panel, bool off)
 esp_err_t gc9a01_del(esp_lcd_panel_t *panel)
 {
     gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
-    log_v("gc9a01_del. ph:%08x", ph);
+    log_v("gc9a01_del. ph:0x%08x", ph);
 
     assert(panel != NULL);
 
@@ -318,7 +318,7 @@ esp_err_t gc9a01_del(esp_lcd_panel_t *panel)
 
 esp_err_t esp_lcd_new_panel_gc9a01(const esp_lcd_panel_io_handle_t io, const esp_lcd_panel_dev_config_t *config, esp_lcd_panel_handle_t *handle)
 {
-    log_v("esp_lcd_new_panel_gc9a01. io:%08x, config:%08x, handle:%08x", io, config, handle);
+    log_v("esp_lcd_new_panel_gc9a01. io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
 
     assert(io != NULL);
     assert(config != NULL);
