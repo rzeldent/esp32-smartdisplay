@@ -1,385 +1,384 @@
-#ifdef LCD_GC9A01_SPI
+#include <esp_lcd_gc9a01.h>
+#include <esp32-hal-log.h>
+#include <esp_rom_gpio.h>
+#include <esp_heap_caps.h>
+#include <memory.h>
+#include <esp_lcd_panel_commands.h>
+#include <esp_lcd_types.h>
+#include <esp_lcd_panel_interface.h>
+#include <esp_lcd_panel_io.h>
 
-/*
- * SPDX-FileCopyrightText: 2021-2023 Espressif Systems (Shanghai) CO LTD
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
-#include <stdlib.h>
-#include <sys/cdefs.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_lcd_panel_interface.h"
-#include "esp_lcd_panel_io.h"
-#include "esp_lcd_panel_vendor.h"
-#include "esp_lcd_panel_ops.h"
-#include "esp_lcd_panel_commands.h"
-#include "driver/gpio.h"
-#include "esp_log.h"
-#include "esp_check.h"
-
-#include "esp_lcd_gc9a01.h"
-
-static const char *TAG = "gc9a01";
-
-static esp_err_t panel_gc9a01_del(esp_lcd_panel_t *panel);
-static esp_err_t panel_gc9a01_reset(esp_lcd_panel_t *panel);
-static esp_err_t panel_gc9a01_init(esp_lcd_panel_t *panel);
-static esp_err_t panel_gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, int x_end, int y_end, const void *color_data);
-static esp_err_t panel_gc9a01_invert_color(esp_lcd_panel_t *panel, bool invert_color_data);
-static esp_err_t panel_gc9a01_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y);
-static esp_err_t panel_gc9a01_swap_xy(esp_lcd_panel_t *panel, bool swap_axes);
-static esp_err_t panel_gc9a01_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap);
-static esp_err_t panel_gc9a01_disp_on_off(esp_lcd_panel_t *panel, bool off);
-
-typedef struct {
+typedef struct
+{
     esp_lcd_panel_t base;
     esp_lcd_panel_io_handle_t io;
-    int reset_gpio_num;
-    bool reset_level;
-    int x_gap;
-    int y_gap;
-    uint8_t fb_bits_per_pixel;
-    uint8_t madctl_val; // save current value of LCD_CMD_MADCTL register
-    uint8_t colmod_val; // save current value of LCD_CMD_COLMOD register
-    const gc9a01_lcd_init_cmd_t *init_cmds;
-    uint16_t init_cmds_size;
+    esp_lcd_panel_dev_config_t config;
+    // Data
+    ushort x_gap;
+    ushort y_gap;
+    uint8_t madctl; // MADCTL register
+    const lcd_init_cmd_t *cmd;
+    const uint16_t cmds_size;
 } gc9a01_panel_t;
 
-esp_err_t esp_lcd_new_panel_gc9a01(const esp_lcd_panel_io_handle_t io, const esp_lcd_panel_dev_config_t *panel_dev_config, esp_lcd_panel_handle_t *ret_panel)
-{
-    esp_err_t ret = ESP_OK;
-    gc9a01_panel_t *gc9a01 = NULL;
-    gpio_config_t io_conf = { 0 };
-
-    ESP_GOTO_ON_FALSE(io && panel_dev_config && ret_panel, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
-    gc9a01 = (gc9a01_panel_t *)calloc(1, sizeof(gc9a01_panel_t));
-    ESP_GOTO_ON_FALSE(gc9a01, ESP_ERR_NO_MEM, err, TAG, "no mem for gc9a01 panel");
-
-    if (panel_dev_config->reset_gpio_num >= 0) {
-        io_conf.mode = GPIO_MODE_OUTPUT;
-        io_conf.pin_bit_mask = 1ULL << panel_dev_config->reset_gpio_num;
-        ESP_GOTO_ON_ERROR(gpio_config(&io_conf), err, TAG, "configure GPIO for RST line failed");
-    }
-
-#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
-    switch (panel_dev_config->color_space) {
-    case ESP_LCD_COLOR_SPACE_RGB:
-        gc9a01->madctl_val = 0;
-        break;
-    case ESP_LCD_COLOR_SPACE_BGR:
-        gc9a01->madctl_val |= LCD_CMD_BGR_BIT;
-        break;
-    default:
-        ESP_GOTO_ON_FALSE(false, ESP_ERR_NOT_SUPPORTED, err, TAG, "unsupported color space");
-        break;
-    }
-#else
-    switch (panel_dev_config->rgb_endian) {
-    case LCD_RGB_ENDIAN_RGB:
-        gc9a01->madctl_val = 0;
-        break;
-    case LCD_RGB_ENDIAN_BGR:
-        gc9a01->madctl_val |= LCD_CMD_BGR_BIT;
-        break;
-    default:
-        ESP_GOTO_ON_FALSE(false, ESP_ERR_NOT_SUPPORTED, err, TAG, "unsupported rgb endian");
-        break;
-    }
-#endif
-
-    switch (panel_dev_config->bits_per_pixel) {
-    case 16: // RGB565
-        gc9a01->colmod_val = 0x55;
-        gc9a01->fb_bits_per_pixel = 16;
-        break;
-    case 18: // RGB666
-        gc9a01->colmod_val = 0x66;
-        // each color component (R/G/B) should occupy the 6 high bits of a byte, which means 3 full bytes are required for a pixel
-        gc9a01->fb_bits_per_pixel = 24;
-        break;
-    default:
-        ESP_GOTO_ON_FALSE(false, ESP_ERR_NOT_SUPPORTED, err, TAG, "unsupported pixel width");
-        break;
-    }
-
-    gc9a01->io = io;
-    gc9a01->reset_gpio_num = panel_dev_config->reset_gpio_num;
-    gc9a01->reset_level = panel_dev_config->flags.reset_active_high;
-    if (panel_dev_config->vendor_config) {
-        gc9a01->init_cmds = ((gc9a01_vendor_config_t *)panel_dev_config->vendor_config)->init_cmds;
-        gc9a01->init_cmds_size = ((gc9a01_vendor_config_t *)panel_dev_config->vendor_config)->init_cmds_size;
-    }
-    gc9a01->base.del = panel_gc9a01_del;
-    gc9a01->base.reset = panel_gc9a01_reset;
-    gc9a01->base.init = panel_gc9a01_init;
-    gc9a01->base.draw_bitmap = panel_gc9a01_draw_bitmap;
-    gc9a01->base.invert_color = panel_gc9a01_invert_color;
-    gc9a01->base.set_gap = panel_gc9a01_set_gap;
-    gc9a01->base.mirror = panel_gc9a01_mirror;
-    gc9a01->base.swap_xy = panel_gc9a01_swap_xy;
-#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
-    gc9a01->base.disp_off = panel_gc9a01_disp_on_off;
-#else
-    gc9a01->base.disp_on_off = panel_gc9a01_disp_on_off;
-#endif
-    *ret_panel = &(gc9a01->base);
-    ESP_LOGD(TAG, "new gc9a01 panel @%p", gc9a01);
-
-    ESP_LOGI(TAG, "LCD panel create success, version: %d.%d.%d", ESP_LCD_GC9A01_VER_MAJOR, ESP_LCD_GC9A01_VER_MINOR,
-             ESP_LCD_GC9A01_VER_PATCH);
-
-    return ESP_OK;
-
-err:
-    if (gc9a01) {
-        if (panel_dev_config->reset_gpio_num >= 0) {
-            gpio_reset_pin(panel_dev_config->reset_gpio_num);
-        }
-        free(gc9a01);
-    }
-    return ret;
-}
-
-static esp_err_t panel_gc9a01_del(esp_lcd_panel_t *panel)
-{
-    gc9a01_panel_t *gc9a01 = __containerof(panel, gc9a01_panel_t, base);
-
-    if (gc9a01->reset_gpio_num >= 0) {
-        gpio_reset_pin(gc9a01->reset_gpio_num);
-    }
-    ESP_LOGD(TAG, "del gc9a01 panel @%p", gc9a01);
-    free(gc9a01);
-    return ESP_OK;
-}
-
-static esp_err_t panel_gc9a01_reset(esp_lcd_panel_t *panel)
-{
-    gc9a01_panel_t *gc9a01 = __containerof(panel, gc9a01_panel_t, base);
-    esp_lcd_panel_io_handle_t io = gc9a01->io;
-
-    // perform hardware reset
-    if (gc9a01->reset_gpio_num >= 0) {
-        gpio_set_level(gc9a01->reset_gpio_num, gc9a01->reset_level);
-        vTaskDelay(pdMS_TO_TICKS(10));
-        gpio_set_level(gc9a01->reset_gpio_num, !gc9a01->reset_level);
-        vTaskDelay(pdMS_TO_TICKS(10));
-    } else { // perform software reset
-        ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, LCD_CMD_SWRESET, NULL, 0), TAG, "send command failed");
-        vTaskDelay(pdMS_TO_TICKS(20)); // spec, wait at least 5ms before sending new command
-    }
-
-    return ESP_OK;
-}
-
-static const gc9a01_lcd_init_cmd_t vendor_specific_init_default[] = {
-//  {cmd, { data }, data_size, delay_ms}
+const lcd_init_cmd_t vendor_specific_init_default[] = {
     // Enable Inter Register
-    {0xfe, (uint8_t []){0x00}, 0, 0},
-    {0xef, (uint8_t []){0x00}, 0, 0},
-    {0xeb, (uint8_t []){0x14}, 1, 0},
-    {0x84, (uint8_t []){0x60}, 1, 0},
-    {0x85, (uint8_t []){0xff}, 1, 0},
-    {0x86, (uint8_t []){0xff}, 1, 0},
-    {0x87, (uint8_t []){0xff}, 1, 0},
-    {0x8e, (uint8_t []){0xff}, 1, 0},
-    {0x8f, (uint8_t []){0xff}, 1, 0},
-    {0x88, (uint8_t []){0x0a}, 1, 0},
-    {0x89, (uint8_t []){0x23}, 1, 0},
-    {0x8a, (uint8_t []){0x00}, 1, 0},
-    {0x8b, (uint8_t []){0x80}, 1, 0},
-    {0x8c, (uint8_t []){0x01}, 1, 0},
-    {0x8d, (uint8_t []){0x03}, 1, 0},
-    {0x90, (uint8_t []){0x08, 0x08, 0x08, 0x08}, 4, 0},
-    {0xff, (uint8_t []){0x60, 0x01, 0x04}, 3, 0},
-    {0xC3, (uint8_t []){0x13}, 1, 0},
-    {0xC4, (uint8_t []){0x13}, 1, 0},
-    {0xC9, (uint8_t []){0x30}, 1, 0},
-    {0xbe, (uint8_t []){0x11}, 1, 0},
-    {0xe1, (uint8_t []){0x10, 0x0e}, 2, 0},
-    {0xdf, (uint8_t []){0x21, 0x0c, 0x02}, 3, 0},
+    {0xfe, (const uint8_t[]){0x00}, 0, 0},
+    {0xef, (const uint8_t[]){0x00}, 0, 0},
+    {0xeb, (const uint8_t[]){0x14}, 1, 0},
+    {0x84, (const uint8_t[]){0x60}, 1, 0},
+    {0x85, (const uint8_t[]){0xff}, 1, 0},
+    {0x86, (const uint8_t[]){0xff}, 1, 0},
+    {0x87, (const uint8_t[]){0xff}, 1, 0},
+    {0x8e, (const uint8_t[]){0xff}, 1, 0},
+    {0x8f, (const uint8_t[]){0xff}, 1, 0},
+    {0x88, (const uint8_t[]){0x0a}, 1, 0},
+    {0x89, (const uint8_t[]){0x23}, 1, 0},
+    {0x8a, (const uint8_t[]){0x00}, 1, 0},
+    {0x8b, (const uint8_t[]){0x80}, 1, 0},
+    {0x8c, (const uint8_t[]){0x01}, 1, 0},
+    {0x8d, (const uint8_t[]){0x03}, 1, 0},
+    {0x90, (const uint8_t[]){0x08, 0x08, 0x08, 0x08}, 4, 0},
+    {0xff, (const uint8_t[]){0x60, 0x01, 0x04}, 3, 0},
+    {0xC3, (const uint8_t[]){0x13}, 1, 0},
+    {0xC4, (const uint8_t[]){0x13}, 1, 0},
+    {0xC9, (const uint8_t[]){0x30}, 1, 0},
+    {0xbe, (const uint8_t[]){0x11}, 1, 0},
+    {0xe1, (const uint8_t[]){0x10, 0x0e}, 2, 0},
+    {0xdf, (const uint8_t[]){0x21, 0x0c, 0x02}, 3, 0},
     // Set gamma
-    {0xF0, (uint8_t []){0x45, 0x09, 0x08, 0x08, 0x26, 0x2a}, 6, 0},
-    {0xF1, (uint8_t []){0x43, 0x70, 0x72, 0x36, 0x37, 0x6f}, 6, 0},
-    {0xF2, (uint8_t []){0x45, 0x09, 0x08, 0x08, 0x26, 0x2a}, 6, 0},
-    {0xF3, (uint8_t []){0x43, 0x70, 0x72, 0x36, 0x37, 0x6f}, 6, 0},
-    {0xed, (uint8_t []){0x1b, 0x0b}, 2, 0},
-    {0xae, (uint8_t []){0x77}, 1, 0},
-    {0xcd, (uint8_t []){0x63}, 1, 0},
-    {0x70, (uint8_t []){0x07, 0x07, 0x04, 0x0e, 0x0f, 0x09, 0x07, 0x08, 0x03}, 9, 0},
-    {0xE8, (uint8_t []){0x34}, 1, 0}, // 4 dot inversion
-    {0x60, (uint8_t []){0x38, 0x0b, 0x6D, 0x6D, 0x39, 0xf0, 0x6D, 0x6D}, 8, 0},
-    {0x61, (uint8_t []){0x38, 0xf4, 0x6D, 0x6D, 0x38, 0xf7, 0x6D, 0x6D}, 8, 0},
-    {0x62, (uint8_t []){0x38, 0x0D, 0x71, 0xED, 0x70, 0x70, 0x38, 0x0F, 0x71, 0xEF, 0x70, 0x70}, 12, 0},
-    {0x63, (uint8_t []){0x38, 0x11, 0x71, 0xF1, 0x70, 0x70, 0x38, 0x13, 0x71, 0xF3, 0x70, 0x70}, 12, 0},
-    {0x64, (uint8_t []){0x28, 0x29, 0xF1, 0x01, 0xF1, 0x00, 0x07}, 7, 0},
-    {0x66, (uint8_t []){0x3C, 0x00, 0xCD, 0x67, 0x45, 0x45, 0x10, 0x00, 0x00, 0x00}, 10, 0},
-    {0x67, (uint8_t []){0x00, 0x3C, 0x00, 0x00, 0x00, 0x01, 0x54, 0x10, 0x32, 0x98}, 10, 0},
-    {0x74, (uint8_t []){0x10, 0x45, 0x80, 0x00, 0x00, 0x4E, 0x00}, 7, 0},
-    {0x98, (uint8_t []){0x3e, 0x07}, 2, 0},
-    {0x99, (uint8_t []){0x3e, 0x07}, 2, 0},
+    {0xF0, (const uint8_t[]){0x45, 0x09, 0x08, 0x08, 0x26, 0x2a}, 6, 0},
+    {0xF1, (const uint8_t[]){0x43, 0x70, 0x72, 0x36, 0x37, 0x6f}, 6, 0},
+    {0xF2, (const uint8_t[]){0x45, 0x09, 0x08, 0x08, 0x26, 0x2a}, 6, 0},
+    {0xF3, (const uint8_t[]){0x43, 0x70, 0x72, 0x36, 0x37, 0x6f}, 6, 0},
+    {0xed, (const uint8_t[]){0x1b, 0x0b}, 2, 0},
+    {0xae, (const uint8_t[]){0x77}, 1, 0},
+    {0xcd, (const uint8_t[]){0x63}, 1, 0},
+    {0x70, (const uint8_t[]){0x07, 0x07, 0x04, 0x0e, 0x0f, 0x09, 0x07, 0x08, 0x03}, 9, 0},
+    {0xE8, (const uint8_t[]){0x34}, 1, 0}, // 4 dot inversion
+    {0x60, (const uint8_t[]){0x38, 0x0b, 0x6D, 0x6D, 0x39, 0xf0, 0x6D, 0x6D}, 8, 0},
+    {0x61, (const uint8_t[]){0x38, 0xf4, 0x6D, 0x6D, 0x38, 0xf7, 0x6D, 0x6D}, 8, 0},
+    {0x62, (const uint8_t[]){0x38, 0x0D, 0x71, 0xED, 0x70, 0x70, 0x38, 0x0F, 0x71, 0xEF, 0x70, 0x70}, 12, 0},
+    {0x63, (const uint8_t[]){0x38, 0x11, 0x71, 0xF1, 0x70, 0x70, 0x38, 0x13, 0x71, 0xF3, 0x70, 0x70}, 12, 0},
+    {0x64, (const uint8_t[]){0x28, 0x29, 0xF1, 0x01, 0xF1, 0x00, 0x07}, 7, 0},
+    {0x66, (const uint8_t[]){0x3C, 0x00, 0xCD, 0x67, 0x45, 0x45, 0x10, 0x00, 0x00, 0x00}, 10, 0},
+    {0x67, (const uint8_t[]){0x00, 0x3C, 0x00, 0x00, 0x00, 0x01, 0x54, 0x10, 0x32, 0x98}, 10, 0},
+    {0x74, (const uint8_t[]){0x10, 0x45, 0x80, 0x00, 0x00, 0x4E, 0x00}, 7, 0},
+    {0x98, (const uint8_t[]){0x3e, 0x07}, 2, 0},
+    {0x99, (const uint8_t[]){0x3e, 0x07}, 2, 0},
 };
 
-static esp_err_t panel_gc9a01_init(esp_lcd_panel_t *panel)
+esp_err_t gc9a01_reset(esp_lcd_panel_t *panel)
 {
-    gc9a01_panel_t *gc9a01 = __containerof(panel, gc9a01_panel_t, base);
-    esp_lcd_panel_io_handle_t io = gc9a01->io;
+    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
+    log_v("gc9a01_reset. ph:%08x", ph);
 
-    // LCD goes into sleep mode and display will be turned off after power on reset, exit sleep mode first
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, LCD_CMD_SLPOUT, NULL, 0), TAG, "send command failed");
+    assert(panel != NULL);
+
+    if (ph->config.reset_gpio_num != GPIO_NUM_NC)
+    {
+        // Hardware reset
+        gpio_set_level(ph->config.reset_gpio_num, ph->config.flags.reset_active_high);
+        vTaskDelay(pdMS_TO_TICKS(1));
+        gpio_set_level(ph->config.reset_gpio_num, !ph->config.flags.reset_active_high);
+    }
+    else
+    {
+        esp_err_t res;
+        // Software reset
+        if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_SWRESET, NULL, 0)) != ESP_OK)
+        {
+            log_e("Sending LCD_CMD_SWRESET failed");
+            return res;
+        }
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    return ESP_OK;
+}
+
+esp_err_t gc9a01_init(esp_lcd_panel_t *panel)
+{
+    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
+    log_v("gc9a01_init. ph:%08x", ph);
+
+    assert(panel != NULL);
+
+    esp_err_t res;
+    if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_SLPOUT, NULL, 0)) != ESP_OK)
+    {
+        log_e("Sending SLPOUT failed");
+        return res;
+    }
+
     vTaskDelay(pdMS_TO_TICKS(100));
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, LCD_CMD_MADCTL, (uint8_t[]) {
-        gc9a01->madctl_val,
-    }, 1), TAG, "send command failed");
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, LCD_CMD_COLMOD, (uint8_t[]) {
-        gc9a01->colmod_val,
-    }, 1), TAG, "send command failed");
 
-    const gc9a01_lcd_init_cmd_t *init_cmds = NULL;
-    uint16_t init_cmds_size = 0;
-    if (gc9a01->init_cmds) {
-        init_cmds = gc9a01->init_cmds;
-        init_cmds_size = gc9a01->init_cmds_size;
-    } else {
-        init_cmds = vendor_specific_init_default;
-        init_cmds_size = sizeof(vendor_specific_init_default) / sizeof(gc9a01_lcd_init_cmd_t);
+    uint8_t colmod;
+    switch (ph->config.bits_per_pixel)
+    {
+    case 16: // RGB565
+        colmod = 0x55;
+        break;
+    case 18: // RGB666
+        colmod = 0x66;
+        break;
+    default:
+        log_e("Invalid bits per pixel: %d. Only RGB565 and RGB666 are supported", ph->config.bits_per_pixel);
+        return ESP_ERR_INVALID_ARG;
     }
 
-    bool is_cmd_overwritten = false;
-    for (int i = 0; i < init_cmds_size; i++) {
-        // Check if the command has been used or conflicts with the internal
-        switch (init_cmds[i].cmd) {
-        case LCD_CMD_MADCTL:
-            is_cmd_overwritten = true;
-            gc9a01->madctl_val = ((uint8_t *)init_cmds[i].data)[0];
-            break;
-        case LCD_CMD_COLMOD:
-            is_cmd_overwritten = true;
-            gc9a01->colmod_val = ((uint8_t *)init_cmds[i].data)[0];
-            break;
-        default:
-            is_cmd_overwritten = false;
-            break;
+    if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_MADCTL, (uint8_t[]){ph->madctl}, 1)) != ESP_OK ||
+        (res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_COLMOD, (uint8_t[]){colmod}, 1)) != ESP_OK)
+    {
+        log_e("Sending MADCTL/COLMOD failed");
+        return res;
+    }
+
+    const lcd_init_cmd_t *cmd = vendor_specific_init_default;
+    uint16_t cmds_size = sizeof(vendor_specific_init_default) / sizeof(lcd_init_cmd_t);
+    if (ph->cmd)
+    {
+        cmd = ph->cmd;
+        cmds_size = ph->cmds_size;
+    }
+
+    while (cmds_size-- > 0)
+    {
+        if ((res = esp_lcd_panel_io_tx_param(ph->io, cmd->cmd, cmd->data, cmd->bytes)) != ESP_OK)
+        {
+            log_e("Sending command: 0x%02x failed", cmd->cmd);
+            return res;
         }
 
-        if (is_cmd_overwritten) {
-            ESP_LOGW(TAG, "The %02Xh command has been used and will be overwritten by external initialization sequence", init_cmds[i].cmd);
+        vTaskDelay(pdMS_TO_TICKS(cmd->delay_ms));
+        cmd++;
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, int x_end, int y_end, const void *color_data)
+{
+    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
+    log_v("gc9a01_draw_bitmap. ph:%08x, x_start:%d, y_start:%d, x_end:%d, y_end:%d, color_data:%08x", ph, x_start, y_start, x_end, y_end, color_data);
+
+    assert(panel != NULL);
+    assert(color_data != NULL);
+
+    if (x_start >= x_end)
+    {
+        log_w("X-start greater than the x-end");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    if (y_start >= y_end)
+    {
+        log_w("Y-start greater than the y-end");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    // Correct for gap
+    x_start += ph->x_gap;
+    x_end += ph->x_gap;
+    y_start += ph->y_gap;
+    y_end += ph->y_gap;
+
+    esp_err_t res;
+    uint8_t caset[4] = {x_start >> 8, x_start & 0xff, (x_end - 1) >> 8, (x_end - 1) & 0xff};
+    uint8_t raset[4] = {y_start >> 8, y_start & 0xff, (y_end - 1) >> 8, (y_end - 1) & 0xff};
+    if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_CASET, &caset, sizeof(caset))) != ESP_OK ||
+        (res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_RASET, &raset, sizeof(raset))) != ESP_OK)
+    {
+        log_e("Sending CASET/RASET failed");
+        return res;
+    }
+
+    uint8_t bytes_per_pixel = (ph->config.bits_per_pixel + 0x7) >> 3;
+    size_t len = (x_end - x_start) * (y_end - y_start) * bytes_per_pixel;
+    if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_RAMWR, color_data, len)) != ESP_OK)
+    {
+        log_e("Sending RAMWR failed");
+        return res;
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t gc9a01_invert_color(esp_lcd_panel_t *panel, bool invert)
+{
+    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
+    log_v("gc9a01_invert_color. ph:%08x, invert:%d", ph, invert);
+
+    assert(panel != NULL);
+
+    esp_err_t res;
+    if ((res = esp_lcd_panel_io_tx_param(ph->io, invert ? LCD_CMD_INVON : LCD_CMD_INVOFF, NULL, 0)) != ESP_OK)
+    {
+        log_e("Sending LCD_CMD_INVON/LCD_CMD_INVOFF failed");
+        return res;
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t gc9a01_update_madctl(gc9a01_panel_t *ph)
+{
+    esp_err_t res;
+    uint8_t data[] = {ph->madctl};
+    if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_MADCTL, data, sizeof(data))) != ESP_OK)
+    {
+        log_e("Sending LCD_CMD_MADCTL failed");
+        return res;
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t gc9a01_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
+{
+    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
+    log_v("gc9a01_mirror. ph:%08x, mirror_x:%d, mirror_y:%d", ph, mirror_x, mirror_y);
+
+    assert(panel != NULL);
+
+    if (mirror_x)
+        ph->madctl |= LCD_CMD_MX_BIT;
+    else
+        ph->madctl &= ~LCD_CMD_MX_BIT;
+
+    if (mirror_y)
+        ph->madctl |= LCD_CMD_MY_BIT;
+    else
+        ph->madctl &= ~LCD_CMD_MY_BIT;
+
+    return gc9a01_update_madctl(ph);
+}
+
+esp_err_t gc9a01_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
+{
+    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
+    log_v("gc9a01_swap_xy. ph:%08x, swap_xy:%d", ph, swap_xy);
+
+    assert(panel != NULL);
+
+    if (swap_xy)
+        ph->madctl |= LCD_CMD_MV_BIT;
+    else
+        ph->madctl &= ~LCD_CMD_MV_BIT;
+
+    return gc9a01_update_madctl(ph);
+}
+
+esp_err_t gc9a01_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
+{
+    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
+    log_v("gc9a01_set_gap. ph:%08x, x_gap:%d, y_gap:%d", ph, x_gap, y_gap);
+
+    assert(panel != NULL);
+
+    ph->x_gap = x_gap;
+    ph->y_gap = y_gap;
+
+    return ESP_OK;
+}
+
+esp_err_t gc9a01_disp_off(esp_lcd_panel_t *panel, bool off)
+{
+    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
+    log_v("gc9a01_disp_off. ph:%08x, off:%d", ph, off);
+
+    assert(panel != NULL);
+
+    esp_err_t res;
+    if ((res = esp_lcd_panel_io_tx_param(ph->io, off ? LCD_CMD_DISPOFF : LCD_CMD_DISPON, NULL, 0)) != ESP_OK)
+    {
+        log_e("Sending LCD_CMD_DISPOFF/LCD_CMD_DISPON failed");
+        return res;
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t gc9a01_del(esp_lcd_panel_t *panel)
+{
+    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
+    log_v("gc9a01_del. ph:%08x", ph);
+
+    assert(panel != NULL);
+
+    // Reset RESET
+    if (ph->config.reset_gpio_num != GPIO_NUM_NC)
+        gpio_reset_pin(ph->config.reset_gpio_num);
+
+    free(ph);
+
+    return ESP_OK;
+}
+
+esp_err_t esp_lcd_new_panel_gc9a01(const esp_lcd_panel_io_handle_t io, const esp_lcd_panel_dev_config_t *config, esp_lcd_panel_handle_t *handle)
+{
+    log_v("esp_lcd_new_panel_gc9a01. io:%08x, config:%08x, handle:%08x", io, config, handle);
+
+    assert(io != NULL);
+    assert(config != NULL);
+    assert(handle != NULL);
+
+    if (config->reset_gpio_num != GPIO_NUM_NC && !GPIO_IS_VALID_GPIO(config->reset_gpio_num))
+    {
+        log_e("Invalid GPIO RST pin: %d", config->reset_gpio_num);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    uint8_t madctl;
+    switch (config->color_space)
+    {
+    case ESP_LCD_COLOR_SPACE_RGB:
+        madctl = 0;
+        break;
+    case ESP_LCD_COLOR_SPACE_BGR:
+        madctl = LCD_CMD_BGR_BIT;
+        break;
+    default:
+        log_e("Invalid color space: %d. Only RGB and BGR are supported", config->color_space);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    if (config->reset_gpio_num != GPIO_NUM_NC)
+    {
+        esp_err_t res;
+        const gpio_config_t cfg = {
+            .pin_bit_mask = BIT64(config->reset_gpio_num),
+            .mode = GPIO_MODE_OUTPUT};
+        if ((res = gpio_config(&cfg)) != ESP_OK)
+        {
+            log_e("Configuring GPIO for RST failed");
+            return res;
         }
-
-        ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, init_cmds[i].cmd, init_cmds[i].data, init_cmds[i].data_bytes), TAG, "send command failed");
-        vTaskDelay(pdMS_TO_TICKS(init_cmds[i].delay_ms));
     }
-    ESP_LOGD(TAG, "send init commands success");
 
-    return ESP_OK;
-}
-
-static esp_err_t panel_gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, int x_end, int y_end, const void *color_data)
-{
-    gc9a01_panel_t *gc9a01 = __containerof(panel, gc9a01_panel_t, base);
-    assert((x_start < x_end) && (y_start < y_end) && "start position must be smaller than end position");
-    esp_lcd_panel_io_handle_t io = gc9a01->io;
-
-    x_start += gc9a01->x_gap;
-    x_end += gc9a01->x_gap;
-    y_start += gc9a01->y_gap;
-    y_end += gc9a01->y_gap;
-
-    // define an area of frame memory where MCU can access
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, LCD_CMD_CASET, (uint8_t[]) {
-        (x_start >> 8) & 0xFF,
-        x_start & 0xFF,
-        ((x_end - 1) >> 8) & 0xFF,
-        (x_end - 1) & 0xFF,
-    }, 4), TAG, "send command failed");
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, LCD_CMD_RASET, (uint8_t[]) {
-        (y_start >> 8) & 0xFF,
-        y_start & 0xFF,
-        ((y_end - 1) >> 8) & 0xFF,
-        (y_end - 1) & 0xFF,
-    }, 4), TAG, "send command failed");
-    // transfer frame buffer
-    size_t len = (x_end - x_start) * (y_end - y_start) * gc9a01->fb_bits_per_pixel / 8;
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_color(io, LCD_CMD_RAMWR, color_data, len), TAG, "send color failed");
-
-    return ESP_OK;
-}
-
-static esp_err_t panel_gc9a01_invert_color(esp_lcd_panel_t *panel, bool invert_color_data)
-{
-    gc9a01_panel_t *gc9a01 = __containerof(panel, gc9a01_panel_t, base);
-    esp_lcd_panel_io_handle_t io = gc9a01->io;
-    int command = 0;
-    if (invert_color_data) {
-        command = LCD_CMD_INVON;
-    } else {
-        command = LCD_CMD_INVOFF;
+    gc9a01_panel_t *ph = heap_caps_aligned_alloc(1, sizeof(gc9a01_panel_t), MALLOC_CAP_DEFAULT);
+    if (ph == NULL)
+    {
+        log_e("No memory available for gc9a01_panel_t");
+        return ESP_ERR_NO_MEM;
     }
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, command, NULL, 0), TAG, "send command failed");
+
+    ph->io = io;
+    memcpy(&ph->config, config, sizeof(esp_lcd_panel_dev_config_t));
+    ph->madctl = madctl;
+
+    ph->base.del = gc9a01_del;
+    ph->base.reset = gc9a01_reset;
+    ph->base.init = gc9a01_init;
+    ph->base.draw_bitmap = gc9a01_draw_bitmap;
+    ph->base.invert_color = gc9a01_invert_color;
+    ph->base.mirror = gc9a01_mirror;
+    ph->base.swap_xy = gc9a01_swap_xy;
+    ph->base.set_gap = gc9a01_set_gap;
+    ph->base.disp_off = gc9a01_disp_off;
+
+    *handle = (esp_lcd_panel_handle_t)ph;
+
     return ESP_OK;
 }
-
-static esp_err_t panel_gc9a01_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
-{
-    gc9a01_panel_t *gc9a01 = __containerof(panel, gc9a01_panel_t, base);
-    esp_lcd_panel_io_handle_t io = gc9a01->io;
-    if (mirror_x) {
-        gc9a01->madctl_val |= LCD_CMD_MX_BIT;
-    } else {
-        gc9a01->madctl_val &= ~LCD_CMD_MX_BIT;
-    }
-    if (mirror_y) {
-        gc9a01->madctl_val |= LCD_CMD_MY_BIT;
-    } else {
-        gc9a01->madctl_val &= ~LCD_CMD_MY_BIT;
-    }
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, LCD_CMD_MADCTL, (uint8_t[]) {
-        gc9a01->madctl_val
-    }, 1), TAG, "send command failed");
-    return ESP_OK;
-}
-
-static esp_err_t panel_gc9a01_swap_xy(esp_lcd_panel_t *panel, bool swap_axes)
-{
-    gc9a01_panel_t *gc9a01 = __containerof(panel, gc9a01_panel_t, base);
-    esp_lcd_panel_io_handle_t io = gc9a01->io;
-    if (swap_axes) {
-        gc9a01->madctl_val |= LCD_CMD_MV_BIT;
-    } else {
-        gc9a01->madctl_val &= ~LCD_CMD_MV_BIT;
-    }
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, LCD_CMD_MADCTL, (uint8_t[]) {
-        gc9a01->madctl_val
-    }, 1), TAG, "send command failed");
-    return ESP_OK;
-}
-
-static esp_err_t panel_gc9a01_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
-{
-    gc9a01_panel_t *gc9a01 = __containerof(panel, gc9a01_panel_t, base);
-    gc9a01->x_gap = x_gap;
-    gc9a01->y_gap = y_gap;
-    return ESP_OK;
-}
-
-static esp_err_t panel_gc9a01_disp_on_off(esp_lcd_panel_t *panel, bool on_off)
-{
-    gc9a01_panel_t *gc9a01 = __containerof(panel, gc9a01_panel_t, base);
-    esp_lcd_panel_io_handle_t io = gc9a01->io;
-    int command = 0;
-
-#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
-    on_off = !on_off;
-#endif
-
-    if (on_off) {
-        command = LCD_CMD_DISPON;
-    } else {
-        command = LCD_CMD_DISPOFF;
-    }
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, command, NULL, 0), TAG, "send command failed");
-    return ESP_OK;
-}
-
-#endif

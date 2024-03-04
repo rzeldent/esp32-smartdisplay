@@ -57,7 +57,7 @@ typedef struct __attribute__((packed))
     uint8_t id;        // 0xA7
     uint8_t projectId; // 0xA8
     uint8_t fwVersion; // 0xA9
-} CSTInfo;
+} cst816s_info;
 
 typedef struct __attribute__((packed))
 {
@@ -65,21 +65,21 @@ typedef struct __attribute__((packed))
     uint8_t fingerNum;
     uint16_t x; // XPOSH (4 bits) + XPOSL (8 bits)
     uint16_t y;  // YPOSH (4 bits) + YPOSL (8 bits)
-} CSTPoint;
+} cst816s_touch_event;
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-    esp_err_t cst816s_reset(esp_lcd_touch_handle_t tp)
+    esp_err_t cst816s_reset(esp_lcd_touch_handle_t th)
     {
-        log_v("cst816s_reset. tp:%08x", tp);
+        log_v("cst816s_reset. th:%08x", th);
 
         esp_err_t res;
 
         // Set RST active
-        if ((res = gpio_set_level(tp->config.rst_gpio_num, tp->config.levels.reset)) != ESP_OK)
+        if ((res = gpio_set_level(th->config.rst_gpio_num, th->config.levels.reset)) != ESP_OK)
         {
             log_e("Setting RST failed");
             return res;
@@ -89,7 +89,7 @@ extern "C"
         vTaskDelay(pdMS_TO_TICKS(1));
 
         // Set RST high
-        if ((res = gpio_set_level(tp->config.rst_gpio_num, !tp->config.levels.reset)) != ESP_OK)
+        if ((res = gpio_set_level(th->config.rst_gpio_num, !th->config.levels.reset)) != ESP_OK)
         {
             log_e("Resetting RST failed");
             return res;
@@ -101,14 +101,14 @@ extern "C"
         return ESP_OK;
     }
 
-    esp_err_t cst816s_read_info(esp_lcd_touch_handle_t tp)
+    esp_err_t cst816s_read_info(esp_lcd_touch_handle_t th)
     {
-        log_v("cst816s_read_info. tp:%08x", tp);
+        log_v("cst816s_read_info. th:%08x", th);
 
         esp_err_t res;
 
-        CSTInfo info;
-        if ((res = esp_lcd_panel_io_rx_param(tp->io, CST816S_CHIPID_REG, &info, sizeof(info))) != ESP_OK)
+        cst816s_info info;
+        if ((res = esp_lcd_panel_io_rx_param(th->io, CST816S_CHIPID_REG, &info, sizeof(info))) != ESP_OK)
         {
             log_e("Unable to read CST816S info");
             return res;
@@ -121,73 +121,73 @@ extern "C"
         return ESP_OK;
     }
 
-    esp_err_t cst816s_read_data(esp_lcd_touch_handle_t tp)
+    esp_err_t cst816s_read_data(esp_lcd_touch_handle_t th)
     {
-        log_v("cst816s_read_data. tp:%08x", tp);
+        log_v("cst816s_read_data. th:%08x", th);
 
         esp_err_t res;
-        CSTPoint buffer;
+        cst816s_touch_event buffer;
 
         // Read only the XY register
-        if ((res = esp_lcd_panel_io_rx_param(tp->io, CST816S_GESTURE_REG, &buffer, sizeof(buffer))) != ESP_OK)
+        if ((res = esp_lcd_panel_io_rx_param(th->io, CST816S_GESTURE_REG, &buffer, sizeof(buffer))) != ESP_OK)
         {
             log_e("Unable to read CST816S point");
             return res;
         }
 
-        portENTER_CRITICAL(&tp->data.lock);
-        if ((tp->data.points = buffer.fingerNum) > 0)
+        portENTER_CRITICAL(&th->data.lock);
+        if ((th->data.points = buffer.fingerNum) > 0)
         {
-            tp->data.coords[0].x = buffer.x;
-            tp->data.coords[0].y = buffer.y;
-            tp->data.coords[0].strength = 0;
+            th->data.coords[0].x = buffer.x;
+            th->data.coords[0].y = buffer.y;
+            th->data.coords[0].strength = 0;
         }
 
-        portEXIT_CRITICAL(&tp->data.lock);
+        portEXIT_CRITICAL(&th->data.lock);
 
         return ESP_OK;
     }
 
-    bool cst816s_get_xy(esp_lcd_touch_handle_t tp, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
+    bool cst816s_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
     {
-        log_v("cst816s_get_xy. tp:%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", tp, x, y, strength, point_num, max_point_num);
+        log_v("cst816s_get_xy. th:%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
 
-        portENTER_CRITICAL(&tp->data.lock);
-        *point_num = tp->data.points > max_point_num ? max_point_num : tp->data.points;
+        portENTER_CRITICAL(&th->data.lock);
+        *point_num = th->data.points > max_point_num ? max_point_num : th->data.points;
         for (uint8_t i = 0; i < *point_num; i++)
         {
-            x[i] = tp->data.coords[i].y;
-            y[i] = tp->data.coords[i].x;
+            x[i] = th->data.coords[i].y;
+            y[i] = th->data.coords[i].x;
             if (strength != NULL)
-                strength[i] = tp->data.coords[i].strength;
+                strength[i] = th->data.coords[i].strength;
         }
 
-        tp->data.points = 0;
-        portEXIT_CRITICAL(&tp->data.lock);
+        th->data.points = 0;
+        portEXIT_CRITICAL(&th->data.lock);
 
         return *point_num > 0;
     }
 
-    esp_err_t cst816s_del(esp_lcd_touch_handle_t tp)
+    esp_err_t cst816s_del(esp_lcd_touch_handle_t th)
     {
-        log_v("cst816s_del. tp:%08x", tp);
+        log_v("cst816s_del. th:%08x", th);
 
-        portENTER_CRITICAL(&tp->data.lock);
+        portENTER_CRITICAL(&th->data.lock);
 
         // Remove interrupts and reset INT
-        if (tp->config.int_gpio_num != GPIO_NUM_NC)
+        if (th->config.int_gpio_num != GPIO_NUM_NC)
         {
-            if (tp->config.interrupt_callback)
-                gpio_isr_handler_remove(tp->config.int_gpio_num);
+            if (th->config.interrupt_callback)
+                gpio_isr_handler_remove(th->config.int_gpio_num);
 
-            gpio_reset_pin(tp->config.int_gpio_num);
+            gpio_reset_pin(th->config.int_gpio_num);
         }
 
         // Reset RST
-        if (tp->config.rst_gpio_num != GPIO_NUM_NC)
-            gpio_reset_pin(tp->config.rst_gpio_num);
+        if (th->config.rst_gpio_num != GPIO_NUM_NC)
+            gpio_reset_pin(th->config.rst_gpio_num);
 
-        free(tp);
+        free(th);
 
         return ESP_OK;
     }
@@ -213,22 +213,22 @@ extern "C"
         }
 
         esp_err_t res;
-        const esp_lcd_touch_handle_t tp = heap_caps_aligned_alloc(1, sizeof(esp_lcd_touch_t), MALLOC_CAP_DEFAULT);
-        if (tp == NULL)
+        const esp_lcd_touch_handle_t th = heap_caps_aligned_alloc(1, sizeof(esp_lcd_touch_t), MALLOC_CAP_DEFAULT);
+        if (th == NULL)
         {
             log_e("No memory available for esp_lcd_touch_t");
             return ESP_ERR_NO_MEM;
         }
 
-        tp->io = io;
-        tp->read_data = cst816s_read_data;
-        tp->get_xy = cst816s_get_xy;
+        th->io = io;
+        th->read_data = cst816s_read_data;
+        th->get_xy = cst816s_get_xy;
 #if (CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS > 0)
-        tp->get_button_state = cst816s_get_button_state;
+        th->get_button_state = cst816s_get_button_state;
 #endif
-        tp->del = cst816s_del;
-        memcpy(&tp->config, config, sizeof(esp_lcd_touch_config_t));
-        portMUX_INITIALIZE(&tp->data.lock);
+        th->del = cst816s_del;
+        memcpy(&th->config, config, sizeof(esp_lcd_touch_config_t));
+        portMUX_INITIALIZE(&th->data.lock);
 
         if (config->int_gpio_num != GPIO_NUM_NC)
         {
@@ -240,17 +240,17 @@ extern "C"
                 .intr_type = config->interrupt_callback ? GPIO_INTR_NEGEDGE : GPIO_INTR_DISABLE};
             if ((res = gpio_config(&cfg)) != ESP_OK)
             {
-                free(tp);
+                free(th);
                 log_e("Configuring GPIO for INT failed");
                 return res;
             }
 
             if (config->interrupt_callback != NULL)
             {
-                if ((res = esp_lcd_touch_register_interrupt_callback(tp, config->interrupt_callback)) != ESP_OK)
+                if ((res = esp_lcd_touch_register_interrupt_callback(th, config->interrupt_callback)) != ESP_OK)
                 {
-                    gpio_reset_pin(tp->config.int_gpio_num);
-                    free(tp);
+                    gpio_reset_pin(th->config.int_gpio_num);
+                    free(th);
                     log_e("Registering INT callback failed");
                     return res;
                 }
@@ -264,38 +264,38 @@ extern "C"
                     .mode = GPIO_MODE_OUTPUT};
                 if ((res = gpio_config(&cfg)) != ESP_OK)
                 {
-                    if (tp->config.int_gpio_num != GPIO_NUM_NC)
+                    if (th->config.int_gpio_num != GPIO_NUM_NC)
                     {
                         if (config->interrupt_callback != NULL)
-                            gpio_isr_handler_remove(tp->config.int_gpio_num);
+                            gpio_isr_handler_remove(th->config.int_gpio_num);
 
-                        gpio_reset_pin(tp->config.int_gpio_num);
+                        gpio_reset_pin(th->config.int_gpio_num);
                     }
 
-                    free(tp);
+                    free(th);
                     log_e("Configuring or setting GPIO for RST failed");
                     return res;
                 }
             }
 
             // Reset controller
-            if ((res = cst816s_reset(tp)) != ESP_OK)
+            if ((res = cst816s_reset(th)) != ESP_OK)
             {
                 log_e("GT911 reset failed");
-                cst816s_del(tp);
+                cst816s_del(th);
                 return res;
             }
 
             // Read type and resolution
-            if ((res = cst816s_read_info(tp)) != ESP_OK)
+            if ((res = cst816s_read_info(th)) != ESP_OK)
             {
                 log_e("GT911 read info failed");
-                cst816s_del(tp);
+                cst816s_del(th);
                 return res;
             }
         }
 
-        *handle = tp;
+        *handle = th;
 
         return ESP_OK;
     }
