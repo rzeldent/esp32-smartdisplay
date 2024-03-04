@@ -28,10 +28,6 @@ const uint8_t GT911_TOUCH_EVENT_UP = 2;
 const uint8_t GT911_TOUCH_EVENT_SLIDE = 3;
 const uint8_t GT911_TOUCH_EVENT_SLIDE_END = 4;
 
-// Two I2C Addresses possible
-#define GT911_IO_I2C_CONFIG_DEV_ADDRESS_5D 0x5D // 0x5D (0xBA/0xBB): INT High during reset or
-#define GT911_IO_I2C_CONFIG_DEV_ADDRESS_14 0x14 // 0x14 (0x28/0x29): INT Low during reset
-
 #define FLAGS_BUFFER_STATUS 0x80    // coordinate (or key) is ready for host to read
 #define FLAGS_LARGE_DETECT 0x40     // large-area touch on th
 #define FLAGS_HAVE_KEY 0x10         //  Have touch key
