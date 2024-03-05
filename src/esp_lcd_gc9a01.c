@@ -14,8 +14,8 @@ typedef struct
     esp_lcd_panel_io_handle_t io;
     esp_lcd_panel_dev_config_t config;
     // Data
-    ushort x_gap;
-    ushort y_gap;
+    int x_gap;
+    int y_gap;
     uint8_t madctl; // MADCTL register
     const lcd_init_cmd_t *cmd;
     const uint16_t cmds_size;
@@ -163,10 +163,8 @@ esp_err_t gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, i
     log_v("gc9a01_draw_bitmap. panel:0x%08x, x_start:%d, y_start:%d, x_end:%d, y_end:%d, color_data:0x%08x", panel, x_start, y_start, x_end, y_end, color_data);
 
     assert(panel != NULL);
-    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
-
-    assert(panel != NULL);
     assert(color_data != NULL);
+    gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
 
     if (x_start >= x_end)
     {
@@ -187,8 +185,8 @@ esp_err_t gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, i
     y_end += ph->y_gap;
 
     esp_err_t res;
-    uint8_t caset[4] = {x_start >> 8, x_start & 0xff, (x_end - 1) >> 8, (x_end - 1) & 0xff};
-    uint8_t raset[4] = {y_start >> 8, y_start & 0xff, (y_end - 1) >> 8, (y_end - 1) & 0xff};
+    const uint8_t caset[4] = {x_start >> 8, x_start, (x_end - 1) >> 8, x_end - 1};
+    const uint8_t raset[4] = {y_start >> 8, y_start, (y_end - 1) >> 8, y_end - 1};
     if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_CASET, &caset, sizeof(caset))) != ESP_OK ||
         (res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_RASET, &raset, sizeof(raset))) != ESP_OK)
     {
@@ -196,8 +194,8 @@ esp_err_t gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, i
         return res;
     }
 
-    uint8_t bytes_per_pixel = (ph->config.bits_per_pixel + 0x7) >> 3;
-    size_t len = (x_end - x_start) * (y_end - y_start) * bytes_per_pixel;
+    const uint8_t bytes_per_pixel = ((ph->config.bits_per_pixel + 0x7) >> 3);
+    const size_t len = (x_end - x_start) * (y_end - y_start) * bytes_per_pixel;
     if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_RAMWR, color_data, len)) != ESP_OK)
     {
         log_e("Sending RAMWR failed");
