@@ -96,6 +96,26 @@ extern "C"
         return ESP_OK;
     }
 
+    // This function is called if the coordinates do not match the returned coordinates. This is the case for display having another form factor, e.g. 472x320
+    void gt911_process_coordinates(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
+    {
+        log_v("gt911_process_coordinates. th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
+
+        portENTER_CRITICAL(&th->data.lock);
+        gt911_info *info = th->config.user_data;
+        assert(info);
+        uint8_t points_available = *point_num > max_point_num ? max_point_num : *point_num;
+        for (uint8_t i = 0; i < points_available; i++)
+        {
+            // Correct the points for the info obtained from the GT911 and configured resolution
+            x[i] = (x[i] * th->config.x_max) / info->xResolution;
+            y[i] = (y[i] * th->config.y_max) / info->yResolution;
+            log_d("processed coordinates: x:%d, y:%d, area:%d", th->data.coords[i].x, th->data.coords[i].y, th->data.coords[i].strength);
+        }
+
+        portEXIT_CRITICAL(&th->data.lock);
+    }
+
     esp_err_t gt911_read_info(esp_lcd_touch_handle_t th)
     {
         log_v("gt911_read_info. th:0x%08x", th);
@@ -125,15 +145,9 @@ extern "C"
 
         if (strcmp((char *)&info->productId, "911") != 0)
         {
+            free(info);
             log_e("GT911 chip not found");
             return ESP_FAIL;
-        }
-
-        if (info->xResolution == 0 || info->yResolution == 0)
-        {
-            log_w("Invalid resolution obtained from GT911. Using supplied resolution (%d,%d)", th->config.x_max, th->config.y_max);
-            info->xResolution = th->config.x_max;
-            info->yResolution = th->config.y_max;
         }
 
         log_d("GT911 productId: %s", info->productId);                                          // 0x8140 - 0x8143
@@ -142,6 +156,12 @@ extern "C"
         log_d("GT911 vendorId: %02x", info->vendorId);                                          // 0x814A
 
         th->config.user_data = info;
+
+        if (info->xResolution > 0 && info->yResolution > 0 && (info->xResolution != th->config.x_max || info->yResolution != th->config.y_max))
+        {
+            log_w("Resolution obtained from GT911 (%d,%d) does not match supplied resolution (%d,%d)", info->xResolution, info->yResolution, th->config.x_max, th->config.y_max);
+            th->config.process_coordinates = gt911_process_coordinates;
+        }
 
         return ESP_OK;
     }
@@ -196,7 +216,6 @@ extern "C"
 
         esp_err_t res;
         gt911_touch_data buffer;
-        uint8_t i;
 
         // Read only the XY register
         if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_READ_XY_REG, &buffer.flags, sizeof(buffer.flags))) != ESP_OK)
@@ -210,7 +229,7 @@ extern "C"
 #if (CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS > 0)
             if ((buffer.flags & FLAGS_HAVE_KEY) > 0)
             {
-                log_v("buttons available");
+                log_v("Buttons available");
                 if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_READ_KEY_REG, &buffer.data.buttons, CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS)) != ESP_OK)
                 {
                     log_e("Unable to read GT911_READ_KEY_REG");
@@ -229,7 +248,7 @@ extern "C"
             //  Check if data is present
             if (points_available > 0)
             {
-                log_v("points_available: %d", points_available);
+                log_v("Points_available: %d", points_available);
                 // Read the number of touches
                 if (points_available <= GT911_TOUCH_MAX_POINTS)
                 {
@@ -240,23 +259,16 @@ extern "C"
                         return res;
                     }
 
-#if ARDUHAL_LOG_LEVEL > ARDUHAL_LOG_LEVEL_NONE
-                    for (uint8_t i = 0; i < points_available; i++)
-                        log_v("event:%d, x:%d, y:%d, area:%d", buffer.data.points[i].event, buffer.data.points[i].x, buffer.data.points[i].y, buffer.data.points[i].area);
-#endif
-
                     portENTER_CRITICAL(&th->data.lock);
-                    gt911_info *info = th->config.user_data;
-                    assert(info);
-                    th->data.points = points_available;
-                    for (i = 0; i < points_available; i++)
+                    for (uint8_t i = 0; i < points_available; i++)
                     {
-                        // Correct the points for the info returned from the GT911 and configured resolution
-                        th->data.coords[i].x = (double)buffer.data.points[i].x * th->config.x_max / info->xResolution;
-                        th->data.coords[i].y = (double)buffer.data.points[i].y * th->config.y_max / info->yResolution;
+                        log_d("Touch: #%d, event:%d, x:%d, y:%d, area:%d", i, buffer.data.points[i].event, buffer.data.points[i].x, buffer.data.points[i].y, buffer.data.points[i].area);
+                        th->data.coords[i].x = buffer.data.points[i].x;
+                        th->data.coords[i].y = buffer.data.points[i].y;
                         th->data.coords[i].strength = buffer.data.points[i].area;
                     }
 
+                    th->data.points = points_available;
                     portEXIT_CRITICAL(&th->data.lock);
                 }
             }
@@ -280,10 +292,12 @@ extern "C"
         *point_num = th->data.points > max_point_num ? max_point_num : th->data.points;
         for (uint8_t i = 0; i < *point_num; i++)
         {
-            x[i] = th->data.coords[i].y;
-            y[i] = th->data.coords[i].x;
+            x[i] = th->data.coords[i].x;
+            y[i] = th->data.coords[i].y;
             if (strength != NULL)
                 strength[i] = th->data.coords[i].strength;
+
+            log_d("Touch: x:%d, y:%d, area:%d", x[i], y[i], strength != NULL ? strength[i] : 0);
         }
 
         th->data.points = 0;
@@ -425,23 +439,24 @@ extern "C"
                     return res;
                 }
             }
-
-            // Reset controller
-            if ((res = gt911_reset(th)) != ESP_OK)
-            {
-                log_e("GT911 reset failed");
-                gt911_del(th);
-                return res;
-            }
-
-            // Read type and resolution
-            if ((res = gt911_read_info(th)) != ESP_OK)
-            {
-                log_e("GT911 read info failed");
-                gt911_del(th);
-                return res;
-            }
         }
+
+        // Reset controller
+        if ((res = gt911_reset(th)) != ESP_OK)
+        {
+            log_e("GT911 reset failed");
+            gt911_del(th);
+            return res;
+        }
+
+        // TODO: creates an invalid instruction when reading
+        // Read type and resolution
+        // if ((res = gt911_read_info(th)) != ESP_OK)
+        // {
+        //     log_e("GT911 read info failed");
+        //     gt911_del(th);
+        //     return res;
+        // }
 
         *handle = th;
 
