@@ -24,7 +24,7 @@ touch_calibration_data_t touch_calibration_data;
 void (*driver_touch_read_cb)(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
 #endif
 
-#if LV_USE_LOG
+#ifdef LV_USE_LOG
 void lvgl_log(const char *buf)
 {
   log_printf("%s", buf);
@@ -33,9 +33,9 @@ void lvgl_log(const char *buf)
 
 // Called when driver parameters are updated (rotation)
 // Top of the display is top left when connector is at the bottom
-static void lvgl_update_callback(lv_disp_drv_t *drv)
+void lvgl_update_callback(lv_disp_drv_t *drv)
 {
-  log_d("lvgl_update_callback");
+  log_v("drv:0x%08x", drv);
   esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
   switch (drv->rotated)
   {
@@ -108,7 +108,7 @@ static void lvgl_update_callback(lv_disp_drv_t *drv)
 // Set backlight intensity
 void smartdisplay_lcd_set_backlight(float duty)
 {
-  log_d("smartdisplay_lcd_set_backlight. duty:%2f", duty);
+  log_v("duty:%2f", duty);
   if (duty > 1.0)
     duty = 1.0f;
   if (duty < 0.0)
@@ -172,6 +172,7 @@ void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 // See: https://www.maximintegrated.com/en/design/technical-documents/app-notes/5/5296.html
 void lvgl_touch_calibration_transform(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
+  log_v("drv:0x%08x, data:0x%08x", drv, data);
   // Call low level read from the driver
   driver_touch_read_cb(drv, data);
   // Check if transformation is required
@@ -188,8 +189,7 @@ void lvgl_touch_calibration_transform(lv_indev_drv_t *drv, lv_indev_data_t *data
 
 touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3])
 {
-  log_d("smartdisplay_compute_touch_calibration");
-  touch_calibration_data.valid = false;
+  log_v("screen:0x%08x, touch:0x%08x", screen, touch);
   const float delta = ((touch[0].x - touch[2].x) * (touch[1].y - touch[2].y)) - ((touch[1].x - touch[2].x) * (touch[0].y - touch[2].y));
   touch_calibration_data_t touch_calibration_data = {
       .valid = true,
@@ -201,7 +201,7 @@ touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t
       .deltaY = ((screen[0].y * (touch[1].x * touch[2].y - touch[2].x * touch[1].y)) - (screen[1].y * (touch[0].x * touch[2].y - touch[2].x * touch[0].y)) + (screen[2].y * (touch[0].x * touch[1].y - touch[1].x * touch[0].y))) / delta,
   };
 
-  log_i("Calibration (alphaX, betaX, deltaX, alphaY, betaY, deltaY) = (%f, %f, %f, %f, %f, %f)", touch_calibration_data.alphaX, touch_calibration_data.betaX, touch_calibration_data.deltaX, touch_calibration_data.alphaY, touch_calibration_data.betaY, touch_calibration_data.deltaY);
+  log_i("alphaX: %f, betaX: %f, deltaX: %f, alphaY: %f, betaY: %f, deltaY: %f", touch_calibration_data.alphaX, touch_calibration_data.betaX, touch_calibration_data.deltaX, touch_calibration_data.alphaY, touch_calibration_data.betaY, touch_calibration_data.deltaY);
   return touch_calibration_data;
 };
 #endif

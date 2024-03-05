@@ -4,7 +4,7 @@
 #include <esp_lcd_touch_gt911.h>
 #include <driver/i2c.h>
 
-static void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
+void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
     esp_lcd_touch_handle_t touch_handle = drv->user_data;
 

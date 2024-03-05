@@ -242,7 +242,7 @@ extern "C"
         log_v("th:0x%08x, output:0x%08x", th, output);
 
         assert(th != NULL);
-        assert(outhut != NULL);
+        assert(output != NULL);
 
         esp_err_t res;
         uint16_t level;

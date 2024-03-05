@@ -5,7 +5,7 @@
 #include "esp_lcd_touch.h"
 #include "esp_lcd_touch_cst816s.h"
 
-static void cst816s_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
+void cst816s_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
     esp_lcd_touch_handle_t touch_handle = drv->user_data;
 

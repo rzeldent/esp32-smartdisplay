@@ -4,7 +4,7 @@
 #include <esp_lcd_touch_xpt2046.h>
 #include <driver/spi_master.h>
 
-static void xpt2046_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
+void xpt2046_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
     esp_lcd_touch_handle_t touch_handle = drv->user_data;
 
