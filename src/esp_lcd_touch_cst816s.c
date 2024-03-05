@@ -61,10 +61,15 @@ typedef struct __attribute__((packed))
 
 typedef struct __attribute__((packed))
 {
+    uint16_t x;
+    uint16_t y;
+} cst816s_point;
+
+typedef struct __attribute__((packed))
+{
     uint8_t event;
     uint8_t fingerNum;
-    uint16_t x; // XPOSH (4 bits) + XPOSL (8 bits)
-    uint16_t y;  // YPOSH (4 bits) + YPOSL (8 bits)
+    cst816s_point point; // POSH (4 bits) + POSL (8 bits)
 } cst816s_touch_event;
 
 #ifdef __cplusplus
@@ -77,7 +82,6 @@ extern "C"
         log_v("th:0x%08x", th);
 
         esp_err_t res;
-
         // Set RST active
         if ((res = gpio_set_level(th->config.rst_gpio_num, th->config.levels.reset)) != ESP_OK)
         {
@@ -106,7 +110,6 @@ extern "C"
         log_v("th:0x%08x", th);
 
         esp_err_t res;
-
         cst816s_info info;
         if ((res = esp_lcd_panel_io_rx_param(th->io, CST816S_CHIPID_REG, &info, sizeof(info))) != ESP_OK)
         {
@@ -138,8 +141,8 @@ extern "C"
         portENTER_CRITICAL(&th->data.lock);
         if ((th->data.points = buffer.fingerNum) > 0)
         {
-            th->data.coords[0].x = buffer.x;
-            th->data.coords[0].y = buffer.y;
+            th->data.coords[0].x = buffer.point.x;
+            th->data.coords[0].y = buffer.point.y;
             th->data.coords[0].strength = 0;
         }
 

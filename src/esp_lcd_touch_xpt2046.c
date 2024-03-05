@@ -108,8 +108,8 @@ extern "C"
             }
 
             // Convert X and Y to 12 bits by dropping upper 3 bits and average the accumulated coordinate data points.
-            x = (double)(x >> 3) / XPT2046_ADC_LIMIT / CONFIG_ESP_LCD_TOUCH_MAX_POINTS * th->config.x_max;
-            y = (double)(y >> 3) / XPT2046_ADC_LIMIT / CONFIG_ESP_LCD_TOUCH_MAX_POINTS * th->config.y_max;
+            x = ((x >> 3) * th->config.x_max) / XPT2046_ADC_LIMIT / CONFIG_ESP_LCD_TOUCH_MAX_POINTS;
+            y = ((y >> 3) * th->config.y_max) / XPT2046_ADC_LIMIT / CONFIG_ESP_LCD_TOUCH_MAX_POINTS;
             points = 1;
         }
 
@@ -131,19 +131,12 @@ extern "C"
         *point_num = th->data.points > max_point_num ? max_point_num : th->data.points;
         for (uint8_t i = 0; i < *point_num; i++)
         {
-            if (th->config.flags.swap_xy)
-            {
-                x[i] = th->config.flags.mirror_y ? th->config.y_max - th->data.coords[i].y : th->data.coords[i].y;
-                y[i] = th->config.flags.mirror_x ? th->config.x_max - th->data.coords[i].x : th->data.coords[i].x;
-            }
-            else
-            {
-                x[i] = th->config.flags.mirror_x ? th->config.x_max - th->data.coords[i].x : th->data.coords[i].x;
-                y[i] = th->config.flags.mirror_y ? th->config.y_max - th->data.coords[i].y : th->data.coords[i].y;
-            }
-
+            x[i] = th->data.coords[i].x;
+            y[i] = th->data.coords[i].y;
             if (strength != NULL)
                 strength[i] = th->data.coords[i].strength;
+
+            log_d("Touch data: x:%d, y:%d, area:%d", x[i], y[i], strength != NULL ? strength[i] : 0);
         }
 
         th->data.points = 0;
@@ -186,7 +179,7 @@ extern "C"
         }
 
         esp_err_t res;
-        const esp_lcd_touch_handle_t th = heap_caps_aligned_alloc(1, sizeof(esp_lcd_touch_t), MALLOC_CAP_DEFAULT);
+        const esp_lcd_touch_handle_t th = heap_caps_calloc(1, sizeof(esp_lcd_touch_t), MALLOC_CAP_DEFAULT);
         if (th == NULL)
         {
             log_e("No memory available for esp_lcd_touch_t");
@@ -232,7 +225,6 @@ extern "C"
         if (config->rst_gpio_num != GPIO_NUM_NC)
             log_w("RST pin defined but is not available on the XPT2046");
 
-        log_d("handle: 0x%08x", th);
         *handle = th;
 
         return ESP_OK;
@@ -243,7 +235,7 @@ extern "C"
         log_v("th:0x%08x, output:0x%08x", th, output);
 
         assert(th != NULL);
-        assert(output != NULL);
+        assert(outhut != NULL);
 
         esp_err_t res;
         uint16_t level;
