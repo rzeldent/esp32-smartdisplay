@@ -195,7 +195,7 @@ extern "C"
         return ESP_OK;
     }
 
-    esp_err_t esp_lcd_touch_new_i2c_gt911(const esp_lcd_panel_io_handle_t io, const esp_lcd_touch_config_t *config, esp_lcd_touch_handle_t *handle)
+    esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, const esp_lcd_touch_config_t *config, esp_lcd_touch_handle_t *handle)
     {
         log_v("io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
 
