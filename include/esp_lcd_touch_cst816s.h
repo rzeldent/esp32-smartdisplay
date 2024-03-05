@@ -2,6 +2,9 @@
 
 #include <esp_lcd_touch.h>
 
+// I2C Address
+#define CST816S_IO_I2C_CONFIG_DEV_ADDRESS_15 0x15 // 0x15 (0x2A/0x2B): INT High during reset or
+
 #ifdef __cplusplus
 extern "C"
 {

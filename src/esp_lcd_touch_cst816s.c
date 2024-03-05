@@ -117,7 +117,7 @@ extern "C"
             return res;
         }
 
-        log_d("CST816S Id: 0x$02X", info.id);
+        log_d("CST816S Id: 0x%02X", info.id);
         log_d("CST816S Project id: %d", info.projectId);
         log_d("CST816S Firmware version: %d", info.fwVersion);
 
@@ -216,7 +216,7 @@ extern "C"
         }
 
         esp_err_t res;
-        const esp_lcd_touch_handle_t th = heap_caps_aligned_alloc(1, sizeof(esp_lcd_touch_t), MALLOC_CAP_DEFAULT);
+        const esp_lcd_touch_handle_t th = heap_caps_calloc(1, sizeof(esp_lcd_touch_t), MALLOC_CAP_DEFAULT);
         if (th == NULL)
         {
             log_e("No memory available for esp_lcd_touch_t");

@@ -38,6 +38,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
         .sclk_io_num = XPT2046_SPI_BUS_SCLK_IO_NUM,
         .quadwp_io_num = XPT2046_SPI_BUS_QUADWP_IO_NUM,
         .quadhd_io_num = XPT2046_SPI_BUS_QUADHD_IO_NUM};
+    log_d("spi_bus_config: mosi_io_num:%d, miso_io_num:%d, sclk_io_num:%d, quadwp_io_num:%d, quadhd_io_num:%d, max_transfer_sz:%d, flags:0x%08x, intr_flags:0x%04x", spi_bus_config.mosi_io_num, spi_bus_config.miso_io_num, spi_bus_config.sclk_io_num, spi_bus_config.quadwp_io_num, spi_bus_config.quadhd_io_num, spi_bus_config.max_transfer_sz, spi_bus_config.flags, spi_bus_config.intr_flags);
     ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(XPT2046_SPI_HOST, &spi_bus_config, XPT2046_SPI_DMA_CHANNEL));
 
     // Attach the touch controller to the SPI bus
@@ -55,6 +56,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
             .dc_low_on_data = XPT2046_SPI_CONFIG_FLAGS_DC_LOW_ON_DATA,
             .octal_mode = XPT2046_SPI_CONFIG_FLAGS_OCTAL_MODE,
             .lsb_first = XPT2046_SPI_CONFIG_FLAGS_LSB_FIRST}};
+    log_d("io_config: cs_gpio_num:%d, dc_gpio_num:%d, spi_mode:%d, pclk_hz:%d, trans_queue_depth:%d, user_ctx:0x%08x, on_color_trans_done:0x%08x, lcd_cmd_bits:%d, lcd_param_bits:%d, flags.dc_as_cmd_phase:%d, flags.dc_low_on_data:%d, flags.octal_mode:%d, flags.lsb_first:%d", io_config.cs_gpio_num, io_config.dc_gpio_num, io_config.spi_mode, io_config.pclk_hz, io_config.trans_queue_depth, io_config.user_ctx, io_config.on_color_trans_done, io_config.lcd_cmd_bits, io_config.lcd_param_bits, io_config.flags.dc_as_cmd_phase, io_config.flags.dc_low_on_data, io_config.flags.octal_mode, io_config.flags.lsb_first);
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)XPT2046_SPI_HOST, &io_spi_config, &io_handle));
 
