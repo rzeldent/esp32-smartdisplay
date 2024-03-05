@@ -6,32 +6,20 @@
 #include <esp32-hal-log.h>
 
 // Registers
-const uint16_t GT911_READ_KEY_REG = 0x8093;
-const uint16_t GT911_READ_XY_REG = 0x814E;
-const uint16_t GT911_READ_XY_REG_POINTS = 0x814F;
+const uint16_t GT911_KEYS_REG = 0x8093;
+const uint16_t GT911_BUFFER_STATUS_REG = 0x814E;
+const uint16_t GT911_TOUCH_POINTS_REG = 0x814F;
 const uint16_t GT911_CONFIG_REG = 0x8047;
 const uint16_t GT911_PRODUCT_ID_REG = 0x8140;
 const uint16_t GT911_CONTROL_REG = 0x8040;
 
 // Limits of points / buttons
-#define GT911_MAX_BUTTONS 4
-#define GT911_TOUCH_MAX_POINTS 5
+#define GT911_KEYS_MAX 4
+#define GT911_TOUCH_POINTS_MAX 5
 
 #if (CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS > GT911_TOUCH_MAX_BUTTONS)
 #error more buttons than available
 #endif
-
-// Touch events
-const uint8_t GT911_TOUCH_EVENT_NONE = 0;
-const uint8_t GT911_TOUCH_EVENT_DOWN = 1;
-const uint8_t GT911_TOUCH_EVENT_UP = 2;
-const uint8_t GT911_TOUCH_EVENT_SLIDE = 3;
-const uint8_t GT911_TOUCH_EVENT_SLIDE_END = 4;
-
-#define FLAGS_BUFFER_STATUS 0x80    // coordinate (or key) is ready for host to read
-#define FLAGS_LARGE_DETECT 0x40     // large-area touch on th
-#define FLAGS_HAVE_KEY 0x10         //  Have touch key
-#define FLAGS_NUM_TOUCH_POINTS 0x0F // Number of touch points
 
 typedef struct __attribute__((packed))
 {
@@ -41,6 +29,25 @@ typedef struct __attribute__((packed))
     uint16_t yResolution; // 0x8148 - 0x8149
     uint8_t vendorId;     // 0x814A
 } gt911_info;
+
+typedef struct
+{
+    uint8_t number_points : 4; // Bit 0-3 (0x0F): Number of touch points
+    uint8_t have_key : 1;      // Bit 4 (0x10): Have touch key
+    uint8_t unused : 1;        // Bit 5
+    uint8_t large_detect : 1;  // Bit 6 (0x40): Large-area touch on touch pad
+    uint8_t buffer_status : 1; // Bit 7 (0x80): Coordinate (or key) is ready for host to read
+} buffer_status_flags;
+
+// Touch events
+enum gt911_touch_event
+{
+    none = 0,
+    down = 1,
+    up = 2,
+    slide = 3,
+    slide_end = 4
+};
 
 typedef struct __attribute__((packed))
 {
@@ -54,13 +61,12 @@ typedef struct __attribute__((packed))
 
 typedef struct __attribute__((packed))
 {
-    uint8_t flags;
     union esp_lcd_touch_gt911
     {
-        uint8_t buttons[GT911_MAX_BUTTONS];
-        gt911_touch_event points[GT911_TOUCH_MAX_POINTS];
+        uint8_t keys[GT911_KEYS_MAX];
+        gt911_touch_event points[GT911_TOUCH_POINTS_MAX];
     } data;
-} gt911_touch_data;
+} gt911_key_touch_data;
 
 #ifdef __cplusplus
 extern "C"
@@ -130,11 +136,9 @@ extern "C"
         }
 
         gt911_info info;
-        uint8_t config;
-        if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_PRODUCT_ID_REG, &info, sizeof(info))) != ESP_OK ||
-            (res = esp_lcd_panel_io_rx_param(th->io, GT911_CONFIG_REG, &config, sizeof(config))) != ESP_OK)
+        if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_PRODUCT_ID_REG, &info, sizeof(info))) != ESP_OK)
         {
-            log_e("Unable to read GT911 info");
+            log_e("Unable to read GT911_PRODUCT_ID_REG");
             return res;
         }
 
@@ -148,7 +152,6 @@ extern "C"
         log_d("GT911 fwId: 0x%04x", info.fwId);                                               // 0x8144 - 0x8145
         log_d("GT911 xResolution/yResolution: (%d, %d)", info.xResolution, info.yResolution); // 0x8146 - 0x8147 // 0x8148 - 0x8149
         log_d("GT911 vendorId: 0x%02x", info.vendorId);                                       // 0x814A
-        log_d("GT911 config reg: 0x%02x", config);                                            // 0x8047
 
         gt911_info *gt911_info = heap_caps_calloc(1, sizeof(gt911_info), MALLOC_CAP_DEFAULT);
         if (gt911_info == NULL)
@@ -176,7 +179,7 @@ extern "C"
         esp_err_t res;
         const uint8_t data[] = {0x05}; // Sleep
         if ((res = esp_lcd_panel_io_tx_param(th->io, GT911_CONTROL_REG, data, sizeof(data))) != ESP_OK)
-            log_e("Unable to write GT911_ENTER_SLEEP");
+            log_e("Unable to write GT911_CONTROL_REG");
 
         return res;
     }
@@ -218,52 +221,52 @@ extern "C"
         log_v("th:0x%08x", th);
 
         esp_err_t res;
-        gt911_touch_data buffer;
+        buffer_status_flags flags;
+        gt911_key_touch_data buffer;
 
         // Read only the XY register
-        if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_READ_XY_REG, &buffer.flags, sizeof(buffer.flags))) != ESP_OK)
+        if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_BUFFER_STATUS_REG, &flags, sizeof(flags))) != ESP_OK)
         {
-            log_e("Unable to read GT911_READ_XY_REG");
+            log_e("Unable to read GT911_BUFFER_STATUS_REG");
             return res;
         }
 
-        if ((buffer.flags & FLAGS_BUFFER_STATUS) > 0)
+        if (flags.buffer_status)
         {
 #if (CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS > 0)
-            if ((buffer.flags & FLAGS_HAVE_KEY) > 0)
+            if (flags.have_key)
             {
                 log_v("Buttons available");
-                if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_READ_KEY_REG, &buffer.data.buttons, CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS)) != ESP_OK)
+                if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_KEYS_REG, &buffer.data.keys, CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS)) != ESP_OK)
                 {
-                    log_e("Unable to read GT911_READ_KEY_REG");
+                    log_e("Unable to read GT911_KEYS_REG");
                     return res;
                 }
 
                 portENTER_CRITICAL(&th->data.lock);
                 th->data.buttons = CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS;
-                for (i = 0; i < CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS; i++)
-                    th->data.button[i].status = buffer.data.buttons[i];
+                for (uint8_t i = 0; i < CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS; i++)
+                    th->data.button[i].status = buffer.data.keys[i];
 
                 portEXIT_CRITICAL(&th->data.lock);
             }
 #endif
-            uint8_t points_available = buffer.flags & FLAGS_NUM_TOUCH_POINTS;
             //  Check if data is present
-            if (points_available > 0)
+            if (flags.number_points > 0)
             {
                 log_v("Points_available: %d", points_available);
                 // Read the number of touches
-                if (points_available <= GT911_TOUCH_MAX_POINTS)
+                if (flags.number_points <= GT911_TOUCH_POINTS_MAX)
                 {
                     // Read the points
-                    if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_READ_XY_REG_POINTS, &buffer.data.points, points_available * sizeof(gt911_touch_event))) != ESP_OK)
+                    if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_TOUCH_POINTS_REG, &buffer.data.points, flags.number_points * sizeof(gt911_touch_event))) != ESP_OK)
                     {
-                        log_e("Unable to read GT911_READ_XY_REG_POINTS");
+                        log_e("Unable to read GT911_TOUCH_POINTS_REG");
                         return res;
                     }
 
                     portENTER_CRITICAL(&th->data.lock);
-                    for (uint8_t i = 0; i < points_available; i++)
+                    for (uint8_t i = 0; i < flags.number_points; i++)
                     {
                         log_d("Point: #%d, event:%d, x:%d, y:%d, area:%d", i, buffer.data.points[i].event, buffer.data.points[i].x, buffer.data.points[i].y, buffer.data.points[i].area);
                         th->data.coords[i].x = buffer.data.points[i].x;
@@ -271,16 +274,16 @@ extern "C"
                         th->data.coords[i].strength = buffer.data.points[i].area;
                     }
 
-                    th->data.points = points_available;
+                    th->data.points = flags.number_points;
                     portEXIT_CRITICAL(&th->data.lock);
                 }
             }
         }
 
         uint8_t clear[] = {0};
-        if ((res = esp_lcd_panel_io_tx_param(th->io, GT911_READ_XY_REG, clear, sizeof(clear))) != ESP_OK)
+        if ((res = esp_lcd_panel_io_tx_param(th->io, GT911_BUFFER_STATUS_REG, clear, sizeof(clear))) != ESP_OK)
         {
-            log_e("Unable to write T911_READ_XY_REG");
+            log_e("Unable to write GT911_BUFFER_STATUS_REG");
             return res;
         }
 
@@ -376,7 +379,7 @@ extern "C"
         }
 
         esp_err_t res;
-        const esp_lcd_touch_handle_t th = heap_caps_aligned_alloc(1, sizeof(esp_lcd_touch_t), MALLOC_CAP_DEFAULT);
+        const esp_lcd_touch_handle_t th = heap_caps_calloc(1, sizeof(esp_lcd_touch_t), MALLOC_CAP_DEFAULT);
         if (th == NULL)
         {
             log_e("No memory available for esp_lcd_touch_t");
@@ -460,6 +463,7 @@ extern "C"
         //     return res;
         // }
 
+        log_d("handle: 0x%08x", th);
         *handle = th;
 
         return ESP_OK;

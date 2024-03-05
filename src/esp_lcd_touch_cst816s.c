@@ -295,6 +295,7 @@ extern "C"
             }
         }
 
+        log_d("handle: 0x%08x", th);
         *handle = th;
 
         return ESP_OK;
