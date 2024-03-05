@@ -34,7 +34,7 @@ extern "C"
 
     esp_err_t xpt2046_enter_sleep(esp_lcd_touch_handle_t th)
     {
-        log_v("xpt2046_enter_sleep. th:0x%08x", th);
+        log_v("th:0x%08x", th);
 
         esp_err_t res;
         uint16_t discard;
@@ -49,7 +49,7 @@ extern "C"
 
     esp_err_t xpt2046_exit_sleep(esp_lcd_touch_handle_t th)
     {
-        log_v("xpt2046_exit_sleep. th:0x%08x", th);
+        log_v("th:0x%08x", th);
 
         esp_err_t res;
         uint16_t discard;
@@ -64,7 +64,7 @@ extern "C"
 
     esp_err_t xpt2046_read_data(esp_lcd_touch_handle_t th)
     {
-        log_v("xpt2046_read_data. th:0x%08x", th);
+        log_v("th:0x%08x", th);
 
         esp_err_t res;
         uint32_t x = 0, y = 0;
@@ -125,7 +125,7 @@ extern "C"
 
     bool xpt2046_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
     {
-        log_v("xpt2046_get_xy. th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
+        log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
 
         portENTER_CRITICAL(&th->data.lock);
         *point_num = th->data.points > max_point_num ? max_point_num : th->data.points;
@@ -154,7 +154,7 @@ extern "C"
 
     esp_err_t xpt2046_del(esp_lcd_touch_handle_t th)
     {
-        log_v("xpt2046_del. th:0x%08x", th);
+        log_v("th:0x%08x", th);
 
         portENTER_CRITICAL(&th->data.lock);
         // Remove interrupts and reset INT
@@ -173,7 +173,7 @@ extern "C"
 
     esp_err_t esp_lcd_touch_new_spi_xpt2046(const esp_lcd_panel_io_handle_t io, const esp_lcd_touch_config_t *config, esp_lcd_touch_handle_t *handle)
     {
-        log_v("esp_lcd_touch_new_spi_xpt2046. io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
+        log_v("io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
 
         assert(io != NULL);
         assert(config != NULL);
@@ -237,9 +237,9 @@ extern "C"
         return ESP_OK;
     }
 
-    esp_err_t esp_lcd_touch_xpt2046_read_battery_level(const esp_lcd_touch_handle_t th, float *outhut)
+    esp_err_t esp_lcd_touch_xpt2046_read_battery_level(const esp_lcd_touch_handle_t th, float *output)
     {
-        log_v("esp_lcd_touch_xpt2046_read_battery_level. th:0x%08x, outhut:0x%08x", th, outhut);
+        log_v("th:0x%08x, output:0x%08x", th, output);
 
         assert(th != NULL);
         assert(outhut != NULL);
@@ -256,7 +256,7 @@ extern "C"
         // battery voltage is reported as 1/4 the actual voltage due to logic in the chip, then
         // adjust for internal vref of 2.5v and finally
         // adjust for ADC bit count
-        *outhut = level * 4 * 2.5f / XPT2046_ADC_LIMIT;
+        *output = level * 4 * 2.5f / XPT2046_ADC_LIMIT;
 
         return ESP_OK;
     }
