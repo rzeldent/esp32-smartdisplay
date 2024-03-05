@@ -103,8 +103,8 @@ extern "C"
             return res;
         }
 
-        // Wait at least 5ms
-        vTaskDelay(pdMS_TO_TICKS(5));
+        // Wait at least 50ms
+        vTaskDelay(pdMS_TO_TICKS(50));
 
         return ESP_OK;
     }

@@ -8,8 +8,10 @@
 
 #include "esp_lcd_gc9a01.h"
 
-bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
+bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
+    log_v("io:0x%08x, edata:%0x%08x, user_ctx:0x%08x", io, edata, user_ctx);
+
     lv_disp_drv_t *disp_driver = user_ctx;
     lv_disp_flush_ready(disp_driver);
     return false;
@@ -17,6 +19,8 @@ bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_i
 
 void gc9a01_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *color_map)
 {
+    log_v("drv:0x%08x, area:%0x%08x, color_map:0x%08x", drv, area, color_map);
+
     esp_lcd_panel_handle_t panel_handle = drv->user_data;
 #if LV_COLOR_16_SWAP != 1
 #warning "LV_COLOR_16_SWAP should be 1 for max performance"
@@ -30,7 +34,8 @@ void gc9a01_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *co
 
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
-    log_d("lvgl_lcd_init");
+    log_v("drv:0x%08x", drv);
+
     // Hardware rotation is supported
     drv->sw_rotate = 0;
     drv->rotated = LV_DISP_ROT_NONE;

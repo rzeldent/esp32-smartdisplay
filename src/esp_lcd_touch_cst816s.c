@@ -18,6 +18,7 @@ const uint8_t CST816S_BC0L_REG = 0xB1;
 const uint8_t CST816S_BC1H_REG = 0xB2;
 const uint8_t CST816S_BC1L_REG = 0xB3;
 
+const uint8_t CST816S_SLEEP_REG = 0xA5;
 const uint8_t CST816S_CHIPID_REG = 0xA7;
 const uint8_t CST816S_PROJID_REG = 0xA8;
 const uint8_t CST816S_FWVERSION_REG = 0xA9;
@@ -44,10 +45,10 @@ const uint8_t CST816S_AUTOSLEEP_REG = 0xFE;
 
 // Touch events
 const uint8_t CST816S_TOUCH_EVENT_NONE = 0x0;
-const uint8_t CST816S_TOUCH_EVENT_ON_SLIPPERY = 0x1;
-const uint8_t CST816S_TOUCH_EVENT_DECLINE = 0x2;
-const uint8_t CST816S_TOUCH_EVENT_LEFT_SLIDE = 0x3;
-const uint8_t CST816S_TOUCH_EVENT_RIGHT_SLIDE = 0x4;
+const uint8_t CST816S_TOUCH_EVENT_SLIDE_DOWN = 0x1;
+const uint8_t CST816S_TOUCH_EVENT_SLIDE_UP = 0x2;
+const uint8_t CST816S_TOUCH_EVENT_SLIDE_LEFT = 0x3;
+const uint8_t CST816S_TOUCH_EVENT_SLIDE_RIGHT = 0x4;
 const uint8_t CST816S_TOUCH_EVENT_CLICK = 0x5;
 const uint8_t CST816S_TOUCH_EVENT_DOUBLE_CLICK = 0xB;
 const uint8_t CST816S_TOUCH_EVENT_PRESS = 0xC;
@@ -99,8 +100,8 @@ extern "C"
             return res;
         }
 
-        // Wait at least 5ms
-        vTaskDelay(pdMS_TO_TICKS(5));
+        // Wait at least 50ms
+        vTaskDelay(pdMS_TO_TICKS(50));
 
         return ESP_OK;
     }
@@ -122,6 +123,18 @@ extern "C"
         log_d("CST816S Firmware version: %d", info.fwVersion);
 
         return ESP_OK;
+    }
+
+    esp_err_t cst816s_enter_sleep(esp_lcd_touch_handle_t th)
+    {
+        log_v("th:0x%08x", th);
+
+        esp_err_t res;
+        const uint8_t data[] = {0x03}; // Sleep
+        if ((res = esp_lcd_panel_io_tx_param(th->io, CST816S_SLEEP_REG, data, sizeof(data))) != ESP_OK)
+            log_e("Unable to write GT911_CONTROL_REG");
+
+        return res;
     }
 
     esp_err_t cst816s_read_data(esp_lcd_touch_handle_t th)
@@ -224,6 +237,7 @@ extern "C"
         }
 
         th->io = io;
+        th->enter_sleep = cst816s_enter_sleep;
         th->read_data = cst816s_read_data;
         th->get_xy = cst816s_get_xy;
 #if (CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS > 0)
