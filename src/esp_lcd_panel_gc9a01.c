@@ -1,6 +1,6 @@
 #ifdef LCD_GC9A01_SPI
 
-#include <esp_lcd_gc9a01.h>
+#include <esp_lcd_panel_gc9a01.h>
 #include <esp32-hal-log.h>
 #include <esp_rom_gpio.h>
 #include <esp_heap_caps.h>
@@ -23,7 +23,7 @@ typedef struct
     const uint16_t cmds_size;
 } gc9a01_panel_t;
 
-const lcd_init_cmd_t vendor_specific_init_default[] = {
+const lcd_init_cmd_t gc9a01_vendor_specific_init_default[] = {
     // Enable Inter Register
     {0xfe, (const uint8_t[]){0x00}, 0, 0},
     {0xef, (const uint8_t[]){0x00}, 0, 0},
@@ -67,7 +67,7 @@ const lcd_init_cmd_t vendor_specific_init_default[] = {
     {0x67, (const uint8_t[]){0x00, 0x3C, 0x00, 0x00, 0x00, 0x01, 0x54, 0x10, 0x32, 0x98}, 10, 0},
     {0x74, (const uint8_t[]){0x10, 0x45, 0x80, 0x00, 0x00, 0x4E, 0x00}, 7, 0},
     {0x98, (const uint8_t[]){0x3e, 0x07}, 2, 0},
-    {0x99, (const uint8_t[]){0x3e, 0x07}, 2, 0},
+    {0x99, (const uint8_t[]){0x3e, 0x07}, 2, 0}
 };
 
 esp_err_t gc9a01_reset(esp_lcd_panel_t *panel)
@@ -139,8 +139,8 @@ esp_err_t gc9a01_init(esp_lcd_panel_t *panel)
         return res;
     }
 
-    const lcd_init_cmd_t *cmd = vendor_specific_init_default;
-    uint16_t cmds_size = sizeof(vendor_specific_init_default) / sizeof(lcd_init_cmd_t);
+    const lcd_init_cmd_t *cmd = gc9a01_vendor_specific_init_default;
+    uint16_t cmds_size = sizeof(gc9a01_vendor_specific_init_default) / sizeof(lcd_init_cmd_t);
     if (ph->cmd)
     {
         cmd = ph->cmd;

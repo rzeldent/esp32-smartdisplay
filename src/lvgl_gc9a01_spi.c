@@ -6,7 +6,7 @@
 #include <esp_lcd_panel_vendor.h>
 #include <esp_lcd_panel_ops.h>
 
-#include "esp_lcd_gc9a01.h"
+#include "esp_lcd_panel_gc9a01.h"
 
 bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {

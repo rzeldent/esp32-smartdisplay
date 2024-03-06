@@ -6,7 +6,7 @@
 #include <esp_lcd_panel_vendor.h>
 #include <esp_lcd_panel_ops.h>
 
-#include "esp_lcd_st7796.h"
+#include "esp_lcd_panel_st7796.h"
 
 static bool st7796_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {

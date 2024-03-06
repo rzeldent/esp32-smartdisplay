@@ -1,4 +1,4 @@
-#ifdef LCD_ST7796_SPI
+#ifdef _LCD_ST7796_SPI
 
 /*
  * SPDX-FileCopyrightText: 2023 Espressif Systems (Shanghai) CO LTD
