@@ -35,6 +35,8 @@ extern "C"
     esp_err_t xpt2046_enter_sleep(esp_lcd_touch_handle_t th)
     {
         log_v("th:0x%08x", th);
+        if (th == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         esp_err_t res;
         uint16_t discard;
@@ -50,6 +52,8 @@ extern "C"
     esp_err_t xpt2046_exit_sleep(esp_lcd_touch_handle_t th)
     {
         log_v("th:0x%08x", th);
+        if (th == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         esp_err_t res;
         uint16_t discard;
@@ -65,6 +69,8 @@ extern "C"
     esp_err_t xpt2046_read_data(esp_lcd_touch_handle_t th)
     {
         log_v("th:0x%08x", th);
+        if (th == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         esp_err_t res;
         uint32_t x = 0, y = 0;
@@ -126,6 +132,8 @@ extern "C"
     bool xpt2046_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
     {
         log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
+        if (th == NULL || x == NULL || y == NULL || point_num == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         portENTER_CRITICAL(&th->data.lock);
         *point_num = th->data.points > max_point_num ? max_point_num : th->data.points;
@@ -148,6 +156,8 @@ extern "C"
     esp_err_t xpt2046_del(esp_lcd_touch_handle_t th)
     {
         log_v("th:0x%08x", th);
+        if (th == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         portENTER_CRITICAL(&th->data.lock);
         // Remove interrupts and reset INT
@@ -167,10 +177,8 @@ extern "C"
     esp_err_t esp_lcd_touch_new_spi_xpt2046(const esp_lcd_panel_io_handle_t io, const esp_lcd_touch_config_t *config, esp_lcd_touch_handle_t *handle)
     {
         log_v("io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
-
-        assert(io != NULL);
-        assert(config != NULL);
-        assert(handle != NULL);
+        if (io == NULL || config == NULL || handle == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         if (config->int_gpio_num != GPIO_NUM_NC && !GPIO_IS_VALID_GPIO(config->int_gpio_num))
         {

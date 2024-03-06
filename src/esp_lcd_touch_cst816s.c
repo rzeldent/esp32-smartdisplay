@@ -81,6 +81,8 @@ extern "C"
     esp_err_t cst816s_reset(esp_lcd_touch_handle_t th)
     {
         log_v("th:0x%08x", th);
+        if (th == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         esp_err_t res;
         // Set RST active
@@ -109,6 +111,8 @@ extern "C"
     esp_err_t cst816s_read_info(esp_lcd_touch_handle_t th)
     {
         log_v("th:0x%08x", th);
+        if (th == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         esp_err_t res;
         cst816s_info info;
@@ -128,6 +132,8 @@ extern "C"
     esp_err_t cst816s_enter_sleep(esp_lcd_touch_handle_t th)
     {
         log_v("th:0x%08x", th);
+        if (th == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         esp_err_t res;
         const uint8_t data[] = {0x03}; // Sleep
@@ -140,6 +146,8 @@ extern "C"
     esp_err_t cst816s_read_data(esp_lcd_touch_handle_t th)
     {
         log_v("th:0x%08x", th);
+        if (th == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         esp_err_t res;
         cst816s_touch_event buffer;
@@ -167,6 +175,8 @@ extern "C"
     bool cst816s_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
     {
         log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
+        if (th == NULL || x == NULL || y == NULL || point_num == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         portENTER_CRITICAL(&th->data.lock);
         *point_num = th->data.points > max_point_num ? max_point_num : th->data.points;
@@ -187,6 +197,8 @@ extern "C"
     esp_err_t cst816s_del(esp_lcd_touch_handle_t th)
     {
         log_v("th:0x%08x", th);
+        if (th == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         portENTER_CRITICAL(&th->data.lock);
 
@@ -211,10 +223,8 @@ extern "C"
     esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, const esp_lcd_touch_config_t *config, esp_lcd_touch_handle_t *handle)
     {
         log_v("io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
-
-        assert(io != NULL);
-        assert(config != NULL);
-        assert(handle != NULL);
+        if (io == NULL || config == NULL || handle == NULL)
+            return ESP_ERR_INVALID_ARG;
 
         if (config->int_gpio_num != GPIO_NUM_NC && !GPIO_IS_VALID_GPIO(config->int_gpio_num))
         {
