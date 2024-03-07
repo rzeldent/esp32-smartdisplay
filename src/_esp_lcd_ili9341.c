@@ -1,4 +1,4 @@
-#ifdef LCD_ILI9341_SPI
+#ifdef _LCD_ILI9341_SPI
 
 /*
  * SPDX-FileCopyrightText: 2022-2023 Espressif Systems (Shanghai) CO LTD
