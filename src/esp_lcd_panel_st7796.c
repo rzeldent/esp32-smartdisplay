@@ -99,7 +99,7 @@ esp_err_t st7796_init(esp_lcd_panel_t *panel)
         colmod = 0x07;
         break;
     default:
-        log_e("Invalid bits per pixel: %d. Only RGB565 and RGB666 are supported", ph->config.bits_per_pixel);
+        log_e("Invalid bits per pixel: %d. Only RGB565, RGB666 and RGB888 are supported", ph->config.bits_per_pixel);
         return ESP_ERR_INVALID_ARG;
     }
 

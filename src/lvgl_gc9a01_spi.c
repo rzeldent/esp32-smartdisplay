@@ -22,6 +22,13 @@ void gc9a01_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *co
     log_v("drv:0x%08x, area:%0x%08x, color_map:0x%08x", drv, area, color_map);
 
     esp_lcd_panel_handle_t panel_handle = drv->user_data;
+#if LV_COLOR_16_SWAP != 1
+#warning "LV_COLOR_16_SWAP should be 1 for max performance"
+    ushort pixels = lv_area_get_size(area);
+    lv_color16_t *p = color_map;
+    while (pixels--)
+        p++->full = (uint16_t)((p->full >> 8) | (p->full << 8));
+#endif
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, color_map));
 };
 
@@ -61,12 +68,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
             .dc_as_cmd_phase = GC9A01_SPI_CONFIG_FLAGS_DC_AS_CMD_PHASE,
             .dc_low_on_data = GC9A01_SPI_CONFIG_FLAGS_DC_LOW_ON_DATA,
             .octal_mode = GC9A01_SPI_CONFIG_FLAGS_OCTAL_MODE,
-#if LV_COLOR_16_SWAP == 1
-            .lsb_first = GC9A01_SPI_CONFIG_FLAGS_LSB_FIRST
-#else
-            .lsb_first = !GC9A01_SPI_CONFIG_FLAGS_LSB_FIRST
-#endif
-        }};
+            .lsb_first = GC9A01_SPI_CONFIG_FLAGS_LSB_FIRST}};
     log_d("io_spi_config: cs_gpio_num:%d, dc_gpio_num:%d, spi_mode:%d, pclk_hz:%d, trans_queue_depth:%d, user_ctx:0x%08x, on_color_trans_done:0x%08x, lcd_cmd_bits:%d, lcd_param_bits:%d, flags.dc_as_cmd_phase:%d, flags.dc_low_on_data:%d, flags.octal_mode:%d, flags.lsb_first:%d", io_spi_config.cs_gpio_num, io_spi_config.dc_gpio_num, io_spi_config.spi_mode, io_spi_config.pclk_hz, io_spi_config.trans_queue_depth, io_spi_config.user_ctx, io_spi_config.on_color_trans_done, io_spi_config.lcd_cmd_bits, io_spi_config.lcd_param_bits, io_spi_config.flags.dc_as_cmd_phase, io_spi_config.flags.dc_low_on_data, io_spi_config.flags.octal_mode, io_spi_config.flags.lsb_first);
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)GC9A01_SPI_HOST, &io_spi_config, &io_handle));
