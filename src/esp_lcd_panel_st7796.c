@@ -169,7 +169,7 @@ esp_err_t st7796_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, i
 
     uint8_t bytes_per_pixel = (ph->config.bits_per_pixel + 0x7) >> 3;
     size_t len = (x_end - x_start) * (y_end - y_start) * bytes_per_pixel;
-    if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_RAMWR, color_data, len)) != ESP_OK)
+    if ((res = esp_lcd_panel_io_tx_color(ph->io, LCD_CMD_RAMWR, color_data, len)) != ESP_OK)
     {
         log_e("Sending RAMWR failed");
         return res;

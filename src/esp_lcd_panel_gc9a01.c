@@ -186,8 +186,8 @@ esp_err_t gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, i
     y_end += ph->y_gap;
 
     esp_err_t res;
-    const uint8_t caset[4] = {x_start >> 8, x_start & 0xff, (x_end - 1) >> 8, (x_end - 1) & 0xff};
-    const uint8_t raset[4] = {y_start >> 8, y_start & 0xff, (y_end - 1) >> 8, (y_end - 1) & 0xff};
+    const uint8_t caset[4] = {x_start >> 8, x_start, (x_end - 1) >> 8, x_end - 1};
+    const uint8_t raset[4] = {y_start >> 8, y_start, (y_end - 1) >> 8, y_end - 1};
     if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_CASET, caset, sizeof(caset))) != ESP_OK ||
         (res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_RASET, raset, sizeof(raset))) != ESP_OK)
     {
@@ -197,7 +197,7 @@ esp_err_t gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, i
 
     uint8_t bytes_per_pixel = (ph->config.bits_per_pixel + 0x7) >> 3;
     size_t len = (x_end - x_start) * (y_end - y_start) * bytes_per_pixel;
-    if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_RAMWR, color_data, len)) != ESP_OK)
+    if ((res = esp_lcd_panel_io_tx_color(ph->io, LCD_CMD_RAMWR, color_data, len)) != ESP_OK)
     {
         log_e("Sending RAMWR failed");
         return res;
