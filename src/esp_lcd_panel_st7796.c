@@ -64,7 +64,7 @@ esp_err_t st7796_reset(esp_lcd_panel_t *panel)
         }
     }
 
-    vTaskDelay(pdMS_TO_TICKS(10));
+    vTaskDelay(pdMS_TO_TICKS(120));
 
     return ESP_OK;
 }
