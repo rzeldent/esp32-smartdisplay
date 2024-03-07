@@ -19,8 +19,6 @@ typedef struct
     int x_gap;
     int y_gap;
     uint8_t madctl;
-    const lcd_init_cmd_t *cmd;
-    const uint16_t cmds_size;
 } gc9a01_panel_t;
 
 const lcd_init_cmd_t gc9a01_vendor_specific_init_default[] = {
