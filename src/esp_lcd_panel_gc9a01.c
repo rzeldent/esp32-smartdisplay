@@ -67,8 +67,7 @@ const lcd_init_cmd_t gc9a01_vendor_specific_init_default[] = {
     {0x67, (const uint8_t[]){0x00, 0x3C, 0x00, 0x00, 0x00, 0x01, 0x54, 0x10, 0x32, 0x98}, 10, 0},
     {0x74, (const uint8_t[]){0x10, 0x45, 0x80, 0x00, 0x00, 0x4E, 0x00}, 7, 0},
     {0x98, (const uint8_t[]){0x3e, 0x07}, 2, 0},
-    {0x99, (const uint8_t[]){0x3e, 0x07}, 2, 0}
-};
+    {0x99, (const uint8_t[]){0x3e, 0x07}, 2, 0}};
 
 esp_err_t gc9a01_reset(esp_lcd_panel_t *panel)
 {
@@ -141,10 +140,10 @@ esp_err_t gc9a01_init(esp_lcd_panel_t *panel)
 
     const lcd_init_cmd_t *cmd = gc9a01_vendor_specific_init_default;
     uint16_t cmds_size = sizeof(gc9a01_vendor_specific_init_default) / sizeof(lcd_init_cmd_t);
-    if (ph->cmd)
+    if (ph->config.vendor_config != NULL)
     {
-        cmd = ph->cmd;
-        cmds_size = ph->cmds_size;
+        cmd = ((gc9a01_vendor_config_t *)ph->config.vendor_config)->init_cmds;
+        cmds_size = ((gc9a01_vendor_config_t *)ph->config.vendor_config)->init_cmds_size;
     }
 
     while (cmds_size-- > 0)

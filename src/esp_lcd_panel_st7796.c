@@ -19,8 +19,6 @@ typedef struct
     int x_gap;
     int y_gap;
     uint8_t madctl;
-    const lcd_init_cmd_t *cmd;
-    const uint16_t cmds_size;
 } st7796_panel_t;
 
 const lcd_init_cmd_t st7796_vendor_specific_init_default[] = {
@@ -64,7 +62,7 @@ esp_err_t st7796_reset(esp_lcd_panel_t *panel)
         }
     }
 
-    vTaskDelay(pdMS_TO_TICKS(120));
+    vTaskDelay(pdMS_TO_TICKS(5));
 
     return ESP_OK;
 }
@@ -112,10 +110,10 @@ esp_err_t st7796_init(esp_lcd_panel_t *panel)
 
     const lcd_init_cmd_t *cmd = st7796_vendor_specific_init_default;
     uint16_t cmds_size = sizeof(st7796_vendor_specific_init_default) / sizeof(lcd_init_cmd_t);
-    if (ph->cmd)
+    if (ph->config.vendor_config != NULL)
     {
-        cmd = ph->cmd;
-        cmds_size = ph->cmds_size;
+        cmd = ((st7796_vendor_config_t *)ph->config.vendor_config)->init_cmds;
+        cmds_size = ((st7796_vendor_config_t *)ph->config.vendor_config)->init_cmds_size;
     }
 
     while (cmds_size-- > 0)
@@ -160,8 +158,8 @@ esp_err_t st7796_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, i
     y_end += ph->y_gap;
 
     esp_err_t res;
-    const uint8_t caset[4] = {x_start >> 8, x_start & 0xff, (x_end - 1) >> 8, (x_end - 1) & 0xff};
-    const uint8_t raset[4] = {y_start >> 8, y_start & 0xff, (y_end - 1) >> 8, (y_end - 1) & 0xff};
+    const uint8_t caset[4] = {x_start >> 8, x_start, (x_end - 1) >> 8, (x_end - 1)};
+    const uint8_t raset[4] = {y_start >> 8, y_start, (y_end - 1) >> 8, (y_end - 1)};
     if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_CASET, caset, sizeof(caset))) != ESP_OK ||
         (res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_RASET, raset, sizeof(raset))) != ESP_OK)
     {
