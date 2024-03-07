@@ -49,7 +49,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(ILI9341_SPI_HOST, &spi_bus_config, ILI9341_SPI_DMA_CHANNEL));
 
     // Attach the LCD controller to the SPI bus
-    const esp_lcd_panel_io_spi_config_t io_config = {
+    const esp_lcd_panel_io_spi_config_t io_spi_config = {
         .cs_gpio_num = ILI9341_SPI_CONFIG_CS_GPIO_NUM,
         .dc_gpio_num = ILI9341_SPI_CONFIG_DC_GPIO_NUM,
         .spi_mode = ILI9341_SPI_CONFIG_SPI_MODE,
@@ -66,7 +66,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
             .lsb_first = ILI9341_SPI_CONFIG_FLAGS_LSB_FIRST}};
     log_d("io_spi_config: cs_gpio_num:%d, dc_gpio_num:%d, spi_mode:%d, pclk_hz:%d, trans_queue_depth:%d, user_ctx:0x%08x, on_color_trans_done:0x%08x, lcd_cmd_bits:%d, lcd_param_bits:%d, flags.dc_as_cmd_phase:%d, flags.dc_low_on_data:%d, flags.octal_mode:%d, flags.lsb_first:%d", io_spi_config.cs_gpio_num, io_spi_config.dc_gpio_num, io_spi_config.spi_mode, io_spi_config.pclk_hz, io_spi_config.trans_queue_depth, io_spi_config.user_ctx, io_spi_config.on_color_trans_done, io_spi_config.lcd_cmd_bits, io_spi_config.lcd_param_bits, io_spi_config.flags.dc_as_cmd_phase, io_spi_config.flags.dc_low_on_data, io_spi_config.flags.octal_mode, io_spi_config.flags.lsb_first);
     esp_lcd_panel_io_handle_t io_handle;
-    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)ILI9341_SPI_HOST, &io_config, &io_handle));
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)ILI9341_SPI_HOST, &io_spi_config, &io_handle));
 
     // Create ili9341 panel handle
     const esp_lcd_panel_dev_config_t panel_dev_config = {

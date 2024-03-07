@@ -36,7 +36,7 @@ void lvgl_log(const char *buf)
 void lvgl_update_callback(lv_disp_drv_t *drv)
 {
   log_v("drv:0x%08x", drv);
-  esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
+  __attribute__((unused)) esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
   switch (drv->rotated)
   {
   case LV_DISP_ROT_NONE:
