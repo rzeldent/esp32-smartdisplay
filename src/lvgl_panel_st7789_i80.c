@@ -2,17 +2,17 @@
 
 #include <esp32_smartdisplay.h>
 #include <esp_lcd_panel_io.h>
-#include <esp_lcd_panel_vendor.h>
+//#include <esp_lcd_panel_vendor.h>
 #include <esp_lcd_panel_ops.h>
 
-static bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
+bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
     lv_disp_drv_t *disp_driver = user_ctx;
     lv_disp_flush_ready(disp_driver);
     return false;
 }
 
-static void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *color_map)
+void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *color_map)
 {
     esp_lcd_panel_handle_t panel_handle = drv->user_data;
 #if LV_COLOR_16_SWAP != 1
@@ -27,7 +27,8 @@ static void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color1
 
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
-    log_d("lvgl_lcd_init");
+    log_v("drv: 0x%08x");
+
     // Hardware rotation is NOT supported
     drv->sw_rotate = 1;
     drv->rotated = LV_DISP_ROT_NONE;

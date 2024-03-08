@@ -1,12 +1,11 @@
 #ifdef LCD_ILI9341_SPI
 
 #include <esp32_smartdisplay.h>
+#include <esp_lcd_ili9341.h>
 #include <driver/spi_master.h>
 #include <esp_lcd_panel_io.h>
-#include <esp_lcd_panel_vendor.h>
+//#include <esp_lcd_panel_vendor.h>
 #include <esp_lcd_panel_ops.h>
-
-#include "esp_lcd_ili9341.h"
 
 static bool ili9341_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
@@ -30,7 +29,8 @@ static void ili9341_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color
 
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
-    log_d("lvgl_lcd_init");
+    log_v("drv: 0x%08x");
+
     // Hardware rotation is supported
     drv->sw_rotate = 0;
     drv->rotated = LV_DISP_ROT_NONE;
@@ -64,7 +64,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
             .dc_low_on_data = ILI9341_SPI_CONFIG_FLAGS_DC_LOW_ON_DATA,
             .octal_mode = ILI9341_SPI_CONFIG_FLAGS_OCTAL_MODE,
             .lsb_first = ILI9341_SPI_CONFIG_FLAGS_LSB_FIRST}};
-    log_d("io_spi_config: cs_gpio_num:%d, dc_gpio_num:%d, spi_mode:%d, pclk_hz:%d, trans_queue_depth:%d, user_ctx:0x%08x, on_color_trans_done:0x%08x, lcd_cmd_bits:%d, lcd_param_bits:%d, flags.dc_as_cmd_phase:%d, flags.dc_low_on_data:%d, flags.octal_mode:%d, flags.lsb_first:%d", io_spi_config.cs_gpio_num, io_spi_config.dc_gpio_num, io_spi_config.spi_mode, io_spi_config.pclk_hz, io_spi_config.trans_queue_depth, io_spi_config.user_ctx, io_spi_config.on_color_trans_done, io_spi_config.lcd_cmd_bits, io_spi_config.lcd_param_bits, io_spi_config.flags.dc_as_cmd_phase, io_spi_config.flags.dc_low_on_data, io_spi_config.flags.octal_mode, io_spi_config.flags.lsb_first);
+    log_d("io_spi_config: cs_gpio_num:%d, dc_gpio_num:%d, spi_mode:%d, pclk_hz:%d, trans_queue_depth:%d, user_ctx:0x%08x, on_color_trans_done:0x%08x, lcd_cmd_bits:%d, lcd_param_bits:%d, flags:{dc_as_cmd_phase:%d, dc_low_on_data:%d, octal_mode:%d, lsb_first:%d}", io_spi_config.cs_gpio_num, io_spi_config.dc_gpio_num, io_spi_config.spi_mode, io_spi_config.pclk_hz, io_spi_config.trans_queue_depth, io_spi_config.user_ctx, io_spi_config.on_color_trans_done, io_spi_config.lcd_cmd_bits, io_spi_config.lcd_param_bits, io_spi_config.flags.dc_as_cmd_phase, io_spi_config.flags.dc_low_on_data, io_spi_config.flags.octal_mode, io_spi_config.flags.lsb_first);
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)ILI9341_SPI_HOST, &io_spi_config, &io_handle));
 
@@ -76,7 +76,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .flags = {
             .reset_active_high = ILI9341_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
         .vendor_config = ILI9341_DEV_CONFIG_VENDOR_CONFIG};
-    log_d("panel_dev_config: reset_gpio_num:%d, color_space:%d, bits_per_pixel:%d, flags.reset_active_high:%d, vendor_config: 0x%08x", panel_dev_config.reset_gpio_num, panel_dev_config.color_space, panel_dev_config.bits_per_pixel, panel_dev_config.flags.reset_active_high, panel_dev_config.vendor_config);
+    log_d("panel_dev_config: reset_gpio_num:%d, color_space:%d, bits_per_pixel:%d, flags: {reset_active_high:%d}, vendor_config: 0x%08x", panel_dev_config.reset_gpio_num, panel_dev_config.color_space, panel_dev_config.bits_per_pixel, panel_dev_config.flags.reset_active_high, panel_dev_config.vendor_config);
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_ili9341(io_handle, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));

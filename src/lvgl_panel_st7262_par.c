@@ -4,14 +4,14 @@
 #include <esp_lcd_panel_rgb.h>
 #include <esp_lcd_panel_ops.h>
 
-static bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx)
+bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx)
 {
     lv_disp_drv_t *disp_driver = user_ctx;
     lv_disp_flush_ready(disp_driver);
     return false;
 }
 
-static void direct_io_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *color_map)
+void direct_io_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *color_map)
 {
     esp_lcd_panel_handle_t panel_handle = drv->user_data;
     // LV_COLOR_16_SWAP is handled by mapping of the data
@@ -20,7 +20,8 @@ static void direct_io_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_col
 
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
-    log_d("lvgl_lcd_init");
+    log_v("drv: 0x%08x");
+
     // Hardware rotation is NOT supported
     drv->sw_rotate = 1;
     drv->rotated = LV_DISP_ROT_NONE;
@@ -61,7 +62,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .user_ctx = drv,
         .flags = {.disp_active_low = ST7262_PANEL_CONFIG_FLAGS_DISP_ACTIVE_LOW, .relax_on_idle = ST7262_PANEL_CONFIG_FLAGS_RELAX_ON_IDLE, .fb_in_psram = ST7262_PANEL_CONFIG_FLAGS_FB_IN_PSRAM}
     };
-
+    log_d("rgb_panel_config: clk_src:%d, timings: {pclk_hz:%d, h_res: %d, v_res:%d, hsync_pulse_width%d, hsync_back_porch%d, hsync_front_porch%d, vsync_pulse_width%d, vsync_back_porch:%d, vsync_front_porch%d, flags: {hsync_idle_low: %d, vsync_idle_low: %d, de_idle_high: %d, pclk_active_neg: %d, pclk_idle_high: %d}}, data_width: %d, sram_trans_align: %d, psram_trans_align: %d, hsync_gpio_num: %d, vsync_gpio_num: %d, de_gpio_num: %d, pclk_gpio_num: %d, data_gpio_nums:[%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,], disp_gpio_num:%d, on_frame_trans_done: 0x%08x, user_ctx: 0x%08x, flags: {disp_active_low: %d, relax_on_idle: %d, fb_in_psram: %d}", tft_panel_config.clk_src, tft_panel_config.timings.pclk_hz, tft_panel_config.timings.h_res, tft_panel_config.timings.v_res, tft_panel_config.timings.hsync_pulse_width, tft_panel_config.timings.hsync_back_porch, tft_panel_config.timings.hsync_front_porch, tft_panel_config.timings.vsync_pulse_width, tft_panel_config.timings.vsync_back_porch, tft_panel_config.timings.vsync_front_porch, tft_panel_config.timings.flags.hsync_idle_low, tft_panel_config.timings.flags.vsync_idle_low, tft_panel_config.timings.flags.de_idle_high, tft_panel_config.timings.flags.pclk_active_neg, tft_panel_config.timings.flags.pclk_idle_high, tft_panel_config.data_width, tft_panel_config.sram_trans_align, tft_panel_config.psram_trans_align, tft_panel_config.hsync_gpio_num, tft_panel_config.vsync_gpio_num, tft_panel_config.de_gpio_num, tft_panel_config.pclk_gpio_num, tft_panel_config.data_gpio_nums[0], tft_panel_config.data_gpio_nums[1], tft_panel_config.data_gpio_nums[2], tft_panel_config.data_gpio_nums[3], tft_panel_config.data_gpio_nums[4], tft_panel_config.data_gpio_nums[5], tft_panel_config.data_gpio_nums[6], tft_panel_config.data_gpio_nums[7], tft_panel_config.data_gpio_nums[8], tft_panel_config.data_gpio_nums[9], tft_panel_config.data_gpio_nums[10], tft_panel_config.data_gpio_nums[11], tft_panel_config.data_gpio_nums[12], tft_panel_config.data_gpio_nums[13], tft_panel_config.data_gpio_nums[14], tft_panel_config.data_gpio_nums[15], tft_panel_config.disp_gpio_num, tft_panel_config.on_frame_trans_done, tft_panel_config.user_ctx, tft_panel_config.flags.disp_active_low, tft_panel_config.flags.fb_in_psram, tft_panel_config.flags.relax_on_idle);
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&tft_panel_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
