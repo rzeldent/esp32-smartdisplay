@@ -13,7 +13,7 @@ bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_i
     return false;
 }
 
-void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *color_map)
+void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
 {
     esp_lcd_panel_handle_t panel_handle = drv->user_data;
 #if LV_COLOR_16_SWAP != 1
@@ -28,7 +28,7 @@ void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *co
 
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
-    log_v("drv: 0x%08x");
+    log_v("drv:0x%08x");
 
     // Hardware rotation is supported
     drv->sw_rotate = 0;
@@ -75,7 +75,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .flags = {
             .reset_active_high = ST7789_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
         .vendor_config = ST7789_DEV_CONFIG_VENDOR_CONFIG};
-    log_d("panel_dev_config: reset_gpio_num:%d, color_space:%d, bits_per_pixel:%d, flags: {reset_active_high:%d}, vendor_config: 0x%08x", panel_dev_config.reset_gpio_num, panel_dev_config.color_space, panel_dev_config.bits_per_pixel, panel_dev_config.flags.reset_active_high, panel_dev_config.vendor_config);
+    log_d("panel_dev_config: reset_gpio_num:%d, color_space:%d, bits_per_pixel:%d, flags:{reset_active_high:%d}, vendor_config:0x%08x", panel_dev_config.reset_gpio_num, panel_dev_config.color_space, panel_dev_config.bits_per_pixel, panel_dev_config.flags.reset_active_high, panel_dev_config.vendor_config);
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));

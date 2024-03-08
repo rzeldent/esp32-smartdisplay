@@ -1,22 +1,21 @@
 #ifdef LCD_GC9A01_SPI
 
 #include <esp32_smartdisplay.h>
-#include <esp_lcd_panel_gc9a01.h>
+#include <esp_panel_gc9a01.h>
 #include <driver/spi_master.h>
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_ops.h>
 
-
-bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
+bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t panel_io_handle, esp_lcd_panel_io_event_data_t *panel_io_event_data, void *user_ctx)
 {
-    log_v("io:0x%08x, edata:%0x%08x, user_ctx:0x%08x", io, edata, user_ctx);
+    log_v("panel_io_handle:0x%08x, panel_io_event_data:%0x%08x, user_ctx:0x%08x", panel_io_handle, panel_io_event_data, user_ctx);
 
     lv_disp_drv_t *disp_driver = user_ctx;
     lv_disp_flush_ready(disp_driver);
     return false;
 }
 
-void gc9a01_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color16_t *color_map)
+void gc9a01_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
 {
     log_v("drv:0x%08x, area:%0x%08x, color_map:0x%08x", drv, area, color_map);
 
@@ -80,7 +79,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .flags = {
             .reset_active_high = GC9A01_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH},
         .vendor_config = GC9A01_DEV_CONFIG_VENDOR_CONFIG};
-    log_d("panel_dev_config: reset_gpio_num:%d, color_space:%d, bits_per_pixel:%d, flags: {reset_active_high:%d}, vendor_config: 0x%08x", panel_dev_config.reset_gpio_num, panel_dev_config.color_space, panel_dev_config.bits_per_pixel, panel_dev_config.flags.reset_active_high, panel_dev_config.vendor_config);
+    log_d("panel_dev_config: reset_gpio_num:%d, color_space:%d, bits_per_pixel:%d, flags:{reset_active_high:%d}, vendor_config: 0x%08x", panel_dev_config.reset_gpio_num, panel_dev_config.color_space, panel_dev_config.bits_per_pixel, panel_dev_config.flags.reset_active_high, panel_dev_config.vendor_config);
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_gc9a01(io_handle, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));

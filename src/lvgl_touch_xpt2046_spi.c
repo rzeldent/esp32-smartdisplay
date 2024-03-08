@@ -30,7 +30,7 @@ void xpt2046_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 
 void lvgl_touch_init(lv_indev_drv_t *drv)
 {
-    log_v("drv: 0x%08x");
+    log_v("drv:0x%08x");
 
     // Create SPI bus only if not already initialized (S035R shares the SPI bus)
     const spi_bus_config_t spi_bus_config = {

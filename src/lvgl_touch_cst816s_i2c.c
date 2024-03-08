@@ -30,7 +30,7 @@ void cst816s_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 
 void lvgl_touch_init(lv_indev_drv_t *drv)
 {
-    log_v("drv: 0x%08x");
+    log_v("drv:0x%08x");
 
     // Create I2C bus
     const i2c_config_t i2c_config = {

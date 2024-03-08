@@ -14,7 +14,7 @@ typedef struct
 {
     esp_lcd_panel_t base;
     esp_lcd_panel_io_handle_t io;
-    esp_lcd_panel_dev_config_t config;
+    esp_lcd_panel_dev_config_t panel_dev_config;
     // Data
     int x_gap;
     int y_gap;
@@ -75,12 +75,12 @@ esp_err_t gc9a01_reset(esp_lcd_panel_t *panel)
 
     const gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
 
-    if (ph->config.reset_gpio_num != GPIO_NUM_NC)
+    if (ph->panel_dev_config.reset_gpio_num != GPIO_NUM_NC)
     {
         // Hardware reset
-        gpio_set_level(ph->config.reset_gpio_num, ph->config.flags.reset_active_high);
+        gpio_set_level(ph->panel_dev_config.reset_gpio_num, ph->panel_dev_config.flags.reset_active_high);
         vTaskDelay(pdMS_TO_TICKS(1));
-        gpio_set_level(ph->config.reset_gpio_num, !ph->config.flags.reset_active_high);
+        gpio_set_level(ph->panel_dev_config.reset_gpio_num, !ph->panel_dev_config.flags.reset_active_high);
     }
     else
     {
@@ -116,7 +116,7 @@ esp_err_t gc9a01_init(esp_lcd_panel_t *panel)
     vTaskDelay(pdMS_TO_TICKS(100));
 
     uint8_t colmod;
-    switch (ph->config.bits_per_pixel)
+    switch (ph->panel_dev_config.bits_per_pixel)
     {
     case 16: // RGB565
         colmod = 0x55;
@@ -125,7 +125,7 @@ esp_err_t gc9a01_init(esp_lcd_panel_t *panel)
         colmod = 0x66;
         break;
     default:
-        log_e("Invalid bits per pixel: %d. Only RGB565 and RGB666 are supported", ph->config.bits_per_pixel);
+        log_e("Invalid bits per pixel: %d. Only RGB565 and RGB666 are supported", ph->panel_dev_config.bits_per_pixel);
         return ESP_ERR_INVALID_ARG;
     }
 
@@ -138,10 +138,10 @@ esp_err_t gc9a01_init(esp_lcd_panel_t *panel)
 
     const lcd_init_cmd_t *cmd = gc9a01_vendor_specific_init_default;
     uint16_t cmds_size = sizeof(gc9a01_vendor_specific_init_default) / sizeof(lcd_init_cmd_t);
-    if (ph->config.vendor_config != NULL)
+    if (ph->panel_dev_config.vendor_config != NULL)
     {
-        cmd = ((gc9a01_vendor_config_t *)ph->config.vendor_config)->init_cmds;
-        cmds_size = ((gc9a01_vendor_config_t *)ph->config.vendor_config)->init_cmds_size;
+        cmd = ((gc9a01_vendor_config_t *)ph->panel_dev_config.vendor_config)->init_cmds;
+        cmds_size = ((gc9a01_vendor_config_t *)ph->panel_dev_config.vendor_config)->init_cmds_size;
     }
 
     while (cmds_size-- > 0)
@@ -195,7 +195,7 @@ esp_err_t gc9a01_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, i
         return res;
     }
 
-    uint8_t bytes_per_pixel = (ph->config.bits_per_pixel + 0x7) >> 3;
+    uint8_t bytes_per_pixel = (ph->panel_dev_config.bits_per_pixel + 0x7) >> 3;
     size_t len = (x_end - x_start) * (y_end - y_start) * bytes_per_pixel;
     if ((res = esp_lcd_panel_io_tx_color(ph->io, LCD_CMD_RAMWR, color_data, len)) != ESP_OK)
     {
@@ -314,28 +314,28 @@ esp_err_t gc9a01_del(esp_lcd_panel_t *panel)
     gc9a01_panel_t *ph = (gc9a01_panel_t *)panel;
 
     // Reset RESET
-    if (ph->config.reset_gpio_num != GPIO_NUM_NC)
-        gpio_reset_pin(ph->config.reset_gpio_num);
+    if (ph->panel_dev_config.reset_gpio_num != GPIO_NUM_NC)
+        gpio_reset_pin(ph->panel_dev_config.reset_gpio_num);
 
     free(ph);
 
     return ESP_OK;
 }
 
-esp_err_t esp_lcd_new_panel_gc9a01(const esp_lcd_panel_io_handle_t io, const esp_lcd_panel_dev_config_t *config, esp_lcd_panel_handle_t *handle)
+esp_err_t esp_lcd_new_panel_gc9a01(const esp_lcd_panel_io_handle_t panel_io_handle, const esp_lcd_panel_dev_config_t *panel_dev_config, esp_lcd_panel_handle_t *panel_handle)
 {
-    log_v("io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
-    if (io == NULL || config == NULL || handle == NULL)
+    log_v("panel_io_handle:0x%08x, panel_dev_config:0x%08x, panel_handle:0x%08x", panel_io_handle, panel_dev_config, panel_handle);
+    if (panel_io_handle == NULL || panel_dev_config == NULL || panel_handle == NULL)
         return ESP_ERR_INVALID_ARG;
 
-    if (config->reset_gpio_num != GPIO_NUM_NC && !GPIO_IS_VALID_GPIO(config->reset_gpio_num))
+    if (panel_dev_config->reset_gpio_num != GPIO_NUM_NC && !GPIO_IS_VALID_GPIO(panel_dev_config->reset_gpio_num))
     {
-        log_e("Invalid GPIO RST pin: %d", config->reset_gpio_num);
+        log_e("Invalid GPIO RST pin: %d", panel_dev_config->reset_gpio_num);
         return ESP_ERR_INVALID_ARG;
     }
 
     uint8_t madctl;
-    switch (config->color_space)
+    switch (panel_dev_config->color_space)
     {
     case ESP_LCD_COLOR_SPACE_RGB:
         madctl = 0;
@@ -344,15 +344,15 @@ esp_err_t esp_lcd_new_panel_gc9a01(const esp_lcd_panel_io_handle_t io, const esp
         madctl = LCD_CMD_BGR_BIT;
         break;
     default:
-        log_e("Invalid color space: %d. Only RGB and BGR are supported", config->color_space);
+        log_e("Invalid color space: %d. Only RGB and BGR are supported", panel_dev_config->color_space);
         return ESP_ERR_INVALID_ARG;
     }
 
-    if (config->reset_gpio_num != GPIO_NUM_NC)
+    if (panel_dev_config->reset_gpio_num != GPIO_NUM_NC)
     {
         esp_err_t res;
         const gpio_config_t cfg = {
-            .pin_bit_mask = BIT64(config->reset_gpio_num),
+            .pin_bit_mask = BIT64(panel_dev_config->reset_gpio_num),
             .mode = GPIO_MODE_OUTPUT};
         if ((res = gpio_config(&cfg)) != ESP_OK)
         {
@@ -368,8 +368,8 @@ esp_err_t esp_lcd_new_panel_gc9a01(const esp_lcd_panel_io_handle_t io, const esp
         return ESP_ERR_NO_MEM;
     }
 
-    ph->io = io;
-    memcpy(&ph->config, config, sizeof(esp_lcd_panel_dev_config_t));
+    ph->io = panel_io_handle;
+    memcpy(&ph->panel_dev_config, panel_dev_config, sizeof(esp_lcd_panel_dev_config_t));
     ph->madctl = madctl;
 
     ph->base.del = gc9a01_del;
@@ -382,8 +382,8 @@ esp_err_t esp_lcd_new_panel_gc9a01(const esp_lcd_panel_io_handle_t io, const esp
     ph->base.set_gap = gc9a01_set_gap;
     ph->base.disp_off = gc9a01_disp_off;
 
-    log_d("handle: 0x%08x", ph);
-    *handle = (esp_lcd_panel_handle_t)ph;
+    log_d("panel_handle: 0x%08x", ph);
+    *panel_handle = (esp_lcd_panel_handle_t)ph;
 
     return ESP_OK;
 }
