@@ -9,21 +9,20 @@ void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
     esp_lcd_touch_handle_t touch_handle = drv->user_data;
 
-    uint16_t touch_x[1] = {0};
-    uint16_t touch_y[1] = {0};
-    uint16_t touch_strength[1] = {0};
+    uint16_t x[1];
+    uint16_t y[1];
     uint8_t touch_cnt = 0;
 
     // Read touch controller data
     ESP_ERROR_CHECK(esp_lcd_touch_read_data(touch_handle));
     // Get coordinates
-    bool pressed = esp_lcd_touch_get_coordinates(touch_handle, touch_x, touch_y, touch_strength, &touch_cnt, 1);
+    bool pressed = esp_lcd_touch_get_coordinates(touch_handle, x, y, NULL, &touch_cnt, 1);
     if (pressed && touch_cnt > 0)
     {
-        data->point.x = touch_x[0];
-        data->point.y = touch_y[0];
+        data->point.x = x[0];
+        data->point.y = y[0];
         data->state = LV_INDEV_STATE_PRESSED;
-        log_d("Pressed at: (%d,%d), strength: %d", data->point.x, data->point.y, touch_strength[0]);
+        log_v("Pressed at: (%d,%d)", data->point.x, data->point.y);
     }
     else
         data->state = LV_INDEV_STATE_RELEASED;
@@ -71,7 +70,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
         .levels = {
             .reset = GT911_TOUCH_CONFIG_LEVELS_RESET,
             .interrupt = GT911_TOUCH_CONFIG_LEVELS_INTERRUPT},
-        //.flags = {.swap_xy = LCD_SWAP_XY, .mirror_x = LCD_MIRROR_X, .mirror_y = LCD_MIRROR_Y},
+        .flags = {.swap_xy = TOUCH_SWAP_XY, .mirror_x = TOUCH_SWAP_X, .mirror_y = TOUCH_SWAP_Y},
         .user_data = io_handle};
     log_d("touch_config: x_max:%d, y_max:%d, rst_gpio_num:%d, int_gpio_num:%d, levels:{reset:%d, interrupt:%d}, flags:{swap_xy:%d, mirror_x:%d, mirror_y:%d}, user_data:0x%08x", touch_config.x_max, touch_config.y_max, touch_config.rst_gpio_num, touch_config.int_gpio_num, touch_config.levels.reset, touch_config.levels.interrupt, touch_config.flags.swap_xy, touch_config.flags.mirror_x, touch_config.flags.mirror_y, touch_config.user_data);
     esp_lcd_touch_handle_t touch_handle;

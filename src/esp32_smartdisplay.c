@@ -12,8 +12,8 @@
 #define BRIGHTNESS_DARK_ZONE 250
 
 // Functions to be defined in the tft/touch driver
-extern void lvgl_lcd_init(lv_disp_drv_t *drv);
-extern void lvgl_touch_init(lv_indev_drv_t *drv);
+extern void lvgl_lcd_init(lv_disp_drv_t *disp_drv);
+extern void lvgl_touch_init(lv_indev_drv_t *disp_drv);
 
 lv_disp_drv_t disp_drv;
 lv_timer_t *update_brightness_timer;
@@ -31,84 +31,11 @@ void lvgl_log(const char *buf)
 }
 #endif
 
-// Called when driver parameters are updated (rotation)
-// Top of the display is top left when connector is at the bottom
-void lvgl_update_callback(lv_disp_drv_t *drv)
-{
-  log_v("drv:0x%08x", drv);
-  __attribute__((unused)) esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
-  switch (drv->rotated)
-  {
-  case LV_DISP_ROT_NONE:
-#if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, LCD_MIRROR_Y));
-#endif
-#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_X, LCD_GAP_Y));
-#endif
-    break;
-  case LV_DISP_ROT_90:
-#if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !LCD_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !LCD_MIRROR_X, LCD_MIRROR_Y));
-#endif
-#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_Y, LCD_GAP_X));
-#endif
-    break;
-  case LV_DISP_ROT_180:
-#if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !LCD_MIRROR_X, !LCD_MIRROR_Y));
-#endif
-#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_X, LCD_GAP_Y));
-#endif
-    break;
-  case LV_DISP_ROT_270:
-#if defined(LCD_SWAP_XY) && defined(LCD_MIRROR_X) && defined(LCD_MIRROR_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !LCD_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, !LCD_MIRROR_Y));
-#endif
-#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_Y, LCD_GAP_X));
-#endif
-    break;
-  }
-
-#ifdef BOARD_HAS_TOUCH
-  esp_lcd_touch_handle_t touch_handle = indev_drv.user_data;
-  switch (drv->rotated)
-  {
-  case LV_DISP_ROT_NONE:
-    ESP_ERROR_CHECK(esp_lcd_touch_set_swap_xy(touch_handle, TOUCH_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_SWAP_X));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_SWAP_Y));
-    break;
-  case LV_DISP_ROT_90:
-    ESP_ERROR_CHECK(esp_lcd_touch_set_swap_xy(touch_handle, !TOUCH_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_SWAP_X));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, TOUCH_SWAP_Y));
-    break;
-  case LV_DISP_ROT_180:
-    ESP_ERROR_CHECK(esp_lcd_touch_set_swap_xy(touch_handle, TOUCH_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, !TOUCH_SWAP_X));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_SWAP_Y));
-    break;
-  case LV_DISP_ROT_270:
-    ESP_ERROR_CHECK(esp_lcd_touch_set_swap_xy(touch_handle, !TOUCH_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_x(touch_handle, TOUCH_SWAP_X));
-    ESP_ERROR_CHECK(esp_lcd_touch_set_mirror_y(touch_handle, !TOUCH_SWAP_Y));
-    break;
-  }
-#endif
-}
-
 // Set backlight intensity
 void smartdisplay_lcd_set_backlight(float duty)
 {
   log_v("duty:%2f", duty);
+
   if (duty > 1.0)
     duty = 1.0f;
   if (duty < 0.0)
@@ -141,12 +68,16 @@ float smartdisplay_lcd_adaptive_brightness_cds()
 
 void adaptive_brightness(lv_timer_t *timer)
 {
+  log_v("timer:0x%08x", timer);
+
   const smartdisplay_lcd_adaptive_brightness_cb_t callback = timer->user_data;
   smartdisplay_lcd_set_backlight(callback());
 }
 
 void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval)
 {
+  log_v("adaptive_brightness_cb:0x%08x, interval:%d", cb, interval);
+
   // Delete current timer if any
   if (update_brightness_timer)
     lv_timer_del(update_brightness_timer);
@@ -161,7 +92,8 @@ void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_
 #ifdef BOARD_HAS_RGB_LED
 void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 {
-  log_d("smartdisplay_led_set_rgb. R:%d, G:%d, B:%d", r, b, b);
+  log_d("R:%d, G:%d, B:%d", r, b, b);
+
   digitalWrite(RGB_LED_R, !r);
   digitalWrite(RGB_LED_G, !g);
   digitalWrite(RGB_LED_B, !b);
@@ -170,11 +102,12 @@ void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 
 #ifdef BOARD_HAS_TOUCH
 // See: https://www.maximintegrated.com/en/design/technical-documents/app-notes/5/5296.html
-void lvgl_touch_calibration_transform(lv_indev_drv_t *drv, lv_indev_data_t *data)
+void lvgl_touch_calibration_transform(lv_indev_drv_t *disp_drv, lv_indev_data_t *data)
 {
-  log_v("drv:0x%08x, data:0x%08x", drv, data);
+  log_v("disp_drv:0x%08x, data:0x%08x", disp_drv, data);
+
   // Call low level read from the driver
-  driver_touch_read_cb(drv, data);
+  driver_touch_read_cb(disp_drv, data);
   // Check if transformation is required
   if (touch_calibration_data.valid && data->state == LV_INDEV_STATE_PRESSED)
   {
@@ -182,7 +115,7 @@ void lvgl_touch_calibration_transform(lv_indev_drv_t *drv, lv_indev_data_t *data
     lv_point_t pt = {
         .x = roundf(data->point.x * touch_calibration_data.alphaX + data->point.y * touch_calibration_data.betaX + touch_calibration_data.deltaX),
         .y = roundf(data->point.x * touch_calibration_data.alphaY + data->point.y * touch_calibration_data.betaY + touch_calibration_data.deltaY)};
-    log_i("Calibrate point (%d, %d) => (%d, %d)", data->point.x, data->point.y, pt.x, pt.y);
+    log_d("Calibrate point (%d, %d) => (%d, %d)", data->point.x, data->point.y, pt.x, pt.y);
     data->point = (lv_point_t){pt.x, pt.y};
   }
 }
@@ -201,7 +134,7 @@ touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t
       .deltaY = ((screen[0].y * (touch[1].x * touch[2].y - touch[2].x * touch[1].y)) - (screen[1].y * (touch[0].x * touch[2].y - touch[2].x * touch[0].y)) + (screen[2].y * (touch[0].x * touch[1].y - touch[1].x * touch[0].y))) / delta,
   };
 
-  log_i("alphaX: %f, betaX: %f, deltaX: %f, alphaY: %f, betaY: %f, deltaY: %f", touch_calibration_data.alphaX, touch_calibration_data.betaX, touch_calibration_data.deltaX, touch_calibration_data.alphaY, touch_calibration_data.betaY, touch_calibration_data.deltaY);
+  log_d("alphaX: %f, betaX: %f, deltaX: %f, alphaY: %f, betaY: %f, deltaY: %f", touch_calibration_data.alphaX, touch_calibration_data.betaX, touch_calibration_data.deltaX, touch_calibration_data.alphaY, touch_calibration_data.betaY, touch_calibration_data.deltaY);
   return touch_calibration_data;
 };
 #endif
@@ -271,9 +204,4 @@ void smartdisplay_init()
   indev_drv.read_cb = lvgl_touch_calibration_transform;
   lv_indev_drv_register(&indev_drv);
 #endif
-
-  // Register callback for changes to the driver parameters
-  disp_drv.drv_update_cb = lvgl_update_callback;
-  // Call the callback to set the rotation
-  lvgl_update_callback(&disp_drv);
 }

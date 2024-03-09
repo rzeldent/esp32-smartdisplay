@@ -32,7 +32,7 @@ void gc9a01_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *colo
 
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
-    log_v("drv:0x%08x", drv);
+    log_v("disp_drv:0x%08x", drv);
 
     // Hardware rotation is supported
     drv->sw_rotate = 0;
@@ -87,6 +87,11 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
 #ifdef LCD_IPS
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
+#endif
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, LCD_MIRROR_Y));
+#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_X, LCD_GAP_Y));
 #endif
     // Turn display on
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));

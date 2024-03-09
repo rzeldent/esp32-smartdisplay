@@ -72,6 +72,11 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
 #endif
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, LCD_MIRROR_Y));
+#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_X, LCD_GAP_Y));
+#endif
 
     drv->user_data = panel_handle;
     drv->flush_cb = direct_io_lv_flush;
