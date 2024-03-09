@@ -252,15 +252,16 @@ esp_err_t gt911_read_data(esp_lcd_touch_handle_t th)
             // Read the number of touch points
             if (flags.number_points <= GT911_TOUCH_POINTS_MAX)
             {
+                uint8_t points = flags.number_points > CONFIG_ESP_LCD_TOUCH_MAX_POINTS ? CONFIG_ESP_LCD_TOUCH_MAX_POINTS : flags.number_points;
                 // Read the points
-                if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_TOUCH_POINTS_REG, &buffer.data.touch_points, flags.number_points * sizeof(gt911_touch_event))) != ESP_OK)
+                if ((res = esp_lcd_panel_io_rx_param(th->io, GT911_TOUCH_POINTS_REG, &buffer.data.touch_points, points * sizeof(gt911_touch_event))) != ESP_OK)
                 {
                     log_e("Unable to read GT911_TOUCH_POINTS_REG");
                     return res;
                 }
 
                 portENTER_CRITICAL(&th->data.lock);
-                for (uint8_t i = 0; i < flags.number_points; i++)
+                for (uint8_t i = 0; i < points; i++)
                 {
                     log_d("Point: #%d, event:%d, point:(%d,%d), area:%d", i, buffer.data.touch_points[i].event, buffer.data.touch_points[i].point.x, buffer.data.touch_points[i].point.y, buffer.data.touch_points[i].area);
                     th->data.coords[i].x = buffer.data.touch_points[i].point.x;
@@ -268,7 +269,7 @@ esp_err_t gt911_read_data(esp_lcd_touch_handle_t th)
                     th->data.coords[i].strength = buffer.data.touch_points[i].area;
                 }
 
-                th->data.points = flags.number_points;
+                th->data.points = points;
                 portEXIT_CRITICAL(&th->data.lock);
             }
         }
@@ -299,7 +300,7 @@ bool gt911_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t 
         if (strength != NULL)
             strength[i] = th->data.coords[i].strength;
 
-        log_d("Touch data: x:%d, y:%d, area:%d", x[i], y[i], strength != NULL ? strength[i] : 0);
+        log_d("Touch data: x:%d, y:%d, strength:%d", x[i], y[i], th->data.coords[i].strength);
     }
 
     th->data.points = 0;
