@@ -461,7 +461,7 @@ esp_err_t esp_lcd_touch_new_i2c_gt911(const esp_lcd_panel_io_handle_t io, const 
         return res;
     }
 
-    log_d("handle: 0x%08x", th);
+    log_d("handle:0x%08x", th);
     *handle = th;
 
     return ESP_OK;

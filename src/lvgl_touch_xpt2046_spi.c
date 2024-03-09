@@ -72,7 +72,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
             .interrupt = XPT2046_TOUCH_CONFIG_LEVELS_INTERRUPT},
         //.flags = {.swap_xy = LCD_SWAP_XY, .mirror_x = LCD_MIRROR_X, .mirror_y = LCD_MIRROR_Y},
         .user_data = io_handle};
-    log_d("touch_config: x_max:%d, y_max:%d, rst_gpio_num:%d, int_gpio_num:%d, levels: {reset:%d, interrupt:%d}, flags:{swap_xy:%d, mirror_x:%d, mirror_y:%d}, user_data:0x%08x", touch_config.x_max, touch_config.y_max, touch_config.rst_gpio_num, touch_config.int_gpio_num, touch_config.levels.reset, touch_config.levels.interrupt, touch_config.flags.swap_xy, touch_config.flags.mirror_x, touch_config.flags.mirror_y, touch_config.user_data);
+    log_d("touch_config: x_max:%d, y_max:%d, rst_gpio_num:%d, int_gpio_num:%d, levels:{reset:%d, interrupt:%d}, flags:{swap_xy:%d, mirror_x:%d, mirror_y:%d}, user_data:0x%08x", touch_config.x_max, touch_config.y_max, touch_config.rst_gpio_num, touch_config.int_gpio_num, touch_config.levels.reset, touch_config.levels.interrupt, touch_config.flags.swap_xy, touch_config.flags.mirror_x, touch_config.flags.mirror_y, touch_config.user_data);
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_spi_xpt2046(io_handle, &touch_config, &touch_handle));
 

@@ -6,52 +6,55 @@
 #include <esp32-hal-log.h>
 
 // Registers
-const uint8_t CST816S_GESTURE_REG = 0x01;
-const uint8_t CST816S_FINGERNUM_REG = 0x02;
-const uint8_t CST816S_XPOSH_REG = 0x03;
-const uint8_t CST816S_XPOSL_REG = 0x04;
-const uint8_t CST816S_YPOSH_REG = 0x05;
-const uint8_t CST816S_YPOSL_REG = 0x06;
+#define CST816S_GESTURE_REG 0x01
+#define CST816S_FINGERNUM_REG 0x02
+#define CST816S_XPOSH_REG 0x03
+#define CST816S_XPOSL_REG 0x04
+#define CST816S_YPOSH_REG 0x05
+#define CST816S_YPOSL_REG 0x06
 
-const uint8_t CST816S_BC0H_REG = 0xB0;
-const uint8_t CST816S_BC0L_REG = 0xB1;
-const uint8_t CST816S_BC1H_REG = 0xB2;
-const uint8_t CST816S_BC1L_REG = 0xB3;
+#define CST816S_BC0H_REG 0xB0
+#define CST816S_BC0L_REG 0xB1
+#define CST816S_BC1H_REG 0xB2
+#define CST816S_BC1L_REG 0xB3
 
-const uint8_t CST816S_SLEEP_REG = 0xA5;
-const uint8_t CST816S_CHIPID_REG = 0xA7;
-const uint8_t CST816S_PROJID_REG = 0xA8;
-const uint8_t CST816S_FWVERSION_REG = 0xA9;
+#define CST816S_SLEEP_REG 0xA5
+#define CST816S_CHIPID_REG 0xA7
+#define CST816S_PROJID_REG 0xA8
+#define CST816S_FWVERSION_REG 0xA9
 
-const uint8_t CST816S_MOTIONMASK_REG = 0xEC;
-const uint8_t CST816S_IRQPULSEWIDTH_REG = 0xED;
-const uint8_t CST816S_NORSCANPER_REG = 0xEE;
-const uint8_t CST816S_MOTIONSIANGLE_REG = 0xEF;
-const uint8_t CST816S_LPSCANRAW1H_REG = 0xF0;
-const uint8_t CST816S_LPSCANRAW1L_REG = 0xF1;
-const uint8_t CST816S_LPSCANRAW2H_REG = 0xF2;
-const uint8_t CST816S_LPSCANRAW2L_REG = 0xF3;
-const uint8_t CST816S_LPAUTOWAKEUPTIME_REG = 0xF4;
-const uint8_t CST816S_LPSCANTH_REG = 0xF5;
-const uint8_t CST816S_LPSCANWIN_REG = 0xF6;
-const uint8_t CST816S_LPSCANFREQ_REG = 0xF7;
-const uint8_t CST816S_LPSCANIDAC_REG = 0xF8;
-const uint8_t CST816S_AUTOSLEEPTIME_REG = 0xF9;
-const uint8_t CST816S_IRQCTL_REG = 0xFA;
-const uint8_t CST816S_AUTORESET_REG = 0xFB;
-const uint8_t CST816S_LONGPRESSTIME_REG = 0xFC;
-const uint8_t CST816S_IOCTL_REG = 0xFD;
-const uint8_t CST816S_AUTOSLEEP_REG = 0xFE;
+#define CST816S_MOTIONMASK_REG 0xEC
+#define CST816S_IRQPULSEWIDTH_REG 0xED
+#define CST816S_NORSCANPER_REG 0xEE
+#define CST816S_MOTIONSIANGLE_REG 0xEF
+#define CST816S_LPSCANRAW1H_REG 0xF0
+#define CST816S_LPSCANRAW1L_REG 0xF1
+#define CST816S_LPSCANRAW2H_REG 0xF2
+#define CST816S_LPSCANRAW2L_REG 0xF3
+#define CST816S_LPAUTOWAKEUPTIME_REG 0xF4
+#define CST816S_LPSCANTH_REG 0xF5
+#define CST816S_LPSCANWIN_REG 0xF6
+#define CST816S_LPSCANFREQ_REG 0xF7
+#define CST816S_LPSCANIDAC_REG 0xF8
+#define CST816S_AUTOSLEEPTIME_REG 0xF9
+#define CST816S_IRQCTL_REG 0xFA
+#define CST816S_AUTORESET_REG 0xFB
+#define CST816S_LONGPRESSTIME_REG 0xFC
+#define CST816S_IOCTL_REG 0xFD
+#define CST816S_AUTOSLEEP_REG 0xFE
 
 // Touch events
-const uint8_t CST816S_TOUCH_EVENT_NONE = 0x0;
-const uint8_t CST816S_TOUCH_EVENT_SLIDE_DOWN = 0x1;
-const uint8_t CST816S_TOUCH_EVENT_SLIDE_UP = 0x2;
-const uint8_t CST816S_TOUCH_EVENT_SLIDE_LEFT = 0x3;
-const uint8_t CST816S_TOUCH_EVENT_SLIDE_RIGHT = 0x4;
-const uint8_t CST816S_TOUCH_EVENT_CLICK = 0x5;
-const uint8_t CST816S_TOUCH_EVENT_DOUBLE_CLICK = 0xB;
-const uint8_t CST816S_TOUCH_EVENT_PRESS = 0xC;
+enum cst816s_touch_event
+{
+    none = 0,
+    down = 1,
+    up = 2,
+    slide_left = 3,
+    slide_right = 4,
+    click = 5,
+    double_click = 11,
+    press = 12
+};
 
 typedef struct __attribute__((packed))
 {
@@ -62,8 +65,12 @@ typedef struct __attribute__((packed))
 
 typedef struct __attribute__((packed))
 {
-    uint16_t x;
-    uint16_t y;
+    uint8_t x_h : 4;
+    uint8_t : 4;
+    uint8_t x_l;
+    uint8_t y_h : 4;
+    uint8_t : 4;
+    uint8_t y_l;
 } cst816s_point;
 
 typedef struct __attribute__((packed))
@@ -157,8 +164,8 @@ esp_err_t cst816s_read_data(esp_lcd_touch_handle_t th)
     portENTER_CRITICAL(&th->data.lock);
     if ((th->data.points = buffer.fingerNum) > 0)
     {
-        th->data.coords[0].x = buffer.point.x;
-        th->data.coords[0].y = buffer.point.y;
+        th->data.coords[0].x = (buffer.point.x_h << 8) | buffer.point.x_l;
+        th->data.coords[0].y = (buffer.point.y_h << 8) | buffer.point.y_l;
         th->data.coords[0].strength = 0;
     }
 
@@ -177,8 +184,8 @@ bool cst816s_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_
     *point_num = th->data.points > max_point_num ? max_point_num : th->data.points;
     for (uint8_t i = 0; i < *point_num; i++)
     {
-        x[i] = th->data.coords[i].y;
-        y[i] = th->data.coords[i].x;
+        x[i] = th->data.coords[i].x;
+        y[i] = th->data.coords[i].y;
         if (strength != NULL)
             strength[i] = th->data.coords[i].strength;
     }
@@ -317,7 +324,7 @@ esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, cons
         }
     }
 
-    log_d("handle: 0x%08x", th);
+    log_d("handle:0x%08x", th);
     *handle = th;
 
     return ESP_OK;

@@ -228,6 +228,7 @@ esp_err_t esp_lcd_touch_new_spi_xpt2046(const esp_lcd_panel_io_handle_t io, cons
     if (config->rst_gpio_num != GPIO_NUM_NC)
         log_w("RST pin defined but is not available on the XPT2046");
 
+    log_d("handle:0x%08x", th);
     *handle = th;
 
     return ESP_OK;
