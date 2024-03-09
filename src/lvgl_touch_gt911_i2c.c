@@ -70,7 +70,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
         .levels = {
             .reset = GT911_TOUCH_CONFIG_LEVELS_RESET,
             .interrupt = GT911_TOUCH_CONFIG_LEVELS_INTERRUPT},
-        .flags = {.swap_xy = TOUCH_SWAP_XY, .mirror_x = TOUCH_SWAP_X, .mirror_y = TOUCH_SWAP_Y},
+        .flags = {.swap_xy = TOUCH_MIRROR_XY, .mirror_x = TOUCH_MIRROR_X, .mirror_y = TOUCH_MIRROR_Y},
         .user_data = io_handle};
     log_d("touch_config: x_max:%d, y_max:%d, rst_gpio_num:%d, int_gpio_num:%d, levels:{reset:%d, interrupt:%d}, flags:{swap_xy:%d, mirror_x:%d, mirror_y:%d}, user_data:0x%08x", touch_config.x_max, touch_config.y_max, touch_config.rst_gpio_num, touch_config.int_gpio_num, touch_config.levels.reset, touch_config.levels.interrupt, touch_config.flags.swap_xy, touch_config.flags.mirror_x, touch_config.flags.mirror_y, touch_config.user_data);
     esp_lcd_touch_handle_t touch_handle;
