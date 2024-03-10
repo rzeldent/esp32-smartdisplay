@@ -521,23 +521,22 @@ board = esp32-8048S070N
 
 ## Appendix: External dependencies
 
-The following libraries are used from the [EspressIf component registry](https://components.espressif.com/):
+The following libraries are used from the [Espressif component registry](https://components.espressif.com/):
 
 | Name                  | Version |
 |---                    |---      |
-| [ESP LCD ST7701](https://components.espressif.com/api/download/?object_type=component&object_id=b9904296-b88e-46a4-897a-3f5b3fa96a6e)             | v1.0.0  |
-| [ESP LCD CG9A01](https://components.espressif.com/api/download/?object_type=component&object_id=6f06ecdf-97a6-4eea-ad4f-c00d11bd970a)             | v1.2    |
-| [ESP LCD ILI9341](https://components.espressif.com/api/download/?object_type=component&object_id=680fe7b6-c70b-4560-acf9-919e5b8fa192)            | v2.0    |
-| [ESP LCD ST7796](https://components.espressif.com/api/download/?object_type=component&object_id=eb6095d1-642a-4e14-9daf-d46db8a1f354)             | v1.2.1  |
 | [ESP_LCD_PANEL_IO_ADDITIONS](https://components.espressif.com/api/download/?object_type=component&object_id=fc4eba6f-2091-4b28-8703-df58c6c975c7) | v1.0.0  |
 | [ESP IO Expander Component](https://components.espressif.com/api/download/?object_type=component&object_id=44022a0f-c4b2-40c0-b2a2-40d7b648cb52)  | v1.0.0  |
 | [ESP LCD Touch](https://components.espressif.com/api/download/?object_type=component&object_id=bb4a4d94-2827-4695-84d1-1b53383b8001)              | v1.1.1  |
-| [ESP LCD Touch CST816S](https://components.espressif.com/api/download/?object_type=component&object_id=cc8ef108-15e8-48cf-9be8-3c7e89ca493e)      | v1.0.3  |
-| [ESP LCD Touch GT911](https://components.espressif.com/api/download/?object_type=component&object_id=4f44d570-8a04-466e-b4bb-429f1df7a9a1)        | v1.1.0  |
-| [ESP LCD Touch Driver](https://components.espressif.com/api/download/?object_type=component&object_id=225971c2-051f-4619-9f91-0080315ee8b8)       | v1.2.0  |
 
 ## Version history
 
+- March 2024
+  - Rewrote drivers for devices and made them cleaner
+  - More parametrization
+  - Fix for more than one point received from GT911
+  - Added esp32-2432S022C
+  - Rotation issues fixes
 - January 2024
   - Fixed esp32-8048S070C
   - Added esp32-4848S040C_I_Y_1/3
