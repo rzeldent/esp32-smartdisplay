@@ -1,4 +1,4 @@
-#ifdef LCD_ILI9341_SPI
+#ifdef DISPLAY_ILI9341_SPI
 
 #include <esp_panel_ili9341.h>
 #include <esp32-hal-log.h>

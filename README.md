@@ -366,8 +366,11 @@ The data returned can set in to the ```touch_calibration_data```
 
 ## Rotation of the display and touch
 
-The library supports rotating for most of the controllers using hardware. Support for the direct 16bits parallel connection is done using software emulation (in LVGL).
-Rotating the touch is also done when rotating.
+The library supports rotating for most of the controllers using hardware. Support for the direct 16bits parallel connection is done using software emulation (in LVGL). Rotating the touch is done by LVGL when rotating.
+
+From the LVGL documentation:
+*The rotation values are relative to how you would rotate the physical display in the clockwise direction.
+Thus, LV_DISP_ROT_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.*
 
 Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL library with the rotation:
 
@@ -377,7 +380,18 @@ Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL lib
 ```
 
 Some boards are around that have flipped screens, this is probably due to differences during tha manufacturing or using different TFTs. It is possible to correct these boards overriding the default defines.
-However if this is encountered a separate board definition is preferable.
+
+To adjust the display and touch to the default (LV_DISP_ROT_NONE) there are 6 defines in the boards definition:
+
+| Name            | Description   |
+|---              |---      |
+| DISPLAY_SWAP_XY     | Swaps the X and Y coordinates for the display |
+| DISPLAY_MIRROR_X    | Mirrors the X coordinate for the display      |
+| DISPLAY_MIRROR_Y    | Mirrors the Y coordinate for the display      |
+| TOUCH_SWAP_XY   | Swaps the X and Y coordinates for the touch   |
+| TOUCH_MIRROR_X  | Mirrors the X coordinate for the touch        |
+| TOUCH_MIRROR_Y  | Mirrors the Y coordinate for the touch        |
+
 
 ## Appendix: Template to support ALL the boards
 
