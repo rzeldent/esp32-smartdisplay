@@ -91,8 +91,8 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
 #if defined(DISPLAY_MIRROR_X) || defined(DISPLAY_MIRROR_Y)    
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
 #endif    
-#if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
-    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_X, LCD_GAP_Y));
+#if defined(DISPLAY_GAP_X) || defined(DISPLAY_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, DISPLAY_GAP_X, DISPLAY_GAP_Y));
 #endif
     // Turn display on
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
