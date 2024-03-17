@@ -1,4 +1,5 @@
 #include <esp32_smartdisplay.h>
+#include <esp_lcd_panel_ops.h>
 
 #ifdef BOARD_HAS_TOUCH
 #include <esp_lcd_touch.h>
@@ -136,17 +137,46 @@ touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t
 };
 #endif
 
+// Called when driver parameters are updated (rotation)
+// Top of the display is top left when connector is at the bottom
+// The rotation values are relative to how you would rotate the physical display in the clockwise direction.
+// Thus, LV_DISP_ROT_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
+void lvgl_update_callback(lv_disp_drv_t *drv)
+{
+  if (drv->sw_rotate == false)
+  {
+    const esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
+    switch (drv->rotated)
+    {
+    case LV_DISP_ROT_NONE:
+      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
+      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
+      break;
+    case LV_DISP_ROT_90:
+      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
+      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
+      break;
+    case LV_DISP_ROT_180:
+      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
+      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
+      break;
+    case LV_DISP_ROT_270:
+      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
+      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
+      break;
+    }
+  }
+}
+
 void smartdisplay_init()
 {
   log_d("smartdisplay_init");
 #ifdef BOARD_HAS_RGB_LED
   // Setup RGB LED.  High is off
   pinMode(RGB_LED_R, OUTPUT);
-  digitalWrite(RGB_LED_R, true);
   pinMode(RGB_LED_G, OUTPUT);
-  digitalWrite(RGB_LED_G, true);
   pinMode(RGB_LED_B, OUTPUT);
-  digitalWrite(RGB_LED_B, true);
+  smartdisplay_led_set_rgb(false, false, false);
 #endif
 
 #ifdef BOARD_HAS_CDS
@@ -177,12 +207,14 @@ void smartdisplay_init()
 #endif
   // Setup TFT display
   lv_disp_drv_init(&disp_drv);
-  disp_drv.hor_res = LCD_WIDTH;
-  disp_drv.ver_res = LCD_HEIGHT;
+  disp_drv.hor_res = DISPLAY_WIDTH;
+  disp_drv.ver_res = DISPLAY_HEIGHT;
   // Create drawBuffer
   disp_drv.draw_buf = (lv_disp_draw_buf_t *)malloc(sizeof(lv_disp_draw_buf_t));
   void *drawBuffer = heap_caps_malloc(sizeof(lv_color_t) * LVGL_BUFFER_PIXELS, LVGL_BUFFER_MALLOC_FLAGS);
   lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, LVGL_BUFFER_PIXELS);
+  // Register callback for changes to the driver parameters (rotation!)
+  disp_drv.drv_update_cb = lvgl_update_callback;
   // Initialize specific driver
   lvgl_lcd_init(&disp_drv);
   __attribute__((unused)) lv_disp_t *display = lv_disp_drv_register(&disp_drv);

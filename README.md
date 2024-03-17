@@ -14,17 +14,17 @@ More information, data sheets, ordering information etc. can be found at [Sunton
 
 Currently this library supports the following boards:
 
-- ESP32-1732S019N/C
-- ESP32-2424S012N/C
-- ESP32-2432S024R/C/N
-- ESP32-2432S028R
-- ESP32-2432S032N/R/C
-- ESP32-3248S035R/C
-- ESP32-4827S043R/C
-- ESP32-4848S040C_I_Y_1/3
-- ESP32-8048S050N/C
-- ESP32-8048S070N/C
-- ESP32-4848S040C
+- ESP32-1732S019 N/C
+- ESP32-2424S012 N/C
+- ESP32-2432S022 N/C
+- ESP32-2432S024 R/C/N
+- ESP32-2432S028 R ( 3 variants)
+- ESP32-2432S032 N/R/C
+- ESP32-3248S035 R/C
+- ESP32-4827S043 R/C
+- ESP32-4848S040C _I_Y_1/3
+- ESP32-8048S050 N/C/R
+- ESP32-8048S070 N/C/R
 
 This library integrates seamlessly in [PlatformIO](https://platformio.org/) and supports these boards by providing display and touch and provides a jump start!
 
@@ -62,7 +62,6 @@ Get started by following the steps below. It is also highly recommended to look 
 This demo provides:
 
 - User Interface created using the SquareLine Studio GUI generator.
-- Sound over I2S and internal DAC
 - Read the CdS (light sensor)
 - Control of the LEDs
 - Works for all known boards
@@ -200,7 +199,9 @@ Especially the definition of the LV_CONF_PATH is critical, this must point to an
 build_flags =
     -Ofast
     -Wall
-    -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
+    #-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
+    #-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_DEBUG
+    #-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_INFO
     # LVGL settings. Point to your lv_conf.h file
     -D LV_CONF_PATH="${PROJECT_DIR}/example/lv_conf.h"
 ```
@@ -208,7 +209,7 @@ build_flags =
 The line in the settings logs to the serial console but can be omitted for production builds:
 
 ```ini
--D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
+-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_NONE
 ```
 
 The -Wall flag can also be removed but outputs all the warnings.
@@ -365,8 +366,11 @@ The data returned can set in to the ```touch_calibration_data```
 
 ## Rotation of the display and touch
 
-The library supports rotating for most of the controllers using hardware. Support for the direct 16bits parallel connection is done using software emulation (in LVGL).
-Rotating the touch is also done when rotating.
+The library supports rotating for most of the controllers using hardware. Support for the direct 16bits parallel connection is done using software emulation (in LVGL). Rotating the touch is done by LVGL when rotating.
+
+From the LVGL documentation:
+*The rotation values are relative to how you would rotate the physical display in the clockwise direction.
+Thus, LV_DISP_ROT_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.*
 
 Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL library with the rotation:
 
@@ -376,7 +380,18 @@ Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL lib
 ```
 
 Some boards are around that have flipped screens, this is probably due to differences during tha manufacturing or using different TFTs. It is possible to correct these boards overriding the default defines.
-However if this is encountered a separate board definition is preferable.
+
+To adjust the display and touch to the default (LV_DISP_ROT_NONE) there are 6 defines in the boards definition:
+
+| Name            | Description   |
+|---              |---      |
+| DISPLAY_SWAP_XY     | Swaps the X and Y coordinates for the display |
+| DISPLAY_MIRROR_X    | Mirrors the X coordinate for the display      |
+| DISPLAY_MIRROR_Y    | Mirrors the Y coordinate for the display      |
+| TOUCH_SWAP_XY   | Swaps the X and Y coordinates for the touch   |
+| TOUCH_MIRROR_X  | Mirrors the X coordinate for the touch        |
+| TOUCH_MIRROR_Y  | Mirrors the Y coordinate for the touch        |
+
 
 ## Appendix: Template to support ALL the boards
 
@@ -391,11 +406,14 @@ The platformio.ini file below supports all the boards. This is useful when runni
 #default_envs = esp32-1732S019N
 #default_envs = esp32-2424S012C
 #default_envs = esp32-2424S012N
+#default_envs = esp32-2432S022N
+#default_envs = esp32-2432S022C
 #default_envs = esp32-2432S024C
 #default_envs = esp32-2432S024N
 #default_envs = esp32-2432S024R
 #default_envs = esp32-2432S028R
 #default_envs = esp32-2432S028Rv2
+#default_envs = esp32-2432S028Rv3
 #default_envs = esp32-2432S032C
 #default_envs = esp32-2432S032N
 #default_envs = esp32-2432S032R
@@ -404,8 +422,8 @@ The platformio.ini file below supports all the boards. This is useful when runni
 #default_envs = esp32-4827S043C
 #default_envs = esp32-4827S043N
 #default_envs = esp32-4827S043R
-#default_envs = esp32-4848S040C_I_Y_1
-#default_envs = esp32-4848S040C_I_Y_2
+#default_envs = esp32-4848S040CIY1
+#default_envs = esp32-4848S040CIY3
 #default_envs = esp32-8048S043C
 #default_envs = esp32-8048S043N
 #default_envs = esp32-8048S043R
@@ -414,6 +432,7 @@ The platformio.ini file below supports all the boards. This is useful when runni
 #default_envs = esp32-8048S050R
 #default_envs = esp32-8048S070C
 #default_envs = esp32-8048S070N
+#default_envs = esp32-8048S070R
 
 [env]
 platform = espressif32
@@ -449,6 +468,12 @@ board = esp32-2424S012C
 [env:esp32-2424S012N]
 board = esp32-2424S012N
 
+[env:esp32-2432S022N]
+board = esp32-2432S022N
+
+[env:esp32-2432S022C]
+board = esp32-2432S022C
+
 [env:esp32-2432S024C]
 board = esp32-2432S024C
 
@@ -463,6 +488,9 @@ board = esp32-2432S028R
 
 [env:esp32-2432S028Rv2]
 board = esp32-2432S028Rv2
+
+[env:esp32-2432S028Rv3]
+board = esp32-2432S028Rv3
 
 [env:esp32-2432S032C]
 board = esp32-2432S032C
@@ -482,17 +510,17 @@ board = esp32-3248S035R
 [env:esp32-4827S043C]
 board = esp32-4827S043C
 
-[env:esp32-4827S043N]
-board = esp32-4827S043N
-
 [env:esp32-4827S043R]
 board = esp32-4827S043R
 
-[env:esp32-4848S040C_I_Y_1]
-board = esp32-8048S043C_I_Y_1
+[env:esp32-4827S043N]
+board = esp32-4827S043N
 
-[env:esp32-4848S040C_I_Y_3]
-board = esp32-8048S043C_I_Y_3
+[env:esp32-4848S040CIY1]
+board = esp32-4848S040CIY1
+
+[env:esp32-4848S040CIY3]
+board = esp32-4848S040CIY3
 
 [env:esp32-8048S043C]
 board = esp32-8048S043C
@@ -517,6 +545,9 @@ board = esp32-8048S070C
 
 [env:esp32-8048S070N]
 board = esp32-8048S070N
+
+[env:esp32-8048S070R]
+board = esp32-8048S070R
 ```
 
 ## Appendix: External dependencies
