@@ -139,27 +139,32 @@ touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t
 
 // Called when driver parameters are updated (rotation)
 // Top of the display is top left when connector is at the bottom
-static void lvgl_update_callback(lv_disp_drv_t *drv)
+// The rotation values are relative to how you would rotate the physical display in the clockwise direction.
+// Thus, LV_DISP_ROT_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
+void lvgl_update_callback(lv_disp_drv_t *drv)
 {
-  const esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
-  switch (drv->rotated)
+  if (drv->sw_rotate == false)
   {
-  case LV_DISP_ROT_NONE:
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, LCD_MIRROR_Y));
-    break;
-  case LV_DISP_ROT_90:
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !LCD_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !LCD_MIRROR_X, LCD_MIRROR_Y));
-    break;
-  case LV_DISP_ROT_180:
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !LCD_MIRROR_X, !LCD_MIRROR_Y));
-    break;
-  case LV_DISP_ROT_270:
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !LCD_SWAP_XY));
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, !LCD_MIRROR_Y));
-    break;
+    const esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
+    switch (drv->rotated)
+    {
+    case LV_DISP_ROT_NONE:
+      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
+      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, LCD_MIRROR_Y));
+      break;
+    case LV_DISP_ROT_90:
+      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !LCD_SWAP_XY));
+      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, !LCD_MIRROR_Y));
+      break;
+    case LV_DISP_ROT_180:
+      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
+      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !LCD_MIRROR_X, !LCD_MIRROR_Y));
+      break;
+    case LV_DISP_ROT_270:
+      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !LCD_SWAP_XY));
+      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !LCD_MIRROR_X, LCD_MIRROR_Y));
+      break;
+    }
   }
 }
 
