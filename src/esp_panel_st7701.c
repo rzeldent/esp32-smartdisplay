@@ -1,4 +1,4 @@
-#ifdef LCD_ST7701_PAR
+#ifdef DISPLAY_ST7701_PAR
 
 #include <esp_panel_st7701.h>
 #include <esp32-hal-log.h>

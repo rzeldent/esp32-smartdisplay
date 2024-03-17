@@ -1,4 +1,4 @@
-#ifdef LCD_ST7796_SPI
+#ifdef DISPLAY_ST7796_SPI
 
 #include <esp_panel_st7796.h>
 #include <esp32-hal-log.h>

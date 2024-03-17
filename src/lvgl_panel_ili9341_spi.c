@@ -1,4 +1,4 @@
-#ifdef LCD_ILI9341_SPI
+#ifdef DISPLAY_ILI9341_SPI
 
 #include <esp32_smartdisplay.h>
 #include <esp_panel_ili9341.h>
@@ -80,15 +80,15 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     ESP_ERROR_CHECK(esp_lcd_new_panel_ili9341(io_handle, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
-#ifdef LCD_IPS
+#ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
 #endif
-#ifdef LCD_SWAP_XY
-    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, LCD_SWAP_XY));
+#ifdef DISPLAY_SWAP_XY
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
 #endif
-#if defined(LCD_MIRROR_X) || defined(LCD_MIRROR_Y)    
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, LCD_MIRROR_X, LCD_MIRROR_Y));
+#if defined(DISPLAY_MIRROR_X) || defined(DISPLAY_MIRROR_Y)    
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
 #endif    
 #if defined(LCD_GAP_X) || defined(LCD_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, LCD_GAP_X, LCD_GAP_Y));

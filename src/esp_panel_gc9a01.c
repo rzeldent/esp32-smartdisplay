@@ -1,4 +1,4 @@
-#ifdef LCD_GC9A01_SPI
+#ifdef DISPLAY_GC9A01_SPI
 
 #include <esp_panel_gc9a01.h>
 #include <esp32-hal-log.h>
