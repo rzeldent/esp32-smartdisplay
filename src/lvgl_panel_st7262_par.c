@@ -76,7 +76,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
 #endif
 #if defined(DISPLAY_MIRROR_X) || defined(DISPLAY_MIRROR_Y)    
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
+    //ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
 #endif    
 #if defined(DISPLAY_GAP_X) || defined(DISPLAY_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, DISPLAY_GAP_X, DISPLAY_GAP_Y));
