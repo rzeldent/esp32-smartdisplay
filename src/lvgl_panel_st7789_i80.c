@@ -7,31 +7,32 @@
 
 bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
-    lv_disp_drv_t *disp_driver = user_ctx;
-    lv_disp_flush_ready(disp_driver);
+    lv_display_t  *display = user_ctx;
+    lv_disp_flush_ready(display);
     return false;
 }
 
-void st7789_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
+void st7789_lv_flush(lv_display_t *drv, const lv_area_t *area, uint8_t *px_map)
 {
     const esp_lcd_panel_handle_t panel_handle = drv->user_data;
-#if LV_COLOR_16_SWAP != 1
-#warning "LV_COLOR_16_SWAP should be 1 for max performance"
-    ushort pixels = lv_area_get_size(area);
-    lv_color16_t *p = color_map;
-    while (pixels--)
-        p++->full = (uint16_t)((p->full >> 8) | (p->full << 8));
-#endif
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, color_map));
+    uint32_t pixels = lv_area_get_size(area);
+    uint16_t *p = (uint16_t*)px_map;
+    while (pixels--) {
+        *p = (uint16_t)((*p >> 8) | (*p << 8));
+        p++;
+    }
+
+    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
 };
 
-void lvgl_lcd_init(lv_disp_drv_t *drv)
+lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 {
-    log_v("drv:0x%08x");
+    lv_display_t *display = lv_display_create(hor_res, ver_res);
+    log_v("display:0x%08x", display);
 
-    // Hardware rotation is NOT supported
-    drv->sw_rotate = 1;
-    drv->rotated = LV_DISP_ROT_NONE;
+    // Hardware rotation is supported
+    display->sw_rotate = 1;
+    display->rotation = LV_DISPLAY_ROTATION_0;
 
     pinMode(ST7789_RD_GPIO, OUTPUT);
     digitalWrite(ST7789_RD_GPIO, HIGH);
@@ -63,7 +64,7 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
         .cs_gpio_num = ST7789_IO_I80_CONFIG_CS_GPIO_NUM,
         .pclk_hz = ST7789_IO_I80_CONFIG_PCLK_HZ,
         .on_color_trans_done = st7789_color_trans_done,
-        .user_ctx = drv,
+        .user_ctx = display,
         .trans_queue_depth = ST7789_IO_I80_CONFIG_TRANS_QUEUE_DEPTH,
         .lcd_cmd_bits = ST7789_IO_I80_CONFIG_LCD_CMD_BITS,
         .lcd_param_bits = ST7789_IO_I80_CONFIG_LCD_PARAM_BITS,
@@ -97,8 +98,10 @@ void lvgl_lcd_init(lv_disp_drv_t *drv)
 #if defined(DISPLAY_GAP_X) || defined(DISPLAY_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, DISPLAY_GAP_X, DISPLAY_GAP_Y));
 #endif
-    drv->user_data = panel_handle;
-    drv->flush_cb = st7789_lv_flush;
+    display->user_data = panel_handle;
+    display->flush_cb = st7789_lv_flush;
+
+    return display;
 }
 
 #endif

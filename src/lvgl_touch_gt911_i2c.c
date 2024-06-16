@@ -5,9 +5,9 @@
 #include <esp_touch_gt911.h>
 #include <driver/i2c.h>
 
-void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
+void gt911_lvgl_touch_cb(lv_indev_t *indev, lv_indev_data_t *data)
 {
-    esp_lcd_touch_handle_t touch_handle = drv->user_data;
+    esp_lcd_touch_handle_t touch_handle = indev->user_data;
 
     uint16_t x[1];
     uint16_t y[1];
@@ -28,9 +28,10 @@ void gt911_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
         data->state = LV_INDEV_STATE_RELEASED;
 }
 
-void lvgl_touch_init(lv_indev_drv_t *drv)
+lv_indev_t* lvgl_touch_init()
 {
-    log_v("drv:0x%08x");
+    lv_indev_t* indev = lv_indev_create();
+    log_v("indev:0x%08x", indev);
 
     // Create I2C bus
     const i2c_config_t i2c_config = {
@@ -50,7 +51,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
     const esp_lcd_panel_io_i2c_config_t io_i2c_config = {
         .dev_addr = GT911_IO_I2C_CONFIG_DEV_ADDR,
         .control_phase_bytes = GT911_IO_I2C_CONFIG_CONTROL_PHASE_BYTES,
-        .user_ctx = drv,
+        .user_ctx = indev,
         .dc_bit_offset = GT911_IO_I2C_CONFIG_DC_BIT_OFFSET,
         .lcd_cmd_bits = GT911_IO_I2C_CONFIG_LCD_CMD_BITS,
         .lcd_param_bits = GT911_IO_I2C_CONFIG_LCD_PARAM_BITS,
@@ -76,9 +77,11 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_i2c_gt911(io_handle, &touch_config, &touch_handle));
 
-    drv->type = LV_INDEV_TYPE_POINTER;
-    drv->user_data = touch_handle;
-    drv->read_cb = gt911_lvgl_touch_cb;
+    indev->type = LV_INDEV_TYPE_POINTER;
+    indev->user_data = touch_handle;
+    indev->read_cb = gt911_lvgl_touch_cb;
+
+    return indev;
 }
 
 #endif
