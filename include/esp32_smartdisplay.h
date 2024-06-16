@@ -39,6 +39,10 @@ extern "C"
     // Set the adaptive brightness callback
     typedef float (*smartdisplay_lcd_adaptive_brightness_cb_t)();
     void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval);
+#ifdef BOARD_HAS_CDS
+    // Read CdS sensor and return a value for the screen brightness (to be used in smartdisplay_lcd_set_brightness_cb)
+    float smartdisplay_lcd_adaptive_brightness_cds();
+#endif    
 #ifdef BOARD_HAS_RGB_LED
     void smartdisplay_led_set_rgb(bool r, bool g, bool b);
 #endif

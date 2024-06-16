@@ -28,7 +28,7 @@ static void ili9341_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color
 
 void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
-    log_v("drv:0x%08x");
+    log_v("drv:0x%08x", drv);
 
     // Hardware rotation is supported
     drv->sw_rotate = 0;
