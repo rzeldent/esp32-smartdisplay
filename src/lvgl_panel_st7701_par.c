@@ -9,7 +9,7 @@
 bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx)
 {
     lv_display_t *display = user_ctx;
-    lv_disp_flush_ready(display);
+    lv_display_flush_ready(display);
     return false;
 }
 

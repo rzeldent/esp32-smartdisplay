@@ -11,7 +11,7 @@ bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t panel_io_handle, esp_lcd_
     log_v("panel_io_handle:0x%08x, panel_io_event_data:%0x%08x, user_ctx:0x%08x", panel_io_handle, panel_io_event_data, user_ctx);
 
     lv_display_t *display = user_ctx;
-    lv_disp_flush_ready(display);
+    lv_display_flush_ready(display);
     return false;
 }
 

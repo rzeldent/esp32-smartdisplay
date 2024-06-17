@@ -40,8 +40,6 @@ void lvgl_log(lv_log_level_t level, const char *buf)
   case LV_LOG_LEVEL_ERROR:
     log_e("%s", buf);
     break;
-  case LV_LOG_LEVEL_USER:
-    break;
   }
 }
 #endif
@@ -51,9 +49,9 @@ void smartdisplay_lcd_set_backlight(float duty)
 {
   log_v("duty:%2f", duty);
 
-  if (duty > 1.0)
+  if (duty > 1.0f)
     duty = 1.0f;
-  if (duty < 0.0)
+  if (duty < 0.0f)
     duty = 0.0f;
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
   ledcWrite(GPIO_BCKL, duty * PWM_MAX_BCKL);
@@ -91,7 +89,7 @@ void adaptive_brightness(lv_timer_t *timer)
 
 void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval)
 {
-  log_v("adaptive_brightness_cb:0x%08x, interval:%d", cb, interval);
+  log_v("adaptive_brightness_cb:0x%08x, interval:%u", cb, interval);
 
   // Delete current timer if any
   if (update_brightness_timer)
@@ -154,39 +152,6 @@ touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t
 };
 #endif
 
-/*
-// Called when driver parameters are updated (rotation)
-// Top of the display is top left when connector is at the bottom
-// The rotation values are relative to how you would rotate the physical display in the clockwise direction.
-// Thus, LV_DISP_ROT_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
-void lvgl_update_callback(lv_disp_drv_t *drv)
-{
-  if (drv->sw_rotate == false)
-  {
-    const esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
-    switch (drv->rotated)
-    {
-    case LV_DISP_ROT_NONE:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-      break;
-    case LV_DISP_ROT_90:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
-      break;
-    case LV_DISP_ROT_180:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
-      break;
-    case LV_DISP_ROT_270:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-      break;
-    }
-  }
-}
-*/
-
 void smartdisplay_init()
 {
   log_d("smartdisplay_init");
@@ -227,12 +192,9 @@ void smartdisplay_init()
   // Setup TFT display
   display = lvgl_lcd_init(DISPLAY_WIDTH, DISPLAY_HEIGHT);
   //  Create drawBuffer
-  uint32_t dreawBufferSize = sizeof(lv_color_t) * LVGL_BUFFER_PIXELS;
-  void *drawBuffer = heap_caps_malloc(dreawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
-  lv_display_set_buffers(display, drawBuffer, NULL, dreawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
-  //  Register callback for changes to the driver parameters (rotation!)
-  // display->drv_update_cb = lvgl_update_callback;
-  //  Initialize specific driver
+  uint32_t drawBufferSize = sizeof(lv_color_t) * LVGL_BUFFER_PIXELS;
+  void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
+  lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
   //  Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on (50%)

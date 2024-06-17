@@ -7,8 +7,8 @@
 
 bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
-    lv_display_t  *display = user_ctx;
-    lv_disp_flush_ready(display);
+    lv_display_t *display = user_ctx;
+    lv_display_flush_ready(display);
     return false;
 }
 
