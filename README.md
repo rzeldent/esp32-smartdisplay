@@ -223,10 +223,10 @@ void setup()
 {
   smartdisplay_init();
 
-  auto disp = lv_disp_get_default();
-  // lv_disp_set_rotation(disp, LV_DISP_ROT_90);
-  // lv_disp_set_rotation(disp, LV_DISP_ROT_180);
-  // lv_disp_set_rotation(disp, LV_DISP_ROT_270);
+  auto disp = lv_display_get_default();
+  // lv_display_set_rotation(disp, LV_DISP_ROT_90);
+  // lv_display_set_rotation(disp, LV_DISP_ROT_180);
+  // lv_display_set_rotation(disp, LV_DISP_ROT_270);
 }
 ```
 
@@ -372,11 +372,11 @@ From the LVGL documentation:
 *The rotation values are relative to how you would rotate the physical display in the clockwise direction.
 Thus, LV_DISP_ROT_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.*
 
-Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL library with the rotation:
+Rotating is done calling the ```lv_display_set_rotation``` function in the LVGL library with the rotation:
 
 ```c++
-  auto disp = lv_disp_get_default();
-  lv_disp_set_rotation(disp, LV_DISP_ROT_90);
+  auto disp = lv_display_get_default();
+  lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_90);
 ```
 
 Some boards are around that have flipped screens, this is probably due to differences during tha manufacturing or using different TFTs. It is possible to correct these boards overriding the default defines.
@@ -562,6 +562,8 @@ The following libraries are used from the [Espressif component registry](https:/
 
 ## Version history
 
+- June 2024
+  - LVGL 9.1
 - March 2024
   - Rewrote drivers for devices and made them cleaner
   - More parametrization
