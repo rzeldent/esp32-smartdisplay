@@ -230,26 +230,18 @@ void lvgl_display_resolution_changed_callback(lv_event_t *event)
     case LV_DISPLAY_ROTATION_0:
       ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
       ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-      display->hor_res = DISPLAY_WIDTH;
-      display->ver_res = DISPLAY_HEIGHT;
       break;
     case LV_DISPLAY_ROTATION_90:
       ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
       ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
-      display->hor_res = DISPLAY_HEIGHT;
-      display->ver_res = DISPLAY_WIDTH;
       break;
     case LV_DISPLAY_ROTATION_180:
       ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
       ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
-      display->hor_res = DISPLAY_WIDTH;
-      display->ver_res = DISPLAY_HEIGHT;
       break;
     case LV_DISPLAY_ROTATION_270:
       ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
       ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-      display->hor_res = DISPLAY_HEIGHT;
-      display->ver_res = DISPLAY_WIDTH;
       break;
     }
   }
