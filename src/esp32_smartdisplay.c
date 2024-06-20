@@ -208,5 +208,6 @@ void smartdisplay_init()
   // Intercept callback
   driver_touch_read_cb = indev->read_cb;
   indev->read_cb = lvgl_touch_calibration_transform;
+  lv_indev_enable(indev, true);
 #endif
 }
