@@ -47,7 +47,7 @@ However, when working with these libraries, I found out that these libraries had
 
 This library depends on:
 
-- [LVGL](https://registry.platformio.org/libraries/lvgl/lvgl), currently version 8.3.9
+- [LVGL](https://registry.platformio.org/libraries/lvgl/lvgl), currently version 9.1.0
 - [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton)
 
 > [!NOTE]
@@ -64,7 +64,7 @@ This demo provides:
 - User Interface created using the SquareLine Studio GUI generator.
 - Read the CdS (light sensor)
 - Control of the LEDs
-- Works for all known boards
+- Works for all known Sunton boards (and more): see [Sunton Boards information](https://github.com/rzeldent/platformio-espressif32-sunton)
 - Full source code
 
 The next sections will guide you though the process of creating an application. However, some knowledge of PlatformIO, C/C++ and LVGL is required!
