@@ -1,6 +1,6 @@
 /**
  * @file lv_conf.h
- * Configuration file for v9.0.0-dev
+ * Configuration file for v9.1.0
  */
 
 /*
@@ -16,6 +16,11 @@
 
 #ifndef LV_CONF_H
 #define LV_CONF_H
+
+/*If you need to include anything here, do it inside the `__ASSEMBLY__` guard */
+#if  0 && defined(__ASSEMBLY__)
+#include "my_include.h"
+#endif
 
 /*====================
    COLOR SETTINGS
@@ -42,7 +47,7 @@
 
 #if LV_USE_STDLIB_MALLOC == LV_STDLIB_BUILTIN
     /*Size of the memory available for `lv_malloc()` in bytes (>= 2kB)*/
-    #define LV_MEM_SIZE (256 * 1024U)          /*[bytes]*/
+    #define LV_MEM_SIZE (64 * 1024U)          /*[bytes]*/
 
     /*Size of the memory expand for `lv_malloc()` in bytes*/
     #define LV_MEM_POOL_EXPAND_SIZE 0
@@ -54,7 +59,7 @@
         #undef LV_MEM_POOL_INCLUDE
         #undef LV_MEM_POOL_ALLOC
     #endif
-#endif  /*LV_USE_MALLOC == LV_STDLIB_BUILTIN*/
+#endif  /*LV_USE_STDLIB_MALLOC == LV_STDLIB_BUILTIN*/
 
 /*====================
    HAL SETTINGS
@@ -94,6 +99,14 @@
 /*Align the start address of draw_buf addresses to this bytes*/
 #define LV_DRAW_BUF_ALIGN                       4
 
+/* If a widget has `style_opa < 255` (not `bg_opa`, `text_opa` etc) or not NORMAL blend mode
+ * it is buffered into a "simple" layer before rendering. The widget can be buffered in smaller chunks.
+ * "Transformed layers" (if `transform_angle/zoom` are set) use larger buffers
+ * and can't be drawn in chunks. */
+
+/*The target buffer size for simple layer chunks.*/
+#define LV_DRAW_LAYER_SIMPLE_BUF_SIZE    (24 * 1024)   /*[bytes]*/
+
 #define LV_USE_DRAW_SW 1
 #if LV_USE_DRAW_SW == 1
     /* Set the number of draw unit.
@@ -101,14 +114,12 @@
      * > 1 means multiply threads will render the screen in parallel */
     #define LV_DRAW_SW_DRAW_UNIT_CNT    1
 
-    /* If a widget has `style_opa < 255` (not `bg_opa`, `text_opa` etc) or not NORMAL blend mode
-     * it is buffered into a "simple" layer before rendering. The widget can be buffered in smaller chunks.
-     * "Transformed layers" (if `transform_angle/zoom` are set) use larger buffers
-     * and can't be drawn in chunks. */
+    /* Use Arm-2D to accelerate the sw render */
+    #define LV_USE_DRAW_ARM2D_SYNC      0
 
-    /*The target buffer size for simple layer chunks.*/
-    #define LV_DRAW_SW_LAYER_SIMPLE_BUF_SIZE          (24 * 1024)   /*[bytes]*/
-
+    /* Enable native helium assembly to be compiled */
+    #define LV_USE_NATIVE_HELIUM_ASM    0
+    
     /* 0: use a simple renderer capable of drawing only simple rectangles with gradient, images, texts, and straight lines only
      * 1: use a complex renderer capable of drawing rounded corners, shadow, skew lines, and arcs too */
     #define LV_DRAW_SW_COMPLEX          1
@@ -132,9 +143,6 @@
         #define  LV_DRAW_SW_ASM_CUSTOM_INCLUDE ""
     #endif
 #endif
-
-/* Use Arm-2D on Cortex-M based devices. Please only enable it for Helium Powered devices for now */
-#define LV_USE_DRAW_ARM2D 0
 
 /* Use NXP's VG-Lite GPU on iMX RTxxx platforms. */
 #define LV_USE_DRAW_VGLITE 0
@@ -176,6 +184,19 @@
 /* Enable VG-Lite assert. */
 #define LV_VG_LITE_USE_ASSERT 0
 
+/* VG-Lite flush commit trigger threshold. GPU will try to batch these many draw tasks. */
+#define LV_VG_LITE_FLUSH_MAX_COUNT 8
+
+/* Enable border to simulate shadow
+ * NOTE: which usually improves performance,
+ * but does not guarantee the same rendering quality as the software. */
+#define LV_VG_LITE_USE_BOX_SHADOW 0
+
+/* VG-Lite gradient image maximum cache number.
+ * NOTE: The memory usage of a single gradient image is 4K bytes.
+ */
+#define LV_VG_LITE_GRAD_CACHE_SIZE 32
+
 #endif
 
 /*=======================
@@ -187,7 +208,7 @@
  *-----------*/
 
 /*Enable the log module*/
-#define LV_USE_LOG 1
+#define LV_USE_LOG 0
 #if LV_USE_LOG
 
     /*How important log should be added:
@@ -284,7 +305,7 @@
 #define LV_COLOR_MIX_ROUND_OFS  0
 
 /* Add 2 x 32 bit variables to each lv_obj_t to speed up getting style properties */
-#define LV_OBJ_STYLE_CACHE      1
+#define LV_OBJ_STYLE_CACHE      0
 
 /* Add `id` field to `lv_obj_t` */
 #define LV_USE_OBJ_ID           0
@@ -309,6 +330,9 @@
 
     /*Enable 16 pixels alignment*/
     #define LV_VG_LITE_THORVG_16PIXELS_ALIGN 1
+
+    /*Buffer address alignment*/
+    #define LV_VG_LITE_THORVG_BUF_ADDR_ALIGN 64
 
     /*Enable multi-thread render*/
     #define LV_VG_LITE_THORVG_THREAD_RENDER 0
@@ -363,36 +387,36 @@
 
 /*Montserrat fonts with ASCII range and some symbols using bpp = 4
  *https://fonts.google.com/specimen/Montserrat*/
-#define LV_FONT_MONTSERRAT_8  1
-#define LV_FONT_MONTSERRAT_10 1
-#define LV_FONT_MONTSERRAT_12 1
+#define LV_FONT_MONTSERRAT_8  0
+#define LV_FONT_MONTSERRAT_10 0
+#define LV_FONT_MONTSERRAT_12 0
 #define LV_FONT_MONTSERRAT_14 1
-#define LV_FONT_MONTSERRAT_16 1
-#define LV_FONT_MONTSERRAT_18 1
-#define LV_FONT_MONTSERRAT_20 1
-#define LV_FONT_MONTSERRAT_22 1
-#define LV_FONT_MONTSERRAT_24 1
-#define LV_FONT_MONTSERRAT_26 1
-#define LV_FONT_MONTSERRAT_28 1
-#define LV_FONT_MONTSERRAT_30 1
-#define LV_FONT_MONTSERRAT_32 1
-#define LV_FONT_MONTSERRAT_34 1
-#define LV_FONT_MONTSERRAT_36 1
-#define LV_FONT_MONTSERRAT_38 1
-#define LV_FONT_MONTSERRAT_40 1
-#define LV_FONT_MONTSERRAT_42 1
-#define LV_FONT_MONTSERRAT_44 1
-#define LV_FONT_MONTSERRAT_46 1
-#define LV_FONT_MONTSERRAT_48 1
+#define LV_FONT_MONTSERRAT_16 0
+#define LV_FONT_MONTSERRAT_18 0
+#define LV_FONT_MONTSERRAT_20 0
+#define LV_FONT_MONTSERRAT_22 0
+#define LV_FONT_MONTSERRAT_24 0
+#define LV_FONT_MONTSERRAT_26 0
+#define LV_FONT_MONTSERRAT_28 0
+#define LV_FONT_MONTSERRAT_30 0
+#define LV_FONT_MONTSERRAT_32 0
+#define LV_FONT_MONTSERRAT_34 0
+#define LV_FONT_MONTSERRAT_36 0
+#define LV_FONT_MONTSERRAT_38 0
+#define LV_FONT_MONTSERRAT_40 0
+#define LV_FONT_MONTSERRAT_42 0
+#define LV_FONT_MONTSERRAT_44 0
+#define LV_FONT_MONTSERRAT_46 0
+#define LV_FONT_MONTSERRAT_48 0
 
 /*Demonstrate special features*/
-#define LV_FONT_MONTSERRAT_28_COMPRESSED 1  /*bpp = 3*/
-#define LV_FONT_DEJAVU_16_PERSIAN_HEBREW 1  /*Hebrew, Arabic, Persian letters and all their forms*/
-#define LV_FONT_SIMSUN_16_CJK            1  /*1000 most common CJK radicals*/
+#define LV_FONT_MONTSERRAT_28_COMPRESSED 0  /*bpp = 3*/
+#define LV_FONT_DEJAVU_16_PERSIAN_HEBREW 0  /*Hebrew, Arabic, Persian letters and all their forms*/
+#define LV_FONT_SIMSUN_16_CJK            0  /*1000 most common CJK radicals*/
 
 /*Pixel perfect monospace fonts*/
-#define LV_FONT_UNSCII_8  1
-#define LV_FONT_UNSCII_16 1
+#define LV_FONT_UNSCII_8  0
+#define LV_FONT_UNSCII_16 0
 
 /*Optionally declare custom fonts here.
  *You can use these fonts as default font too and they will be available globally.
@@ -405,10 +429,10 @@
 /*Enable handling large font and/or fonts with a lot of characters.
  *The limit depends on the font size, font face and bpp.
  *Compiler error will be triggered if a font needs it.*/
-#define LV_FONT_FMT_TXT_LARGE 1
+#define LV_FONT_FMT_TXT_LARGE 0
 
 /*Enables/disables support for compressed fonts.*/
-#define LV_USE_FONT_COMPRESSED 1
+#define LV_USE_FONT_COMPRESSED 0
 
 /*Enable drawing placeholders when glyph dsc is not found*/
 #define LV_USE_FONT_PLACEHOLDER 1
@@ -591,9 +615,9 @@
 /*File system interfaces for common APIs */
 
 /*API for fopen, fread, etc*/
-#define LV_USE_FS_STDIO 1
+#define LV_USE_FS_STDIO 0
 #if LV_USE_FS_STDIO
-    #define LV_FS_STDIO_LETTER 'A'     /*Set an upper cased letter on which the drive will accessible (e.g. 'A')*/
+    #define LV_FS_STDIO_LETTER '\0'     /*Set an upper cased letter on which the drive will accessible (e.g. 'A')*/
     #define LV_FS_STDIO_PATH ""         /*Set the working directory. File/directory paths will be appended to it.*/
     #define LV_FS_STDIO_CACHE_SIZE 0    /*>0 to cache this number of bytes in lv_fs_read()*/
 #endif
@@ -622,13 +646,19 @@
 #endif
 
 /*API for memory-mapped file access. */
-#define LV_USE_FS_MEMFS 1
+#define LV_USE_FS_MEMFS 0
 #if LV_USE_FS_MEMFS
     #define LV_FS_MEMFS_LETTER '\0'     /*Set an upper cased letter on which the drive will accessible (e.g. 'A')*/
 #endif
 
+/*API for LittleFs. */
+#define LV_USE_FS_LITTLEFS 0
+#if LV_USE_FS_LITTLEFS
+    #define LV_FS_LITTLEFS_LETTER '\0'     /*Set an upper cased letter on which the drive will accessible (e.g. 'A')*/
+#endif
+
 /*LODEPNG decoder library*/
-#define LV_USE_LODEPNG 1
+#define LV_USE_LODEPNG 0
 
 /*PNG decoder(libpng) library*/
 #define LV_USE_LIBPNG 0
@@ -638,14 +668,14 @@
 
 /* JPG + split JPG decoder library.
  * Split JPG is a custom format optimized for embedded systems. */
-#define LV_USE_TJPGD 1
+#define LV_USE_TJPGD 0
 
 /* libjpeg-turbo decoder library.
  * Supports complete JPEG specifications and high-performance JPEG decoding. */
 #define LV_USE_LIBJPEG_TURBO 0
 
 /*GIF decoder library*/
-#define LV_USE_GIF 1
+#define LV_USE_GIF 0
 #if LV_USE_GIF
 /*GIF decoder accelerate*/
 #define LV_GIF_CACHE_DECODE_DATA 0
@@ -656,13 +686,13 @@
 #define LV_BIN_DECODER_RAM_LOAD 0
 
 /*RLE decompress library*/
-#define LV_USE_RLE 1
+#define LV_USE_RLE 0
 
 /*QR code library*/
-#define LV_USE_QRCODE 1
+#define LV_USE_QRCODE 0
 
 /*Barcode code library*/
-#define LV_USE_BARCODE 1
+#define LV_USE_BARCODE 0
 
 /*FreeType library*/
 #define LV_USE_FREETYPE 0
@@ -676,7 +706,7 @@
 #endif
 
 /* Built-in TTF decoder */
-#define LV_USE_TINY_TTF 1
+#define LV_USE_TINY_TTF 0
 #if LV_USE_TINY_TTF
     /* Enable loading TTF data from files */
     #define LV_TINY_TTF_FILE_SUPPORT 0
@@ -693,9 +723,6 @@
 
 /* Enable ThorVG by assuming that its installed and linked to the project */
 #define LV_USE_THORVG_EXTERNAL 0
-
-/*Enable LZ4 compress/decompress lib*/
-#define LV_USE_LZ4  0
 
 /*Use lvgl built-in LZ4 lib*/
 #define LV_USE_LZ4_INTERNAL  0
@@ -716,16 +743,17 @@
  *==================*/
 
 /*1: Enable API to take snapshot for object*/
-#define LV_USE_SNAPSHOT 1
+#define LV_USE_SNAPSHOT 0
 
 /*1: Enable system monitor component*/
-#define LV_USE_SYSMON   1
-
+#define LV_USE_SYSMON   0
 #if LV_USE_SYSMON
+    /*Get the idle percentage. E.g. uint32_t my_get_idle(void);*/
+    #define LV_SYSMON_GET_IDLE lv_timer_get_idle
 
     /*1: Show CPU usage and FPS count
      * Requires `LV_USE_SYSMON = 1`*/
-    #define LV_USE_PERF_MONITOR 1
+    #define LV_USE_PERF_MONITOR 0
     #if LV_USE_PERF_MONITOR
         #define LV_USE_PERF_MONITOR_POS LV_ALIGN_BOTTOM_RIGHT
 
@@ -734,9 +762,9 @@
     #endif
 
     /*1: Show the used memory and the memory fragmentation
-     * Requires `LV_USE_BUILTIN_MALLOC = 1`
+     * Requires `LV_USE_STDLIB_MALLOC = LV_STDLIB_BUILTIN`
      * Requires `LV_USE_SYSMON = 1`*/
-    #define LV_USE_MEM_MONITOR 1
+    #define LV_USE_MEM_MONITOR 0
     #if LV_USE_MEM_MONITOR
         #define LV_USE_MEM_MONITOR_POS LV_ALIGN_BOTTOM_LEFT
     #endif
@@ -770,23 +798,23 @@
 #endif
 
 /*1: Enable Monkey test*/
-#define LV_USE_MONKEY 1
+#define LV_USE_MONKEY 0
 
 /*1: Enable grid navigation*/
-#define LV_USE_GRIDNAV 1
+#define LV_USE_GRIDNAV 0
 
 /*1: Enable lv_obj fragment*/
-#define LV_USE_FRAGMENT 1
+#define LV_USE_FRAGMENT 0
 
 /*1: Support using images as font in label or span widgets */
-#define LV_USE_IMGFONT 1
+#define LV_USE_IMGFONT 0
 
 /*1: Enable an observer pattern implementation*/
 #define LV_USE_OBSERVER 1
 
 /*1: Enable Pinyin input method*/
 /*Requires: lv_keyboard*/
-#define LV_USE_IME_PINYIN 1
+#define LV_USE_IME_PINYIN 0
 #if LV_USE_IME_PINYIN
     /*1: Use default thesaurus*/
     /*If you do not use the default thesaurus, be sure to use `lv_ime_pinyin` after setting the thesauruss*/
@@ -804,7 +832,7 @@
 
 /*1: Enable file explorer*/
 /*Requires: lv_table*/
-#define LV_USE_FILE_EXPLORER                     1
+#define LV_USE_FILE_EXPLORER                     0
 #if LV_USE_FILE_EXPLORER
     /*Maximum length of path*/
     #define LV_FILE_EXPLORER_PATH_MAX_LEN        (128)
@@ -820,11 +848,12 @@
 /*Use SDL to open window on PC and handle mouse and keyboard*/
 #define LV_USE_SDL              0
 #if LV_USE_SDL
-    #define LV_SDL_INCLUDE_PATH    <SDL2/SDL.h>
-    #define LV_SDL_RENDER_MODE     LV_DISPLAY_RENDER_MODE_DIRECT   /*LV_DISPLAY_RENDER_MODE_DIRECT is recommended for best performance*/
-    #define LV_SDL_BUF_COUNT       1    /*1 or 2*/
-    #define LV_SDL_FULLSCREEN      0    /*1: Make the window full screen by default*/
-    #define LV_SDL_DIRECT_EXIT     1    /*1: Exit the application when all SDL windows are closed*/
+    #define LV_SDL_INCLUDE_PATH     <SDL2/SDL.h>
+    #define LV_SDL_RENDER_MODE      LV_DISPLAY_RENDER_MODE_DIRECT   /*LV_DISPLAY_RENDER_MODE_DIRECT is recommended for best performance*/
+    #define LV_SDL_BUF_COUNT        1    /*1 or 2*/
+    #define LV_SDL_FULLSCREEN       0    /*1: Make the window full screen by default*/
+    #define LV_SDL_DIRECT_EXIT      1    /*1: Exit the application when all SDL windows are closed*/
+    #define LV_SDL_MOUSEWHEEL_MODE  LV_SDL_MOUSEWHEEL_MODE_ENCODER  /*LV_SDL_MOUSEWHEEL_MODE_ENCODER/CROWN*/
 #endif
 
 /*Use X11 to open window on Linux desktop and handle mouse and keyboard*/
@@ -877,16 +906,30 @@
 /*Driver for evdev input devices*/
 #define LV_USE_EVDEV    0
 
+/*Driver for libinput input devices*/
+#define LV_USE_LIBINPUT    0
+
+#if LV_USE_LIBINPUT
+    #define LV_LIBINPUT_BSD    0
+
+    /*Full keyboard support*/
+    #define LV_LIBINPUT_XKB             0
+    #if LV_LIBINPUT_XKB
+        /*"setxkbmap -query" can help find the right values for your keyboard*/
+        #define LV_LIBINPUT_XKB_KEY_MAP { .rules = NULL, .model = "pc101", .layout = "us", .variant = NULL, .options = NULL }
+    #endif
+#endif
+
 /*Drivers for LCD devices connected via SPI/parallel port*/
-#define LV_USE_ST7735       0
-#define LV_USE_ST7789       0
-#define LV_USE_ST7796       0
-#define LV_USE_ILI9341      0
+#define LV_USE_ST7735		0
+#define LV_USE_ST7789		0
+#define LV_USE_ST7796		0
+#define LV_USE_ILI9341		0
 
 #define LV_USE_GENERIC_MIPI (LV_USE_ST7735 | LV_USE_ST7789 | LV_USE_ST7796 | LV_USE_ILI9341)
 
 /* LVGL Windows backend */
-#define LV_USE_WINDOWS      0
+#define LV_USE_WINDOWS    0
 
 /*==================
 * EXAMPLES
@@ -900,19 +943,19 @@
  ====================*/
 
 /*Show some widget. It might be required to increase `LV_MEM_SIZE` */
-#define LV_USE_DEMO_WIDGETS 1
+#define LV_USE_DEMO_WIDGETS 0
 
 /*Demonstrate the usage of encoder and keyboard*/
-#define LV_USE_DEMO_KEYPAD_AND_ENCODER 1
+#define LV_USE_DEMO_KEYPAD_AND_ENCODER 0
 
 /*Benchmark your system*/
-#define LV_USE_DEMO_BENCHMARK 1
+#define LV_USE_DEMO_BENCHMARK 0
 
 /*Render test for each primitives. Requires at least 480x272 display*/
-#define LV_USE_DEMO_RENDER 1
+#define LV_USE_DEMO_RENDER 0
 
 /*Stress test for LVGL*/
-#define LV_USE_DEMO_STRESS 1
+#define LV_USE_DEMO_STRESS 0
 
 /*Music player demo*/
 #define LV_USE_DEMO_MUSIC 0
@@ -925,16 +968,16 @@
 #endif
 
 /*Flex layout demo*/
-#define LV_USE_DEMO_FLEX_LAYOUT     1
+#define LV_USE_DEMO_FLEX_LAYOUT     0
 
 /*Smart-phone like multi-language demo*/
-#define LV_USE_DEMO_MULTILANG       1
+#define LV_USE_DEMO_MULTILANG       0
 
 /*Widget transformation demo*/
-#define LV_USE_DEMO_TRANSFORM       1
+#define LV_USE_DEMO_TRANSFORM       0
 
 /*Demonstrate scroll settings*/
-#define LV_USE_DEMO_SCROLL          1
+#define LV_USE_DEMO_SCROLL          0
 
 /*Vector graphic demo*/
 #define LV_USE_DEMO_VECTOR_GRAPHIC  0

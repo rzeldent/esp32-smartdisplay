@@ -22,7 +22,7 @@ Currently this library supports the following boards:
 - ESP32-2432S032 N/R/C
 - ESP32-3248S035 R/C
 - ESP32-4827S043 R/C
-- ESP32-4848S040C \_I_Y_1/3
+- ESP32-4848S040C_I_Y_1/3
 - ESP32-8048S050 N/C/R
 - ESP32-8048S070 N/C/R
 
@@ -51,7 +51,7 @@ This library depends on:
 - [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton)
 
 > [!NOTE]
-> This library uses the "official" drivers from Espressif's component service. These drivers use the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers have already been copied and included to this library.
+> This library uses the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers are provided by Espressid and have already been copied and included to this library.
 
 ## How to use
 
@@ -67,7 +67,7 @@ This demo provides:
 - Works for all known Sunton boards (and more): see [Sunton Boards information](https://github.com/rzeldent/platformio-espressif32-sunton)
 - Full source code
 
-The next sections will guide you though the process of creating an application. However, some knowledge of PlatformIO, C/C++ and LVGL is required!
+The next sections will guide you though the process of creating an application. However, knowledge of PlatformIO, C/C++ and LVGL is required!
 
 If you run into problems, first try to open a discussion on the [github esp32-smartdisplay discussion board](https://github.com/rzeldent/esp32-smartdisplay/discussions).
 
@@ -118,12 +118,11 @@ This will automatically download the library, the LVGL library (as a dependency)
 LVGL needs a configuration file; `lv_conf.h`. This file contains information about the fonts, color depths, default background, styles, etc...
 The default LVGL template can be found in the LVGL library at the location: `lvgl/lv_conf_template.h`.
 This file must be copied to the include directory and renamed to `lvgl_conf.h`. Also the `#if 0` must be removed to enable the file to be included.
+
+This file can immediately be used and is valid. Some modifications might be required fore additional features.
+
 More information about setting up a project with LVGL can be obtained at [LVGL get-started/quick-overview](https://docs.lvgl.io/master/get-started/quick-overview.html#add-lvgl-into-your-project).
 I suggest to put the `lv_conf.h` file in the include directory and set the build flags to specify the location of the file, see below.
-
-> [!TIP]
-> LVGL can also be downloaded manually from: [https://github.com/lvgl/lvgl/archive/master.zip](https://github.com/lvgl/lvgl/archive/master.zip) to extract the template.
-> The template can also be copied from the demo application.
 
 Important settings are:
 
@@ -141,53 +140,6 @@ Important settings are:
   #define LV_USE_MEM_MONITOR 1
   ```
 
-- (Optionally) Include additional fonts.
-
-  The font Montserrat 14pt is required. Other fonts can be included.
-
-  ```h
-  #define LV_FONT_MONTSERRAT_22 1
-  ...
-
-  ```
-
-- Optionally, only enable widgets that are used to save on code
-
-```h
-  #define LV_USE_ANIMIMG        1
-  #define LV_USE_ARC            1
-  #define LV_USE_ARC            1
-  #define LV_USE_BAR            1
-  #define LV_USE_BUTTON         1
-  #define LV_USE_BUTTONMATRIX   1
-  #define LV_USE_CALENDAR       1
-  #define LV_USE_CANVAS         1
-  #define LV_USE_CHART          1
-  #define LV_USE_CHECKBOX       1
-  #define LV_USE_DROPDOWN       1   /*Requires: lv_label*/
-  #define LV_USE_IMAGE          1   /*Requires: lv_label*/
-  #define LV_USE_IMAGEBUTTON    1
-  #define LV_USE_KEYBOARD       1
-  #define LV_USE_LABEL          1
-  #define LV_USE_LED            1
-  #define LV_USE_LINE           1
-  #define LV_USE_LIST           1
-  #define LV_USE_MENU           1
-  #define LV_USE_MSGBOX         1
-  #define LV_USE_ROLLER         1   /*Requires: lv_label*/
-  #define LV_USE_SCALE          1
-  #define LV_USE_SLIDER         1   /*Requires: lv_bar*/
-  #define LV_USE_SPAN           1
-  #define LV_USE_SPINBOX        1
-  #define LV_USE_SPINNER        1
-  #define LV_USE_SWITCH         1
-  #define LV_USE_TEXTAREA       1   /*Requires: lv_label*/
-  #define LV_USE_TABLE          1
-  #define LV_USE_TABVIEW        1
-  #define LV_USE_TILEVIEW       1
-  #define LV_USE_WIN            1
-```
-
 For debugging it is possible to enable logging from LVGL. The library will output to the debugging output (using `lv_log_register_print_cb`).
 To enable logging, set the define:
 
@@ -198,7 +150,52 @@ To enable logging, set the define:
 
 By default the logging is only `LV_LOG_LEVEL_WARN` but can be adjusted in the `lv_conf.h`.
 
-More information about the LVGL configuration can be found in the excellent [LVGL documentation](https://docs.lvgl.io/8.3/index.html).
+To enable additional decoding options, libraries or widgets, enable them in the lv_conf.ini file by setting a LV_USE_xxxx to 1.
+These are disabled by default.
+
+```cpp
+//API for LittleFs.
+#define LV_USE_FS_LITTLEFS 0
+//LODEPNG decoder library
+#define LV_USE_LODEPNG 0
+//PNG decoder(libpng) library
+#define LV_USE_LIBPNG 0
+//BMP decoder library
+#define LV_USE_BMP 0
+// JPG + split JPG decoder library.
+#define LV_USE_TJPGD 0
+// libjpeg-turbo decoder library.
+#define LV_USE_LIBJPEG_TURBO 0
+//GIF decoder library
+#define LV_USE_GIF 0
+//Decode bin images to RAM
+#define LV_BIN_DECODER_RAM_LOAD 0
+//RLE decompress library
+#define LV_USE_RLE 0
+//QR code library
+#define LV_USE_QRCODE 0
+//Barcode code library
+#define LV_USE_BARCODE 0
+//FreeType library
+#define LV_USE_FREETYPE 0
+// Built-in TTF decoder
+#define LV_USE_TINY_TTF 0
+//Rlottie library
+#define LV_USE_RLOTTIE 0
+//Enable Vector Graphic APIs
+#define LV_USE_VECTOR_GRAPHIC  0
+//Enable ThorVG (vector graphics library) from the src/libs folder
+#define LV_USE_THORVG_INTERNAL 0
+//Use lvgl built-in LZ4 lib
+#define LV_USE_LZ4_INTERNAL  0
+//Use external LZ4 library
+#define LV_USE_LZ4_EXTERNAL  0
+//FFmpeg library for image decoding and playing videos
+#define LV_USE_FFMPEG 0
+```
+
+More information about the LVGL configuration can be found in the excellent [LVGL documentation](https://docs.lvgl.io).
+
 
 > [!WARNING]
 > After the library has been build, changes in the lv_conf.h are no longer applied because libraries are cached.
@@ -281,6 +278,38 @@ If there are problems:
 - Check if it is a known or previously resolved issue in the [issues](https://github.com/rzeldent/esp32-smartdisplay/issues),
 - Refer to the [discussions](https://github.com/rzeldent/esp32-smartdisplay/discussions),
 - If all fails, submit an [issue](https://github.com/rzeldent/esp32-smartdisplay/issues), no SLA as this is done in my spare time.
+
+## Porting from LVGL 8.3.9
+
+There are breaking changes in LVGL. Please refer to the documentation and forums provided by LVGL to port your application.
+
+### lv_conf.h
+
+The lv_conf.h template has been changed quite extensively.
+The best way to start is to do a fresh start using the template from ```lvgl\lv_conf_template.h```.
+Copy this to your include directory and and rename this to ```lv_conf.h```.
+Next, update the ```#if 0``` on top to ```#if 1``` so the wil will be included:
+
+```c++
+/* clang-format off */
+#if 1 /*Set it to "1" to enable content*/
+```
+
+### Ticker
+
+The ticker needs to be updated to keep track of time. In LVGL 8.3.8 this was done by setting: ```#define LV_TICK_CUSTOM 1```.
+Now it has to be updated by your application. A solution is to put this in the loop() and combine this with the ```lv_timer_handler()```
+
+```c++
+    // Update the ticker
+    static auto lv_last_tick = millis();
+
+    auto const now = millis();
+    lv_tick_inc(now - lv_last_tick);
+    lv_last_tick = now;
+    // Update the UI
+    lv_timer_handler();
+```
 
 ## More on lv_conf.h
 
