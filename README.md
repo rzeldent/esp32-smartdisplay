@@ -383,14 +383,14 @@ Some boards are around that have flipped screens, this is probably due to differ
 
 To adjust the display and touch to the default (LV_DISP_ROT_NONE) there are 6 defines in the boards definition:
 
-| Name            | Description   |
-|---              |---      |
-| DISPLAY_SWAP_XY     | Swaps the X and Y coordinates for the display |
-| DISPLAY_MIRROR_X    | Mirrors the X coordinate for the display      |
-| DISPLAY_MIRROR_Y    | Mirrors the Y coordinate for the display      |
-| TOUCH_SWAP_XY   | Swaps the X and Y coordinates for the touch   |
-| TOUCH_MIRROR_X  | Mirrors the X coordinate for the touch        |
-| TOUCH_MIRROR_Y  | Mirrors the Y coordinate for the touch        |
+| Name              | Description   |
+|---                |---      |
+| DISPLAY_SWAP_XY   | Swaps the X and Y coordinates for the display |
+| DISPLAY_MIRROR_X  | Mirrors the X coordinate for the display      |
+| DISPLAY_MIRROR_Y  | Mirrors the Y coordinate for the display      |
+| TOUCH_SWAP_XY     | Swaps the X and Y coordinates for the touch   |
+| TOUCH_MIRROR_X    | Mirrors the X coordinate for the touch        |
+| TOUCH_MIRROR_Y    | Mirrors the Y coordinate for the touch        |
 
 
 ## Appendix: Template to support ALL the boards
