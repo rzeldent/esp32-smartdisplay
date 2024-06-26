@@ -1,4 +1,4 @@
-#ifdef DISPLAY_NV3041A_SPI
+#ifdef DISPLAY_ST7796_SPI
 
 #include <esp32_smartdisplay.h>
 #include <esp_panel_nv3041a.h>
