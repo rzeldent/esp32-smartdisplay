@@ -1,4 +1,4 @@
-#ifdef DISPLAY_NV3401A_SPI
+#ifdef DISPLAY_NV3041A_SPI
 
 #include <esp_panel_nv3041a.h>
 #include <esp32-hal-log.h>

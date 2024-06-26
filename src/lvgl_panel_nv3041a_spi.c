@@ -1,4 +1,4 @@
-#ifdef DISPLAY_ST7796_SPI
+#ifdef DISPLAY_NV3041A_SPI
 
 #include <esp32_smartdisplay.h>
 #include <esp_panel_nv3041a.h>
@@ -9,32 +9,31 @@
 
 bool nv3041a_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
-    lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
+    lv_disp_drv_t *disp_driver = user_ctx;
+    lv_disp_flush_ready(disp_driver);
     return false;
 }
 
-void nv3041a_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
+void nv3041a_lv_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
 {
-    esp_lcd_panel_handle_t panel_handle = display->user_data;
-    uint32_t pixels = lv_area_get_size(area);
-    uint16_t *p = (uint16_t*)px_map;
-    while (pixels--) {
-        *p = (uint16_t)((*p >> 8) | (*p << 8));
-        p++;
-    }
-
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+    esp_lcd_panel_handle_t panel_handle = drv->user_data;
+#if LV_COLOR_16_SWAP != 1
+#warning "LV_COLOR_16_SWAP should be 1 for max performance"
+    ushort pixels = lv_area_get_size(area);
+    lv_color16_t *p = color_map;
+    while (pixels--)
+        p++->full = (uint16_t)((p->full >> 8) | (p->full << 8));
+#endif
+    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, color_map));
 };
 
-lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
+void lvgl_lcd_init(lv_disp_drv_t *drv)
 {
-    lv_display_t *display = lv_display_create(hor_res, ver_res);
-    log_v("display:0x%08x", display);
+    log_v("drv:0x%08x", drv);
 
     // Hardware rotation is supported
-    display->sw_rotate = 0;
-    display->rotation = LV_DISPLAY_ROTATION_0;
+    drv->sw_rotate = 0;
+    drv->rotated = LV_DISP_ROT_NONE;
 
     // Create SPI bus
     const spi_bus_config_t spi_bus_config = {
@@ -56,7 +55,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
         .spi_mode = NV3041A_SPI_CONFIG_SPI_MODE,
         .pclk_hz = NV3041A_SPI_CONFIG_PCLK_HZ,
         .on_color_trans_done = nv3041a_color_trans_done,
-        .user_ctx = display,
+        .user_ctx = drv,
         .trans_queue_depth = NV3041A_SPI_CONFIG_TRANS_QUEUE_DEPTH,
         .lcd_cmd_bits = NV3041A_SPI_CONFIG_LCD_CMD_BITS,
         .lcd_param_bits = NV3041A_SPI_CONFIG_LCD_PARAM_BITS,
@@ -86,22 +85,20 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
 #endif
-#ifdef DISPLAY_SWAP_XY
+#if (DISPLAY_SWAP_XY)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
 #endif
-#if defined(DISPLAY_MIRROR_X) || defined(DISPLAY_MIRROR_Y)    
+#if (DISPLAY_MIRROR_X || DISPLAY_MIRROR_Y)    
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
 #endif    
-#if defined(DISPLAY_GAP_X) || defined(DISPLAY_GAP_Y)
+#if (DISPLAY_GAP_X || DISPLAY_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, DISPLAY_GAP_X, DISPLAY_GAP_Y));
 #endif
     // Turn display on
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
 
-    display->user_data = panel_handle;
-    display->flush_cb = nv3041a_lv_flush;
-
-    return display;
+    drv->user_data = panel_handle;
+    drv->flush_cb = nv3041a_lv_flush;
 }
 
 #endif
