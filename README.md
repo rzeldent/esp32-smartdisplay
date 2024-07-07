@@ -433,6 +433,7 @@ The platformio.ini file below supports all the boards. This is useful when runni
 #default_envs = esp32-8048S070C
 #default_envs = esp32-8048S070N
 #default_envs = esp32-8048S070R
+#default_envs = esp32-s3touchlcd7
 
 [env]
 platform = espressif32
@@ -548,6 +549,9 @@ board = esp32-8048S070N
 
 [env:esp32-8048S070R]
 board = esp32-8048S070R
+
+[env:esp32-s3touchlcd7]
+board = esp32-s3touchlcd7
 ```
 
 ## Appendix: External dependencies
@@ -562,6 +566,9 @@ The following libraries are used from the [Espressif component registry](https:/
 
 ## Version history
 
+- July 2024
+  - Update to LVGL 8.4.0
+  - Version 2.0.10
 - March 2024
   - Rewrote drivers for devices and made them cleaner
   - More parametrization
