@@ -10,22 +10,39 @@
 #define BRIGHTNESS_DARK_ZONE 250
 
 // Functions to be defined in the tft/touch driver
-extern void lvgl_lcd_init(lv_disp_drv_t *disp_drv);
-extern void lvgl_touch_init(lv_indev_drv_t *disp_drv);
+extern lv_display_t *lvgl_lcd_init();
+extern lv_indev_t *lvgl_touch_init();
 
-lv_disp_drv_t disp_drv;
-lv_timer_t *update_brightness_timer;
+lv_display_t *display;
 
 #ifdef BOARD_HAS_TOUCH
-lv_indev_drv_t indev_drv;
+lv_indev_t *indev;
 touch_calibration_data_t touch_calibration_data;
-void (*driver_touch_read_cb)(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
+void (*driver_touch_read_cb)(lv_indev_t *indev, lv_indev_data_t *data);
 #endif
 
+void lvgl_display_resolution_changed_callback(lv_event_t *drv);
+
+lv_timer_t *update_brightness_timer;
+
 #ifdef LV_USE_LOG
-void lvgl_log(const char *buf)
+void lvgl_log(lv_log_level_t level, const char *buf)
 {
-  log_printf("%s", buf);
+  switch (level)
+  {
+  case LV_LOG_LEVEL_TRACE:
+    log_printf("%s", buf);
+    break;
+  case LV_LOG_LEVEL_INFO:
+    log_i("%s", buf);
+    break;
+  case LV_LOG_LEVEL_WARN:
+    log_w("%s", buf);
+    break;
+  case LV_LOG_LEVEL_ERROR:
+    log_e("%s", buf);
+    break;
+  }
 }
 #endif
 
@@ -34,9 +51,9 @@ void smartdisplay_lcd_set_backlight(float duty)
 {
   log_v("duty:%2f", duty);
 
-  if (duty > 1.0)
+  if (duty > 1.0f)
     duty = 1.0f;
-  if (duty < 0.0)
+  if (duty < 0.0f)
     duty = 0.0f;
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
   ledcWrite(GPIO_BCKL, duty * PWM_MAX_BCKL);
@@ -74,7 +91,7 @@ void adaptive_brightness(lv_timer_t *timer)
 
 void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval)
 {
-  log_v("adaptive_brightness_cb:0x%08x, interval:%d", cb, interval);
+  log_v("adaptive_brightness_cb:0x%08x, interval:%u", cb, interval);
 
   // Delete current timer if any
   if (update_brightness_timer)
@@ -100,12 +117,12 @@ void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 
 #ifdef BOARD_HAS_TOUCH
 // See: https://www.maximintegrated.com/en/design/technical-documents/app-notes/5/5296.html
-void lvgl_touch_calibration_transform(lv_indev_drv_t *disp_drv, lv_indev_data_t *data)
+void lvgl_touch_calibration_transform(lv_indev_t *indev, lv_indev_data_t *data)
 {
-  log_v("disp_drv:0x%08x, data:0x%08x", disp_drv, data);
+  log_v("indev:0x%08x, data:0x%08x", indev, data);
 
   // Call low level read from the driver
-  driver_touch_read_cb(disp_drv, data);
+  driver_touch_read_cb(indev, data);
   // Check if transformation is required
   if (touch_calibration_data.valid && data->state == LV_INDEV_STATE_PRESSED)
   {
@@ -136,37 +153,6 @@ touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t
   return touch_calibration_data;
 };
 #endif
-
-// Called when driver parameters are updated (rotation)
-// Top of the display is top left when connector is at the bottom
-// The rotation values are relative to how you would rotate the physical display in the clockwise direction.
-// Thus, LV_DISP_ROT_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
-void lvgl_update_callback(lv_disp_drv_t *drv)
-{
-  if (drv->sw_rotate == false)
-  {
-    const esp_lcd_panel_handle_t panel_handle = disp_drv.user_data;
-    switch (drv->rotated)
-    {
-    case LV_DISP_ROT_NONE:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-      break;
-    case LV_DISP_ROT_90:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
-      break;
-    case LV_DISP_ROT_180:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
-      break;
-    case LV_DISP_ROT_270:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-      break;
-    }
-  }
-}
 
 void smartdisplay_init()
 {
@@ -206,19 +192,12 @@ void smartdisplay_init()
   ledcAttachPin(GPIO_BCKL, PWM_CHANNEL_BCKL);
 #endif
   // Setup TFT display
-  lv_disp_drv_init(&disp_drv);
-  disp_drv.hor_res = DISPLAY_WIDTH;
-  disp_drv.ver_res = DISPLAY_HEIGHT;
-  // Create drawBuffer
-  disp_drv.draw_buf = (lv_disp_draw_buf_t *)malloc(sizeof(lv_disp_draw_buf_t));
-  void *drawBuffer = heap_caps_malloc(sizeof(lv_color_t) * LVGL_BUFFER_PIXELS, LVGL_BUFFER_MALLOC_FLAGS);
-  lv_disp_draw_buf_init(disp_drv.draw_buf, drawBuffer, NULL, LVGL_BUFFER_PIXELS);
-  // Register callback for changes to the driver parameters (rotation!)
-  disp_drv.drv_update_cb = lvgl_update_callback;
-  // Initialize specific driver
-  lvgl_lcd_init(&disp_drv);
-  __attribute__((unused)) lv_disp_t *display = lv_disp_drv_register(&disp_drv);
-  // Clear screen
+  display = lvgl_lcd_init();
+  // Register callback for hardware rotation
+  if (!display->sw_rotate)
+    lv_display_add_event_cb(display, lvgl_display_resolution_changed_callback, LV_EVENT_RESOLUTION_CHANGED, NULL);
+
+  //  Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on (50%)
   smartdisplay_lcd_set_backlight(0.5f);
@@ -226,11 +205,39 @@ void smartdisplay_init()
 // If there is a touch controller defined
 #ifdef BOARD_HAS_TOUCH
   // Setup touch
-  lv_indev_drv_init(&indev_drv);
-  indev_drv.disp = display;
-  lvgl_touch_init(&indev_drv);
-  driver_touch_read_cb = indev_drv.read_cb;
-  indev_drv.read_cb = lvgl_touch_calibration_transform;
-  lv_indev_drv_register(&indev_drv);
+  indev = lvgl_touch_init();
+  indev->disp = display;
+  // Intercept callback
+  driver_touch_read_cb = indev->read_cb;
+  indev->read_cb = lvgl_touch_calibration_transform;
+  lv_indev_enable(indev, true);
 #endif
+}
+
+// Called when driver resolution is updated (including rotation)
+// Top of the display is top left when connector is at the bottom
+// The rotation values are relative to how you would rotate the physical display in the clockwise direction.
+// Thus, LV_DISPLAY_ROTATION_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
+void lvgl_display_resolution_changed_callback(lv_event_t *event)
+{
+  const esp_lcd_panel_handle_t panel_handle = display->user_data;
+  switch (display->rotation)
+  {
+  case LV_DISPLAY_ROTATION_0:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
+    break;
+  case LV_DISPLAY_ROTATION_90:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
+    break;
+  case LV_DISPLAY_ROTATION_180:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
+    break;
+  case LV_DISPLAY_ROTATION_270:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
+    break;
+  }
 }
