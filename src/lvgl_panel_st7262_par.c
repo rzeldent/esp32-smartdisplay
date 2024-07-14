@@ -23,7 +23,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
     lv_display_t *display = lv_display_create(hor_res, ver_res);
     log_v("display:0x%08x", display);
 
-    // Hardware rotation is supported
+    // Hardware rotation is not supported
     display->sw_rotate = 1;
     display->rotation = LV_DISPLAY_ROTATION_0;
 

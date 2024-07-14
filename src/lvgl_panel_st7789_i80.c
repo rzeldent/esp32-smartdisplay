@@ -31,7 +31,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
     log_v("display:0x%08x", display);
 
     // Hardware rotation is supported
-    display->sw_rotate = 1;
+    display->sw_rotate = 0;
     display->rotation = LV_DISPLAY_ROTATION_0;
 
     pinMode(ST7789_RD_GPIO, OUTPUT);
