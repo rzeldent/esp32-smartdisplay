@@ -25,7 +25,6 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Hardware rotation is not supported
     display->sw_rotate = 1;
-    display->render_mode = LV_DISPLAY_RENDER_MODE_DIRECT;
     display->rotation = LV_DISPLAY_ROTATION_0;
 
     // Create direct_io panel handle

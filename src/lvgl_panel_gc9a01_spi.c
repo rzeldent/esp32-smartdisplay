@@ -38,7 +38,6 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Hardware rotation is supported
     display->sw_rotate = 0;
-    display->render_mode = LV_DISPLAY_RENDER_MODE_PARTIAL;
     display->rotation = LV_DISPLAY_ROTATION_0;
 
     // Create SPI bus
