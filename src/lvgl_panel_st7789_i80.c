@@ -16,8 +16,9 @@ void st7789_lv_flush(lv_display_t *drv, const lv_area_t *area, uint8_t *px_map)
 {
     const esp_lcd_panel_handle_t panel_handle = drv->user_data;
     uint32_t pixels = lv_area_get_size(area);
-    uint16_t *p = (uint16_t*)px_map;
-    while (pixels--) {
+    uint16_t *p = (uint16_t *)px_map;
+    while (pixels--)
+    {
         *p = (uint16_t)((*p >> 8) | (*p << 8));
         p++;
     }
@@ -32,6 +33,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Hardware rotation is supported
     display->sw_rotate = 0;
+    display->render_mode = LV_DISPLAY_RENDER_MODE_PARTIAL;
     display->rotation = LV_DISPLAY_ROTATION_0;
 
     pinMode(ST7789_RD_GPIO, OUTPUT);

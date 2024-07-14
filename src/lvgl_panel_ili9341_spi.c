@@ -17,8 +17,9 @@ void ili9341_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_
 {
     esp_lcd_panel_handle_t panel_handle = display->user_data;
     uint32_t pixels = lv_area_get_size(area);
-    uint16_t *p = (uint16_t*)px_map;
-    while (pixels--) {
+    uint16_t *p = (uint16_t *)px_map;
+    while (pixels--)
+    {
         *p = (uint16_t)((*p >> 8) | (*p << 8));
         p++;
     }
@@ -33,6 +34,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Hardware rotation is supported
     display->sw_rotate = 0;
+    display->render_mode = LV_DISPLAY_RENDER_MODE_PARTIAL;
     display->rotation = LV_DISPLAY_ROTATION_0;
 
     // Create SPI bus
@@ -88,9 +90,9 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 #if (DISPLAY_SWAP_XY)
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
 #endif
-#if (DISPLAY_MIRROR_X || DISPLAY_MIRROR_Y)    
+#if (DISPLAY_MIRROR_X || DISPLAY_MIRROR_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-#endif    
+#endif
 #if (DISPLAY_GAP_X || DISPLAY_GAP_Y)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, DISPLAY_GAP_X, DISPLAY_GAP_Y));
 #endif
