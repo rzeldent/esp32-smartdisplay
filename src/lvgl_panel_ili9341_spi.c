@@ -27,10 +27,14 @@ void ili9341_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
 };
 
-lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
+lv_display_t *lvgl_lcd_init()
 {
-    lv_display_t *display = lv_display_create(hor_res, ver_res);
+    lv_display_t *display = lv_display_create(DISPLAY_WIDTH, DISPLAY_HEIGHT);
     log_v("display:0x%08x", display);
+    //  Create drawBuffer
+    uint32_t drawBufferSize = sizeof(lv_color_t) * LVGL_BUFFER_PIXELS;
+    void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
+    lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
     // Hardware rotation is supported
     display->sw_rotate = 0;

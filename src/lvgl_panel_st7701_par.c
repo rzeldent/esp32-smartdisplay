@@ -20,10 +20,14 @@ void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *p
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
 };
 
-lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
+lv_display_t *lvgl_lcd_init()
 {
-    lv_display_t *display = lv_display_create(hor_res, ver_res);
+    lv_display_t *display = lv_display_create(DISPLAY_WIDTH, DISPLAY_HEIGHT);
     log_v("display:0x%08x", display);
+    //  Create drawBuffer
+    uint32_t drawBufferSize = sizeof(lv_color_t) * LVGL_BUFFER_PIXELS;
+    void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
+    lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
     // Hardware rotation is not supported
     display->sw_rotate = 1;
@@ -73,11 +77,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
         .vsync_gpio_num = ST7701_PANEL_CONFIG_VSYNC_GPIO_NUM,
         .de_gpio_num = ST7701_PANEL_CONFIG_DE_GPIO_NUM,
         .pclk_gpio_num = ST7701_PANEL_CONFIG_PCLK_GPIO_NUM,
-#if LV_COLOR_16_SWAP == 0
         .data_gpio_nums = {ST7701_PANEL_CONFIG_DATA_GPIO_R0, ST7701_PANEL_CONFIG_DATA_GPIO_R1, ST7701_PANEL_CONFIG_DATA_GPIO_R2, ST7701_PANEL_CONFIG_DATA_GPIO_R3, ST7701_PANEL_CONFIG_DATA_GPIO_R4, ST7701_PANEL_CONFIG_DATA_GPIO_G0, ST7701_PANEL_CONFIG_DATA_GPIO_G1, ST7701_PANEL_CONFIG_DATA_GPIO_G2, ST7701_PANEL_CONFIG_DATA_GPIO_G3, ST7701_PANEL_CONFIG_DATA_GPIO_G4, ST7701_PANEL_CONFIG_DATA_GPIO_G5, ST7701_PANEL_CONFIG_DATA_GPIO_B0, ST7701_PANEL_CONFIG_DATA_GPIO_B1, ST7701_PANEL_CONFIG_DATA_GPIO_B2, ST7701_PANEL_CONFIG_DATA_GPIO_B3, ST7701_PANEL_CONFIG_DATA_GPIO_B4},
-#else
-        .data_gpio_nums = {ST7701_PANEL_CONFIG_DATA_GPIO_G3, ST7701_PANEL_CONFIG_DATA_GPIO_G4, ST7701_PANEL_CONFIG_DATA_GPIO_G5, ST7701_PANEL_CONFIG_DATA_GPIO_B0, ST7701_PANEL_CONFIG_DATA_GPIO_B1, ST7701_PANEL_CONFIG_DATA_GPIO_B2, ST7701_PANEL_CONFIG_DATA_GPIO_B3, ST7701_PANEL_CONFIG_DATA_GPIO_B4, ST7701_PANEL_CONFIG_DATA_GPIO_R0, ST7701_PANEL_CONFIG_DATA_GPIO_R1, ST7701_PANEL_CONFIG_DATA_GPIO_R2, ST7701_PANEL_CONFIG_DATA_GPIO_R3, ST7701_PANEL_CONFIG_DATA_GPIO_R4, ST7701_PANEL_CONFIG_DATA_GPIO_G0, ST7701_PANEL_CONFIG_DATA_GPIO_G1, ST7701_PANEL_CONFIG_DATA_GPIO_G2},
-#endif
         .disp_gpio_num = ST7701_PANEL_CONFIG_DISP_GPIO_NUM,
         .on_frame_trans_done = direct_io_frame_trans_done,
         .user_ctx = display,

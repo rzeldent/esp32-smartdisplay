@@ -14,14 +14,59 @@ bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_
 void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
     const esp_lcd_panel_handle_t panel_handle = display->user_data;
-    // LV_COLOR_16_SWAP is handled by mapping of the data
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+
+    lv_display_rotation_t rotation = lv_display_get_rotation(display);
+    if (rotation == LV_DISPLAY_ROTATION_0)
+    {
+        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+        return;
+    }
+
+    // Rotated
+    int32_t w = lv_area_get_width(area);
+    int32_t h = lv_area_get_height(area);
+    lv_color_format_t cf = lv_display_get_color_format(display);
+    uint32_t px_size = lv_color_format_get_size(cf);
+    size_t buf_size = w * h * px_size;
+    log_v("alloc rotation buffer to: %u bytes", buf_size);
+    void *rotation_buffer = heap_caps_malloc(buf_size, LVGL_BUFFER_MALLOC_FLAGS);
+    assert(rotation_buffer != NULL);
+
+    uint32_t w_stride = lv_draw_buf_width_to_stride(w, cf);
+    uint32_t h_stride = lv_draw_buf_width_to_stride(h, cf);
+
+    switch (rotation)
+    {
+    case LV_DISPLAY_ROTATION_90:
+        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
+        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->y1, display->ver_res - area->x1 - w, area->y1 + h, display->ver_res - area->x1, rotation_buffer));
+        break;
+    case LV_DISPLAY_ROTATION_180:
+        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, w_stride, rotation, cf);
+        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->x1 - w, display->ver_res - area->y1 - h, display->hor_res - area->x1, display->ver_res - area->y1, rotation_buffer));
+        break;
+    case LV_DISPLAY_ROTATION_270:
+        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
+        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->y2 - 1, area->x2 - w + 1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer));
+        break;
+    default:
+        assert(false);
+        break;
+    }
+
+    free(rotation_buffer);
 };
 
-lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
+lv_display_t *lvgl_lcd_init()
 {
-    lv_display_t *display = lv_display_create(hor_res, ver_res);
+    lv_display_t *display = lv_display_create(DISPLAY_WIDTH, DISPLAY_HEIGHT);
     log_v("display:0x%08x", display);
+    //  Create drawBuffer
+    lv_color_format_t cf = lv_display_get_color_format(display);
+    uint32_t px_size = lv_color_format_get_size(cf);
+    uint32_t drawBufferSize = px_size * LVGL_BUFFER_PIXELS;
+    void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
+    lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
     // Hardware rotation is not supported
     display->sw_rotate = 1;
@@ -53,11 +98,8 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
         .vsync_gpio_num = ST7262_PANEL_CONFIG_VSYNC_GPIO_NUM,
         .de_gpio_num = ST7262_PANEL_CONFIG_DE_GPIO_NUM,
         .pclk_gpio_num = ST7262_PANEL_CONFIG_PCLK_GPIO_NUM,
-#if LV_COLOR_16_SWAP == 0
+        // LV_COLOR_16_SWAP is handled by mapping of the data
         .data_gpio_nums = {ST7262_PANEL_CONFIG_DATA_GPIO_R0, ST7262_PANEL_CONFIG_DATA_GPIO_R1, ST7262_PANEL_CONFIG_DATA_GPIO_R2, ST7262_PANEL_CONFIG_DATA_GPIO_R3, ST7262_PANEL_CONFIG_DATA_GPIO_R4, ST7262_PANEL_CONFIG_DATA_GPIO_G0, ST7262_PANEL_CONFIG_DATA_GPIO_G1, ST7262_PANEL_CONFIG_DATA_GPIO_G2, ST7262_PANEL_CONFIG_DATA_GPIO_G3, ST7262_PANEL_CONFIG_DATA_GPIO_G4, ST7262_PANEL_CONFIG_DATA_GPIO_G5, ST7262_PANEL_CONFIG_DATA_GPIO_B0, ST7262_PANEL_CONFIG_DATA_GPIO_B1, ST7262_PANEL_CONFIG_DATA_GPIO_B2, ST7262_PANEL_CONFIG_DATA_GPIO_B3, ST7262_PANEL_CONFIG_DATA_GPIO_B4},
-#else
-        .data_gpio_nums = {ST7262_PANEL_CONFIG_DATA_GPIO_G3, ST7262_PANEL_CONFIG_DATA_GPIO_G4, ST7262_PANEL_CONFIG_DATA_GPIO_G5, ST7262_PANEL_CONFIG_DATA_GPIO_B0, ST7262_PANEL_CONFIG_DATA_GPIO_B1, ST7262_PANEL_CONFIG_DATA_GPIO_B2, ST7262_PANEL_CONFIG_DATA_GPIO_B3, ST7262_PANEL_CONFIG_DATA_GPIO_B4, ST7262_PANEL_CONFIG_DATA_GPIO_R0, ST7262_PANEL_CONFIG_DATA_GPIO_R1, ST7262_PANEL_CONFIG_DATA_GPIO_R2, ST7262_PANEL_CONFIG_DATA_GPIO_R3, ST7262_PANEL_CONFIG_DATA_GPIO_R4, ST7262_PANEL_CONFIG_DATA_GPIO_G0, ST7262_PANEL_CONFIG_DATA_GPIO_G1, ST7262_PANEL_CONFIG_DATA_GPIO_G2},
-#endif
         .disp_gpio_num = ST7262_PANEL_CONFIG_DISP_GPIO_NUM,
         .on_frame_trans_done = direct_io_frame_trans_done,
         .user_ctx = display,

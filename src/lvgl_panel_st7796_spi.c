@@ -30,8 +30,12 @@ void st7796_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_m
 
 lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 {
-    lv_display_t *display = lv_display_create(hor_res, ver_res);
+    lv_display_t *display = lv_display_create(DISPLAY_WIDTH, DISPLAY_HEIGHT);
     log_v("display:0x%08x", display);
+    //  Create drawBuffer
+    uint32_t drawBufferSize = sizeof(lv_color_t) * LVGL_BUFFER_PIXELS;
+    void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
+    lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
     // Hardware rotation is supported
     display->sw_rotate = 0;

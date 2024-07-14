@@ -10,7 +10,7 @@
 #define BRIGHTNESS_DARK_ZONE 250
 
 // Functions to be defined in the tft/touch driver
-extern lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res);
+extern lv_display_t *lvgl_lcd_init();
 extern lv_indev_t *lvgl_touch_init();
 
 lv_display_t *display;
@@ -192,13 +192,11 @@ void smartdisplay_init()
   ledcAttachPin(GPIO_BCKL, PWM_CHANNEL_BCKL);
 #endif
   // Setup TFT display
-  display = lvgl_lcd_init(DISPLAY_WIDTH, DISPLAY_HEIGHT);
-  //  Create drawBuffer
-  uint32_t drawBufferSize = sizeof(lv_color_t) * LVGL_BUFFER_PIXELS;
-  void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
-  lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
+  display = lvgl_lcd_init();
   // Register callback for hardware rotation
-  lv_display_add_event_cb(display, lvgl_display_resolution_changed_callback, LV_EVENT_RESOLUTION_CHANGED, NULL);
+  if (!display->sw_rotate)
+    lv_display_add_event_cb(display, lvgl_display_resolution_changed_callback, LV_EVENT_RESOLUTION_CHANGED, NULL);
+
   //  Clear screen
   lv_obj_clean(lv_scr_act());
   // Turn backlight on (50%)
@@ -222,27 +220,24 @@ void smartdisplay_init()
 // Thus, LV_DISPLAY_ROTATION_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
 void lvgl_display_resolution_changed_callback(lv_event_t *event)
 {
-  if (!display->sw_rotate)
+  const esp_lcd_panel_handle_t panel_handle = display->user_data;
+  switch (display->rotation)
   {
-    const esp_lcd_panel_handle_t panel_handle = display->user_data;
-    switch (display->rotation)
-    {
-    case LV_DISPLAY_ROTATION_0:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-      break;
-    case LV_DISPLAY_ROTATION_90:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
-      break;
-    case LV_DISPLAY_ROTATION_180:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
-      break;
-    case LV_DISPLAY_ROTATION_270:
-      ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
-      ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-      break;
-    }
+  case LV_DISPLAY_ROTATION_0:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
+    break;
+  case LV_DISPLAY_ROTATION_90:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
+    break;
+  case LV_DISPLAY_ROTATION_180:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
+    break;
+  case LV_DISPLAY_ROTATION_270:
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
+    break;
   }
 }
