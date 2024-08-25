@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <lvgl.h>
 #include <display/lv_display_private.h>
-//#include <misc/lv_timer_private.h>
+#include <misc/lv_timer_private.h>
 #include <indev/lv_indev_private.h>
 
 // Use last PWM_CHANNEL for backlight
