@@ -35,6 +35,6 @@
     "frameworks": "arduino",
     "platforms": "espressif32",
     "dependencies": {
-        "lvgl/lvgl": "https://github.com/lvgl/lvgl.git"
+        "lvgl/lvgl": "https://github.com/lvgl/lvgl.git#d39fc17"
     }
 }
