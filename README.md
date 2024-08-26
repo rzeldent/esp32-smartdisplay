@@ -22,7 +22,7 @@ Currently this library supports the following boards:
 - ESP32-2432S032 N/R/C
 - ESP32-3248S035 R/C
 - ESP32-4827S043 R/C
-- ESP32-4848S040C _I_Y_1/3
+- ESP32-4848S040C_I_Y_1/3
 - ESP32-8048S050 N/C/R
 - ESP32-8048S070 N/C/R
 
@@ -47,11 +47,11 @@ However, when working with these libraries, I found out that these libraries had
 
 This library depends on:
 
-- [LVGL](https://registry.platformio.org/libraries/lvgl/lvgl), currently version 8.3.9
+- [LVGL](https://registry.platformio.org/libraries/lvgl/lvgl), currently version 9.1.0
 - [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton)
 
->[!NOTE]
->This library uses the "official" drivers from Espressif's component service. These drivers use the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers have already been copied and included to this library.
+> [!NOTE]
+> This library uses the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers are provided by Espressid and have already been copied and included to this library.
 
 ## How to use
 
@@ -64,10 +64,10 @@ This demo provides:
 - User Interface created using the SquareLine Studio GUI generator.
 - Read the CdS (light sensor)
 - Control of the LEDs
-- Works for all known boards
+- Works for all known Sunton boards (and more): see [Sunton Boards information](https://github.com/rzeldent/platformio-espressif32-sunton)
 - Full source code
 
-The next sections will guide you though the process of creating an application. However, some knowledge of PlatformIO, C/C++ and LVGL is required!
+The next sections will guide you though the process of creating an application. However, knowledge of PlatformIO, C/C++ and LVGL is required!
 
 If you run into problems, first try to open a discussion on the [github esp32-smartdisplay discussion board](https://github.com/rzeldent/esp32-smartdisplay/discussions).
 
@@ -82,22 +82,22 @@ Make sure you have PlatformIO installed and functional. Follow the documentation
 
 ### Step 2: Boards definitions
 
-The board definitions required for this library are defined in the boards library [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton). This library must reside in the ```<project>/boards``` directory so PlatformIo will automatically recognize these boards.
+The board definitions required for this library are defined in the boards library [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton). This library must reside in the `<project>/boards` directory so PlatformIo will automatically recognize these boards.
 
-**It is recommended to use ```git submodule``` to include these board definitions automatically.**
+**It is recommended to use `git submodule` to include these board definitions automatically.**
 
->[!TIP]
->If you already have a project, clone it with the ```git clone --recurse-submodules```. If creating a new project, use ```git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards``` to add them to your project as a submodule.
+> [!TIP]
+> If you already have a project, clone it with the `git clone --recurse-submodules`. If creating a new project, use `git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards` to add them to your project as a submodule.
 
 ### Step 3: Create a new project
 
 Use the standard PlatformIO create project to start a new project. When using a new PlatformIO installation these boards, defined in [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton), are not present. Just use a known ESP32 board and correct this later in the platformIO file.
 
-Optionally, you can copy the boards definition to the ```<home>/.platformio\platforms\espressif32\boards``` directory to have them always available but it is probably easier to create the project, add the boards as a git submodule and change the board afterwards. For each supported board there is a board definition.
+Optionally, you can copy the boards definition to the `<home>/.platformio\platforms\espressif32\boards` directory to have them always available but it is probably easier to create the project, add the boards as a git submodule and change the board afterwards. For each supported board there is a board definition.
 
 ### Step 4: Add this library to your project
 
-To add this library (and its dependency on LVGL) add the following line to the ```platformio.ini``` file:
+To add this library (and its dependency on LVGL) add the following line to the `platformio.ini` file:
 
 From the platformIO registry (version 2.0.x):
 
@@ -115,15 +115,14 @@ This will automatically download the library, the LVGL library (as a dependency)
 
 ### Step 5: Create a settings file for LVGL
 
-LVGL needs a configuration file; ```lv_conf.h```. This file contains information about the fonts, color depths, default background, styles, etc...
-The default LVGL template can be found in the LVGL library at the location: ```lvgl/lv_conf_template.h```.
-This file must be copied to the include directory and renamed to ```lvgl_conf.h```. Also the ``#if 0`` must be removed to enable the file to be included.
-More information about setting up a project with LVGL can be obtained at [LVGL get-started/quick-overview](https://docs.lvgl.io/master/get-started/quick-overview.html#add-lvgl-into-your-project).
-I suggest to put the ```lv_conf.h``` file in the include directory and set the build flags to specify the location of the file, see below.
+LVGL needs a configuration file; `lv_conf.h`. This file contains information about the fonts, color depths, default background, styles, etc...
+The default LVGL template can be found in the LVGL library at the location: `lvgl/lv_conf_template.h`.
+This file must be copied to the include directory and renamed to `lvgl_conf.h`. Also the `#if 0` must be removed to enable the file to be included.
 
->[!TIP]
->LVGL can also be downloaded manually from: [https://github.com/lvgl/lvgl/archive/master.zip](https://github.com/lvgl/lvgl/archive/master.zip) to extract the template.
->The template can also be copied from the demo application.
+This file can immediately be used and is valid. Some modifications might be required fore additional features.
+
+More information about setting up a project with LVGL can be obtained at [LVGL get-started/quick-overview](https://docs.lvgl.io/master/get-started/quick-overview.html#add-lvgl-into-your-project).
+I suggest to put the `lv_conf.h` file in the include directory and set the build flags to specify the location of the file, see below.
 
 Important settings are:
 
@@ -134,22 +133,6 @@ Important settings are:
   #define LV_COLOR_DEPTH 16
   ```
 
-- Because of the SPI interface, the bytes are sent in big endian format so this must be corrected.
-  The RGB panel interface takes care of this by swapping the GPIO lines but for the SPI controllers this is not optimal. More information about this can be found [below](#lv_color_16_swap).
-
-  ```h
-  /*Swap the 2 bytes of RGB565 color. Useful if the display has an 8-bit interface (e.g. SPI)*/
-  #define LV_COLOR_16_SWAP 1
-  ```
-
-- To have a time reference use the milliseconds reference for the Arduino
-
-  ```h
-  /*Use a custom tick source that tells the elapsed time in milliseconds and enables this code.*/
-  /*It removes the need to manually update the tick with `lv_tick_inc()`)*/
-  #define LV_TICK_CUSTOM 1
-  ```
-
 - For debugging, enable CPU usage, FPS (Frames per Second) and memory defragmentation
 
   ```h
@@ -157,25 +140,7 @@ Important settings are:
   #define LV_USE_MEM_MONITOR 1
   ```
 
-- (Optionally) Include additional fonts.
-
-  ```h
-  ...
-  #define LV_FONT_MONTSERRAT_22 1
-  ...
-  ```
-
-- Optionally, only enable widgets that are used to save on code
-
-  ```h
-  #define LV_USE_ARC        1
-  #define LV_USE_BAR        1
-  #define LV_USE_BTN        1
-  #define LV_USE_BTNMATRIX  1
-  ...
-  ```
-
-For debugging it is possible to enable logging from LVGL. The library will output to the debugging output (using ```lv_log_register_print_cb```).
+For debugging it is possible to enable logging from LVGL. The library will output to the debugging output (using `lv_log_register_print_cb`).
 To enable logging, set the define:
 
 ```h
@@ -183,17 +148,62 @@ To enable logging, set the define:
 #define LV_USE_LOG 1
 ```
 
-By default the logging is only ```LV_LOG_LEVEL_WARN``` but can be adjusted in the ```lv_conf.h```.
+By default the logging is only `LV_LOG_LEVEL_WARN` but can be adjusted in the `lv_conf.h`.
 
-More information about the LVGL configuration can be found in the excellent [LVGL documentation](https://docs.lvgl.io/8.3/index.html).
+To enable additional decoding options, libraries or widgets, enable them in the lv_conf.ini file by setting a LV_USE_xxxx to 1.
+These are disabled by default.
 
->[!WARNING]
->After the library has been build, changes in the lv_conf.h are no longer applied because libraries are cached.
->To apply these settings, delete the ```.pio``` directory so the libraries will be rebuild.
+```cpp
+//API for LittleFs.
+#define LV_USE_FS_LITTLEFS 0
+//LODEPNG decoder library
+#define LV_USE_LODEPNG 0
+//PNG decoder(libpng) library
+#define LV_USE_LIBPNG 0
+//BMP decoder library
+#define LV_USE_BMP 0
+// JPG + split JPG decoder library.
+#define LV_USE_TJPGD 0
+// libjpeg-turbo decoder library.
+#define LV_USE_LIBJPEG_TURBO 0
+//GIF decoder library
+#define LV_USE_GIF 0
+//Decode bin images to RAM
+#define LV_BIN_DECODER_RAM_LOAD 0
+//RLE decompress library
+#define LV_USE_RLE 0
+//QR code library
+#define LV_USE_QRCODE 0
+//Barcode code library
+#define LV_USE_BARCODE 0
+//FreeType library
+#define LV_USE_FREETYPE 0
+// Built-in TTF decoder
+#define LV_USE_TINY_TTF 0
+//Rlottie library
+#define LV_USE_RLOTTIE 0
+//Enable Vector Graphic APIs
+#define LV_USE_VECTOR_GRAPHIC  0
+//Enable ThorVG (vector graphics library) from the src/libs folder
+#define LV_USE_THORVG_INTERNAL 0
+//Use lvgl built-in LZ4 lib
+#define LV_USE_LZ4_INTERNAL  0
+//Use external LZ4 library
+#define LV_USE_LZ4_EXTERNAL  0
+//FFmpeg library for image decoding and playing videos
+#define LV_USE_FFMPEG 0
+```
+
+More information about the LVGL configuration can be found in the excellent [LVGL documentation](https://docs.lvgl.io).
+
+
+> [!WARNING]
+> After the library has been build, changes in the lv_conf.h are no longer applied because libraries are cached.
+> To apply these settings, delete the `.pio` directory so the libraries will be rebuild.
 
 ### Step 6: Copy the build flags below in your project
 
-Especially the definition of the LV_CONF_PATH is critical, this must point to an **absolute path** where the ```lv_conf.h``` file is located. More about this in the [section below](#more-on-lv_confh).
+Especially the definition of the LV_CONF_PATH is critical, this must point to an **absolute path** where the `lv_conf.h` file is located. More about this in the [section below](#more-on-lv_confh).
 
 ```ini
 build_flags =
@@ -216,26 +226,32 @@ The -Wall flag can also be removed but outputs all the warnings.
 
 ### Step 7: Initialize the display (and touch) in your project
 
-To enable to display in your project call the void ```smartdisplay_init()``` function at startup and optionally set the orientation:
+To enable to display in your project call the void `smartdisplay_init()` function at startup and optionally set the orientation:
 
 ```cpp
 void setup()
 {
   smartdisplay_init();
 
-  auto disp = lv_disp_get_default();
-  // lv_disp_set_rotation(disp, LV_DISP_ROT_90);
-  // lv_disp_set_rotation(disp, LV_DISP_ROT_180);
-  // lv_disp_set_rotation(disp, LV_DISP_ROT_270);
+  auto display = lv_display_get_default();
+  // lv_display_set_rotation(display, LV_DISPLAY_ROTATION_90);
+  // lv_display_set_rotation(display, LV_DISPLAY_ROTATION_180);
+  // lv_display_set_rotation(display, LV_DISPLAY_ROTATION_270);
 }
 ```
 
-and update the timer (and drawing) in the loop:
+and update tick update and drawing in the loop:
 
 ```cpp
+auto lv_last_tick = millis();
+
 void loop()
 {
-  lv_timer_handler();
+    // Update the ticker
+    lv_tick_inc(now - lv_last_tick);
+    lv_last_tick = now;
+    // Update the UI
+    lv_timer_handler();
 }
 ```
 
@@ -248,7 +264,7 @@ There is a good UI designer available for LVGL and free (but some limitations) f
 This tool makes it easy to create transitions, insert images, attach events, work with round screens etc.. A big advantage is that the UI C-code is generated!
 SquareLine als provides drivers but only export the ui files!
 
-In the project settings change the include ```lvgl/lvgl.h``` to ```lvgl.h```.
+In the project settings change the include `lvgl/lvgl.h` to `lvgl.h`.
 
 ## Step 9: Compile, upload and enjoy
 
@@ -263,6 +279,38 @@ If there are problems:
 - Refer to the [discussions](https://github.com/rzeldent/esp32-smartdisplay/discussions),
 - If all fails, submit an [issue](https://github.com/rzeldent/esp32-smartdisplay/issues), no SLA as this is done in my spare time.
 
+## Porting from LVGL 8.3.9
+
+There are breaking changes in LVGL. Please refer to the documentation and forums provided by LVGL to port your application.
+
+### lv_conf.h
+
+The lv_conf.h template has been changed quite extensively.
+The best way to start is to do a fresh start using the template from ```lvgl\lv_conf_template.h```.
+Copy this to your include directory and and rename this to ```lv_conf.h```.
+Next, update the ```#if 0``` on top to ```#if 1``` so the wil will be included:
+
+```c++
+/* clang-format off */
+#if 1 /*Set it to "1" to enable content*/
+```
+
+### Ticker
+
+The ticker needs to be updated to keep track of time. In LVGL 8.3.8 this was done by setting: ```#define LV_TICK_CUSTOM 1```.
+Now it has to be updated by your application. A solution is to put this in the loop() and combine this with the ```lv_timer_handler()```
+
+```c++
+    // Update the ticker
+    static auto lv_last_tick = millis();
+
+    auto const now = millis();
+    lv_tick_inc(now - lv_last_tick);
+    lv_last_tick = now;
+    // Update the UI
+    lv_timer_handler();
+```
+
 ## More on lv_conf.h
 
 To use the LVGL library, a `lv_conf.h` file is required to define the settings for LVGL.
@@ -275,26 +323,8 @@ To include it globally, the define must be (for the include directory):
   -D LV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
 ```
 
->[!TIP]
->The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/libdeps/<board>/lvgl/lv_conf_template.h`.
-
-## LV_COLOR_16_SWAP
-
-The LVGL library has a define called **LV_COLOR_16_SWAP** in the ```lvgl_conf.h```. The value can be 1 or 0.
-This variable will swap the byte order of the lv_color16_t. This is required because the SPI is by default LSB first.
-
-Setting this variable to true is recommended for the SPI interfaces (GC9A01A, ST7789, ILI9341 and ST7796). If not, a warning will be issued but the code should work. The parallel 16 bits panels without interface are not affected by this; the GPIO pin layout will change accordingly.
-
-This makes it easier to have only one definition for lv_conf.h and SquareLine.
-
->[!IMPORTANT]
->If this is not done, the code will run but swapping will be done runtime (degrading a bit the performance).
->So it is preferable to always set the LV_COLOR_16_SWAP to 1 when using SPI.
-
-Additionally, when using the [SquareLine Studio](https://squareline.io/) for designing the user interface, the display properties (under the project settings) must match this variable.
-It needs to be set both in `lv_conf.h` configuration file and the corresponding display properties (16 bit swap) in [SquareLine Studio](https://squareline.io/).
-
-![SquareLine display properties](assets/images/Squareline-display-properties.png)
+> [!TIP]
+> The template for the `lv_conf.h` file can be found in the LVGL library at `.pio/libdeps/<board>/lvgl/lv_conf_template.h`.
 
 ## LVGL initialization Functions
 
@@ -312,7 +342,7 @@ The range is from [0, 1] so 0 is off, 0.5 is half and 1 is full brightness.
 
 ### void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval)
 
-This function can be called to periodically call a user defined function to set the brightness of the display. If a NULL value is passed for the parameter ```cb``` the functionality is disabled and the display is set to 50% brightness.
+This function can be called to periodically call a user defined function to set the brightness of the display. If a NULL value is passed for the parameter `cb` the functionality is disabled and the display is set to 50% brightness.
 
 The callback function must have the following format:
 
@@ -324,7 +354,7 @@ float smartdisplay_lcd_adaptive_brightness_function)()
 }
 ```
 
-If the board has a CdS sensor, a callback is automatically provided. The callback can be set to the internal function ```smartdisplay_lcd_set_brightness_cb```.
+If the board has a CdS sensor, a callback is automatically provided. The callback can be set to the internal function `smartdisplay_lcd_set_brightness_cb`.
 This function will adjust the brightness to the value read from the CdS sensor on the front of the display.
 
 So, to enable adaptive brightness using the CdS sensor, call
@@ -343,7 +373,7 @@ A true value means: ON (LED is lit), false turns off the led.
 This function allows only 8 LED colors:
 
 | R   | G   | B   | Color   |
-|---  |---  |---  |---      |
+| --- | --- | --- | ------- |
 | 0   | 0   | 0   | Black   |
 | 1   | 0   | 0   | Red     |
 | 0   | 1   | 0   | Green   |
@@ -362,43 +392,42 @@ This data structure holds the calibration data for the touch display. If the val
 ### touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3])
 
 This function returns the calibration data based on 3 points. The screen array contains the (selected) calibration points on the screen and the touch array the actual measured position.
-The data returned can set in to the ```touch_calibration_data```
+The data returned can set in to the `touch_calibration_data`
 
 ## Rotation of the display and touch
 
 The library supports rotating for most of the controllers using hardware. Support for the direct 16bits parallel connection is done using software emulation (in LVGL). Rotating the touch is done by LVGL when rotating.
 
 From the LVGL documentation:
-*The rotation values are relative to how you would rotate the physical display in the clockwise direction.
-Thus, LV_DISP_ROT_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.*
+_The rotation values are relative to how you would rotate the physical display in the clockwise direction.
+Thus, LV_DISP_ROT_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate._
 
-Rotating is done calling the ```lv_disp_set_rotation``` function in the LVGL library with the rotation:
+Rotating is done calling the `lv_display_set_rotation` function in the LVGL library with the rotation:
 
 ```c++
-  auto disp = lv_disp_get_default();
-  lv_disp_set_rotation(disp, LV_DISP_ROT_90);
+  auto display = lv_display_get_default();
+  lv_display_set_rotation(display, LV_DISPLAY_ROTATION_90);
 ```
 
 Some boards are around that have flipped screens, this is probably due to differences during tha manufacturing or using different TFTs. It is possible to correct these boards overriding the default defines.
 
 To adjust the display and touch to the default (LV_DISP_ROT_NONE) there are 6 defines in the boards definition:
 
-| Name              | Description   |
-|---                |---      |
-| DISPLAY_SWAP_XY   | Swaps the X and Y coordinates for the display |
-| DISPLAY_MIRROR_X  | Mirrors the X coordinate for the display      |
-| DISPLAY_MIRROR_Y  | Mirrors the Y coordinate for the display      |
-| TOUCH_SWAP_XY     | Swaps the X and Y coordinates for the touch   |
-| TOUCH_MIRROR_X    | Mirrors the X coordinate for the touch        |
-| TOUCH_MIRROR_Y    | Mirrors the Y coordinate for the touch        |
-
+| Name             | Description                                   |
+| ---------------- | --------------------------------------------- |
+| DISPLAY_SWAP_XY  | Swaps the X and Y coordinates for the display |
+| DISPLAY_MIRROR_X | Mirrors the X coordinate for the display      |
+| DISPLAY_MIRROR_Y | Mirrors the Y coordinate for the display      |
+| TOUCH_SWAP_XY    | Swaps the X and Y coordinates for the touch   |
+| TOUCH_MIRROR_X   | Mirrors the X coordinate for the touch        |
+| TOUCH_MIRROR_Y   | Mirrors the Y coordinate for the touch        |
 
 ## Appendix: Template to support ALL the boards
 
-The platformio.ini file below supports all the boards. This is useful when running your application on multiple boards. If using one board only, uncomment the ```default_envs``` for that board in the ```[platformio]``` section.
+The platformio.ini file below supports all the boards. This is useful when running your application on multiple boards. If using one board only, uncomment the `default_envs` for that board in the `[platformio]` section.
 
->[!TIP]
->When building using a pipeline (github action), the ini below, with all the boards, can be used automatically create builds for all the boards.
+> [!TIP]
+> When building using a pipeline (github action), the ini below, with all the boards, can be used automatically create builds for all the boards.
 
 ```ini
 [platformio]
@@ -453,7 +482,7 @@ build_flags =
     -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
     # LVGL settings
     #-DLV_CONF_PATH=${PROJECT_INCLUDE_DIR}/lv_conf.h
-    
+
 lib_deps =
     https://github.com/rzeldent/esp32-smartdisplay.git
 
@@ -558,8 +587,8 @@ board = esp32-s3touchlcd7
 
 The following libraries are used from the [Espressif component registry](https://components.espressif.com/):
 
-| Name                  | Version |
-|---                    |---      |
+| Name                                                                                                                                              | Version |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | [ESP_LCD_PANEL_IO_ADDITIONS](https://components.espressif.com/api/download/?object_type=component&object_id=fc4eba6f-2091-4b28-8703-df58c6c975c7) | v1.0.0  |
 | [ESP IO Expander Component](https://components.espressif.com/api/download/?object_type=component&object_id=44022a0f-c4b2-40c0-b2a2-40d7b648cb52)  | v1.0.0  |
 | [ESP LCD Touch](https://components.espressif.com/api/download/?object_type=component&object_id=bb4a4d94-2827-4695-84d1-1b53383b8001)              | v1.1.1  |
@@ -567,6 +596,7 @@ The following libraries are used from the [Espressif component registry](https:/
 ## Version history
 
 - July 2024
+  - LVGL 9.1
   - Update to LVGL 8.4.0
   - Version 2.0.10
 - March 2024

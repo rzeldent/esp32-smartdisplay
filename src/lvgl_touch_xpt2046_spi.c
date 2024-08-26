@@ -4,9 +4,9 @@
 #include <esp_touch_xpt2046.h>
 #include <driver/spi_master.h>
 
-void xpt2046_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
+void xpt2046_lvgl_touch_cb(lv_indev_t *indev, lv_indev_data_t *data)
 {
-    esp_lcd_touch_handle_t touch_handle = drv->user_data;
+    esp_lcd_touch_handle_t touch_handle = indev->user_data;
 
     uint16_t x[1];
     uint16_t y[1];
@@ -27,9 +27,10 @@ void xpt2046_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
         data->state = LV_INDEV_STATE_RELEASED;
 }
 
-void lvgl_touch_init(lv_indev_drv_t *drv)
+lv_indev_t *lvgl_touch_init()
 {
-    log_v("drv:0x%08x", drv);
+    lv_indev_t *indev = lv_indev_create();
+    log_v("indev:0x%08x", indev);
 
     // Create SPI bus only if not already initialized (S035R shares the SPI bus)
     const spi_bus_config_t spi_bus_config = {
@@ -47,7 +48,7 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
         .dc_gpio_num = XPT2046_SPI_CONFIG_DC_GPIO_NUM,
         .spi_mode = XPT2046_SPI_CONFIG_SPI_MODE,
         .pclk_hz = XPT2046_SPI_CONFIG_PCLK_HZ,
-        .user_ctx = drv,
+        .user_ctx = indev,
         .trans_queue_depth = XPT2046_SPI_CONFIG_TRANS_QUEUE_DEPTH,
         .lcd_cmd_bits = XPT2046_SPI_CONFIG_LCD_CMD_BITS,
         .lcd_param_bits = XPT2046_SPI_CONFIG_LCD_PARAM_BITS,
@@ -75,9 +76,11 @@ void lvgl_touch_init(lv_indev_drv_t *drv)
     esp_lcd_touch_handle_t touch_handle;
     ESP_ERROR_CHECK(esp_lcd_touch_new_spi_xpt2046(io_handle, &touch_config, &touch_handle));
 
-    drv->type = LV_INDEV_TYPE_POINTER;
-    drv->user_data = touch_handle;
-    drv->read_cb = xpt2046_lvgl_touch_cb;
+    indev->type = LV_INDEV_TYPE_POINTER;
+    indev->user_data = touch_handle;
+    indev->read_cb = xpt2046_lvgl_touch_cb;
+
+    return indev;
 }
 
 #endif
