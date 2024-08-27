@@ -595,6 +595,9 @@ The following libraries are used from the [Espressif component registry](https:/
 
 ## Version history
 
+- August 2024
+  - LVGL 9.2
+  - New boards
 - July 2024
   - LVGL 9.1
   - Update to LVGL 8.4.0
