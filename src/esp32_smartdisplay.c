@@ -94,11 +94,11 @@ void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_
   log_v("adaptive_brightness_cb:0x%08x, interval:%u", cb, interval);
 
   // Delete current timer if any
-  if (update_brightness_timer)
+  if (update_brightness_timer != NULL)
     lv_timer_del(update_brightness_timer);
 
   // Use callback for intensity or 50% default
-  if (cb && interval > 0)
+  if (cb != NULL && interval > 0)
     update_brightness_timer = lv_timer_create(adaptive_brightness, interval, cb);
   else
     smartdisplay_lcd_set_backlight(0.5f);
