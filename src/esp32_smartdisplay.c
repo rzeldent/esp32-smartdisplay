@@ -107,7 +107,7 @@ void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_
 #ifdef BOARD_HAS_RGB_LED
 void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 {
-  log_d("R:%d, G:%d, B:%d", r, b, b);
+  log_d("R:%d, G:%d, B:%d", r, g, b);
 
   digitalWrite(RGB_LED_R, !r);
   digitalWrite(RGB_LED_G, !g);
