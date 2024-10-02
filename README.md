@@ -32,7 +32,7 @@ This library integrates seamlessly in [PlatformIO](https://platformio.org/) and 
 
 With the boards, there is a link supplied and there are a lot of examples present and this looks fine.... If you know your way around....
 
-These examples for [LVGL](https://lvgl.io/) depend on external libraries ([LCD_eSPI](https://github.com/Bodmer/LCD_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)) but also different touch drivers.
+These examples for [LVGL](https://lvgl.io/) depend on external libraries ([TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) or [LovyanGFX](https://github.com/lovyan03/LovyanGFX)) but also different touch drivers.
 However, when working with these libraries, I found out that these libraries had their flaws using these boards:
 
 - Lots of configuring to do before it all works,
