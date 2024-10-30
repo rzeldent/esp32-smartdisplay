@@ -13,6 +13,7 @@ bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_
 
 void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
+    // Hardware rotation is not supported
     const esp_lcd_panel_handle_t panel_handle = display->user_data;
 
     lv_display_rotation_t rotation = lv_display_get_rotation(display);
@@ -67,10 +68,6 @@ lv_display_t *lvgl_lcd_init()
     uint32_t drawBufferSize = px_size * LVGL_BUFFER_PIXELS;
     void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
     lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
-
-    // Hardware rotation is not supported
-    display->sw_rotate = 1;
-    display->rotation = LV_DISPLAY_ROTATION_0;
 
     // Create direct_io panel handle
     const esp_lcd_rgb_panel_config_t rgb_panel_config = {
