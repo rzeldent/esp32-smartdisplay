@@ -35,6 +35,6 @@
     "frameworks": "arduino",
     "platforms": "espressif32",
     "dependencies": {
-        "lvgl/lvgl": "9.2.0"
+        "lvgl/lvgl": "^9.2.1"
     }
 }

@@ -69,7 +69,7 @@ lv_display_t *lvgl_lcd_init()
     lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
     // Hardware rotation is not supported
-    display->sw_rotate = 1;
+    //display->sw_rotate = 1;
     display->rotation = LV_DISPLAY_ROTATION_0;
 
     // Create direct_io panel handle
