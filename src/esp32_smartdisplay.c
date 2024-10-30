@@ -193,9 +193,6 @@ void smartdisplay_init()
 #endif
   // Setup TFT display
   display = lvgl_lcd_init();
-  // Register callback for hardware rotation
-  // if (!display->sw_rotate)
-  //   lv_display_add_event_cb(display, lvgl_display_resolution_changed_callback, LV_EVENT_RESOLUTION_CHANGED, NULL);
 
   //  Clear screen
   lv_obj_clean(lv_scr_act());
@@ -213,31 +210,3 @@ void smartdisplay_init()
   lv_indev_enable(indev, true);
 #endif
 }
-
-// Called when driver resolution is updated (including rotation)
-// Top of the display is top left when connector is at the bottom
-// The rotation values are relative to how you would rotate the physical display in the clockwise direction.
-// Thus, LV_DISPLAY_ROTATION_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
-// void lvgl_display_resolution_changed_callback(lv_event_t *event)
-// {
-//   const esp_lcd_panel_handle_t panel_handle = display->user_data;
-//   switch (display->rotation)
-//   {
-//   case LV_DISPLAY_ROTATION_0:
-//     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
-//     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-//     break;
-//   case LV_DISPLAY_ROTATION_90:
-//     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
-//     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
-//     break;
-//   case LV_DISPLAY_ROTATION_180:
-//     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
-//     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, !DISPLAY_MIRROR_Y));
-//     break;
-//   case LV_DISPLAY_ROTATION_270:
-//     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, !DISPLAY_SWAP_XY));
-//     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, !DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
-//     break;
-//   }
-// }

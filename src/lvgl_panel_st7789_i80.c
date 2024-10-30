@@ -14,6 +14,7 @@ bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_i
 
 void st7789_lv_flush(lv_display_t *drv, const lv_area_t *area, uint8_t *px_map)
 {
+    // Hardware rotation is supported
     const esp_lcd_panel_handle_t panel_handle = drv->user_data;
     uint32_t pixels = lv_area_get_size(area);
     uint16_t *p = (uint16_t *)px_map;
@@ -34,10 +35,6 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
     uint32_t drawBufferSize = sizeof(lv_color_t) * LVGL_BUFFER_PIXELS;
     void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
     lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
-
-    // Hardware rotation is supported
-    //display->sw_rotate = 0;
-    display->rotation = LV_DISPLAY_ROTATION_0;
 
     pinMode(ST7789_RD_GPIO, OUTPUT);
     digitalWrite(ST7789_RD_GPIO, HIGH);

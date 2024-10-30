@@ -17,6 +17,7 @@ bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t panel_io_handle, esp_lcd_
 
 void gc9a01_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
+    // Hardware rotation is supported
     log_v("display:0x%08x, area:%0x%08x, color_map:0x%08x", display, area, px_map);
 
     esp_lcd_panel_handle_t panel_handle = display->user_data;
@@ -39,10 +40,6 @@ lv_display_t *lvgl_lcd_init()
     uint32_t drawBufferSize = sizeof(lv_color_t) * LVGL_BUFFER_PIXELS;
     void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
     lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
-
-    // Hardware rotation is supported
-//    display->sw_rotate = 0;
-    display->rotation = LV_DISPLAY_ROTATION_0;
 
     // Create SPI bus
     const spi_bus_config_t spi_bus_config = {
