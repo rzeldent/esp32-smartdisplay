@@ -204,8 +204,7 @@ esp_err_t esp_lcd_touch_new_spi_xpt2046(const esp_lcd_panel_io_handle_t io, cons
         const gpio_config_t cfg = {
             .pin_bit_mask = BIT64(config->int_gpio_num),
             .mode = GPIO_MODE_INPUT,
-            // If the user has provided a callback routine for the interrupt enable the interrupt mode on the negative edge.
-            .intr_type = config->interrupt_callback ? GPIO_INTR_NEGEDGE : GPIO_INTR_DISABLE};
+            .intr_type = config->levels.interrupt ? GPIO_INTR_POSEDGE : GPIO_INTR_NEGEDGE};
         if ((res = gpio_config(&cfg)) != ESP_OK)
         {
             free(th);
@@ -219,7 +218,7 @@ esp_err_t esp_lcd_touch_new_spi_xpt2046(const esp_lcd_panel_io_handle_t io, cons
             {
                 gpio_reset_pin(th->config.int_gpio_num);
                 free(th);
-                log_e("Registering INT callback failed");
+                log_e("Registering interrupt callback failed");
                 return res;
             }
         }
