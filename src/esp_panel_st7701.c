@@ -192,54 +192,20 @@ esp_err_t st7701_invert_color(esp_lcd_panel_t *panel, bool invert)
     return esp_lcd_panel_invert_color(ph->lcd_panel, invert);
 }
 
-esp_err_t st7701_update_madctl(st7701_panel_t *ph)
-{
-    esp_err_t res;
-    if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_MADCTL, &ph->madctl, 1)) != ESP_OK)
-    {
-        log_e("Sending LCD_CMD_MADCTL failed");
-        return res;
-    }
-
-    return ESP_OK;
-}
-
 esp_err_t st7701_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
 {
     log_v("panel:0x%08x, mirror_x:%d, mirror_y:%d", panel, mirror_x, mirror_y);
-    if (panel == NULL)
-        return ESP_ERR_INVALID_ARG;
 
     st7701_panel_t *ph = (st7701_panel_t *)panel;
-
-    if (mirror_x)
-        ph->madctl |= LCD_CMD_MX_BIT;
-    else
-        ph->madctl &= ~LCD_CMD_MX_BIT;
-
-    if (mirror_y)
-        ph->madctl |= LCD_CMD_MY_BIT;
-    else
-        ph->madctl &= ~LCD_CMD_MY_BIT;
-
-    return st7701_update_madctl(ph);
-    //return esp_lcd_panel_mirror(ph->lcd_panel, mirror_x, mirror_y);
+    return esp_lcd_panel_mirror(ph->lcd_panel, mirror_x, mirror_y);
 }
 
 esp_err_t st7701_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
 {
     log_v("panel:0x%08x, swap_xy:%d", panel, swap_xy);
-    if (panel == NULL)
-        return ESP_ERR_INVALID_ARG;
 
     st7701_panel_t *ph = (st7701_panel_t *)panel;
-    if (swap_xy)
-        ph->madctl |= LCD_CMD_MV_BIT;
-    else
-        ph->madctl &= ~LCD_CMD_MV_BIT;
-
-    return st7701_update_madctl(ph);
-//    return esp_lcd_panel_swap_xy(ph->lcd_panel, swap_xy);
+    return esp_lcd_panel_swap_xy(ph->lcd_panel, swap_xy);
 }
 
 esp_err_t st7701_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)

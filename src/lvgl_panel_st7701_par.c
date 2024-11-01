@@ -15,9 +15,49 @@ bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_
 
 void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
-    // Hardware rotation is supported
+    // Hardware rotation is not supported
     const esp_lcd_panel_handle_t panel_handle = display->user_data;
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+
+    lv_display_rotation_t rotation = lv_display_get_rotation(display);
+    if (rotation == LV_DISPLAY_ROTATION_0)
+    {
+        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+        return;
+    }
+
+    // Rotated
+    int32_t w = lv_area_get_width(area);
+    int32_t h = lv_area_get_height(area);
+    lv_color_format_t cf = lv_display_get_color_format(display);
+    uint32_t px_size = lv_color_format_get_size(cf);
+    size_t buf_size = w * h * px_size;
+    log_v("alloc rotation buffer to: %u bytes", buf_size);
+    void *rotation_buffer = heap_caps_malloc(buf_size, LVGL_BUFFER_MALLOC_FLAGS);
+    assert(rotation_buffer != NULL);
+
+    uint32_t w_stride = lv_draw_buf_width_to_stride(w, cf);
+    uint32_t h_stride = lv_draw_buf_width_to_stride(h, cf);
+
+    switch (rotation)
+    {
+    case LV_DISPLAY_ROTATION_90:
+        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
+        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->y1, display->ver_res - area->x1 - w, area->y1 + h, display->ver_res - area->x1, rotation_buffer));
+        break;
+    case LV_DISPLAY_ROTATION_180:
+        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, w_stride, rotation, cf);
+        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->x1 - w, display->ver_res - area->y1 - h, display->hor_res - area->x1, display->ver_res - area->y1, rotation_buffer));
+        break;
+    case LV_DISPLAY_ROTATION_270:
+        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
+        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->y2 - 1, area->x2 - w + 1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer));
+        break;
+    default:
+        assert(false);
+        break;
+    }
+
+    free(rotation_buffer);
 };
 
 lv_display_t *lvgl_lcd_init()
