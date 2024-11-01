@@ -212,18 +212,18 @@ esp_err_t st7701_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
 
     st7701_panel_t *ph = (st7701_panel_t *)panel;
 
-    if (mirror_x)
-        ph->madctl |= LCD_CMD_MX_BIT;
-    else
-        ph->madctl &= ~LCD_CMD_MX_BIT;
+    // if (mirror_x)
+    //     ph->madctl |= LCD_CMD_MX_BIT;
+    // else
+    //     ph->madctl &= ~LCD_CMD_MX_BIT;
 
-    if (mirror_y)
-        ph->madctl |= LCD_CMD_MY_BIT;
-    else
-        ph->madctl &= ~LCD_CMD_MY_BIT;
+    // if (mirror_y)
+    //     ph->madctl |= LCD_CMD_MY_BIT;
+    // else
+    //     ph->madctl &= ~LCD_CMD_MY_BIT;
 
-    return st7701_update_madctl(ph);
-    //    return esp_lcd_panel_mirror(ph->lcd_panel, mirror_x, mirror_y);
+    // return st7701_update_madctl(ph);
+    return esp_lcd_panel_mirror(ph->lcd_panel, mirror_x, mirror_y);
 }
 
 esp_err_t st7701_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
@@ -232,14 +232,14 @@ esp_err_t st7701_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
-    st7701_panel_t *ph = (st7701_panel_t *)panel;
-    if (swap_xy)
-        ph->madctl |= LCD_CMD_MV_BIT;
-    else
-        ph->madctl &= ~LCD_CMD_MV_BIT;
+    // st7701_panel_t *ph = (st7701_panel_t *)panel;
+    // if (swap_xy)
+    //     ph->madctl |= LCD_CMD_MV_BIT;
+    // else
+    //     ph->madctl &= ~LCD_CMD_MV_BIT;
 
-    return st7701_update_madctl(ph);
-    //    return esp_lcd_panel_swap_xy(ph->lcd_panel, swap_xy);
+    // return st7701_update_madctl(ph);
+    return esp_lcd_panel_swap_xy(ph->lcd_panel, swap_xy);
 }
 
 esp_err_t st7701_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
