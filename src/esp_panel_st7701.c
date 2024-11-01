@@ -232,7 +232,7 @@ esp_err_t st7701_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
-    // st7701_panel_t *ph = (st7701_panel_t *)panel;
+    st7701_panel_t *ph = (st7701_panel_t *)panel;
     // if (swap_xy)
     //     ph->madctl |= LCD_CMD_MV_BIT;
     // else
