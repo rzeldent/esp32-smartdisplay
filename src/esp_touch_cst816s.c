@@ -86,6 +86,12 @@ esp_err_t cst816s_reset(esp_lcd_touch_handle_t th)
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
+    if (th->config.rst_gpio_num == GPIO_NUM_NC)
+    {
+        log_w("No RST pin defined");
+        return ESP_OK;
+    }
+
     esp_err_t res;
     // Set RST active
     if ((res = gpio_set_level(th->config.rst_gpio_num, th->config.levels.reset)) != ESP_OK)
@@ -293,7 +299,9 @@ esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, cons
         {
             if ((res = esp_lcd_touch_register_interrupt_callback(th, config->interrupt_callback)) != ESP_OK)
             {
-                gpio_reset_pin(th->config.int_gpio_num);
+                if (config->int_gpio_num != GPIO_NUM_NC)
+                    gpio_reset_pin(th->config.int_gpio_num);
+
                 free(th);
                 log_e("Registering interrupt callback failed");
                 return res;
