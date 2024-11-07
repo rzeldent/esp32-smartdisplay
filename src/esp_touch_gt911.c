@@ -82,6 +82,12 @@ esp_err_t gt911_reset(esp_lcd_touch_handle_t th)
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
+    if (th->config.rst_gpio_num == GPIO_NUM_NC)
+    {
+        log_w("No RST pin defined");
+        return ESP_OK;
+    }
+
     esp_err_t res;
     // Set RST active
     if ((res = gpio_set_level(th->config.rst_gpio_num, th->config.levels.reset)) != ESP_OK)
