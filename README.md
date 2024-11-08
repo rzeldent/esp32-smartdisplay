@@ -599,7 +599,7 @@ The following libraries are used from the [Espressif component registry](https:/
   - LVGL 9.2.2
   - Software rotation flag
   - Fix for non connected RST in touch drivers
-  - Fix for 
+  - Fix for esp32-3248S035C buffer size
 - October 2024
   - Fix for LVGL 9.2.2 that removed the sw_rotate flag
 - August 2024
