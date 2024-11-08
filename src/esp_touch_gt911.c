@@ -82,6 +82,12 @@ esp_err_t gt911_reset(esp_lcd_touch_handle_t th)
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
+    if (th->config.rst_gpio_num == GPIO_NUM_NC)
+    {
+        log_w("No RST pin defined");
+        return ESP_OK;
+    }
+
     esp_err_t res;
     // Set RST active
     if ((res = gpio_set_level(th->config.rst_gpio_num, th->config.levels.reset)) != ESP_OK)
@@ -397,52 +403,18 @@ esp_err_t esp_lcd_touch_new_i2c_gt911(const esp_lcd_panel_io_handle_t io, const 
     memcpy(&th->config, config, sizeof(esp_lcd_touch_config_t));
     portMUX_INITIALIZE(&th->data.lock);
 
-    if (config->int_gpio_num != GPIO_NUM_NC)
+    // Initialize RST pin
+    if (config->rst_gpio_num != GPIO_NUM_NC)
     {
-        esp_rom_gpio_pad_select_gpio(config->int_gpio_num);
+        esp_rom_gpio_pad_select_gpio(config->rst_gpio_num);
         const gpio_config_t cfg = {
-            .pin_bit_mask = BIT64(config->int_gpio_num),
-            .mode = GPIO_MODE_INPUT,
-            // If the user has provided a callback routine for the interrupt enable the interrupt mode on the negative edge.
-            .intr_type = config->interrupt_callback ? GPIO_INTR_NEGEDGE : GPIO_INTR_DISABLE};
+            .pin_bit_mask = BIT64(config->rst_gpio_num),
+            .mode = GPIO_MODE_OUTPUT};
         if ((res = gpio_config(&cfg)) != ESP_OK)
         {
             free(th);
-            log_e("Configuring GPIO for INT failed");
+            log_e("Configuring or setting GPIO for RST failed");
             return res;
-        }
-
-        if (config->interrupt_callback != NULL)
-        {
-            if ((res = esp_lcd_touch_register_interrupt_callback(th, config->interrupt_callback)) != ESP_OK)
-            {
-                gpio_reset_pin(th->config.int_gpio_num);
-                free(th);
-                log_e("Registering INT callback failed");
-                return res;
-            }
-        }
-
-        if (config->rst_gpio_num != GPIO_NUM_NC)
-        {
-            esp_rom_gpio_pad_select_gpio(config->rst_gpio_num);
-            const gpio_config_t cfg = {
-                .pin_bit_mask = BIT64(config->rst_gpio_num),
-                .mode = GPIO_MODE_OUTPUT};
-            if ((res = gpio_config(&cfg)) != ESP_OK)
-            {
-                if (th->config.int_gpio_num != GPIO_NUM_NC)
-                {
-                    if (config->interrupt_callback != NULL)
-                        gpio_isr_handler_remove(th->config.int_gpio_num);
-
-                    gpio_reset_pin(th->config.int_gpio_num);
-                }
-
-                free(th);
-                log_e("Configuring or setting GPIO for RST failed");
-                return res;
-            }
         }
     }
 
@@ -460,6 +432,32 @@ esp_err_t esp_lcd_touch_new_i2c_gt911(const esp_lcd_panel_io_handle_t io, const 
         log_e("GT911 read info failed");
         gt911_del(th);
         return res;
+    }
+
+    if (config->int_gpio_num != GPIO_NUM_NC)
+    {
+        esp_rom_gpio_pad_select_gpio(config->int_gpio_num);
+        const gpio_config_t cfg = {
+            .pin_bit_mask = BIT64(config->int_gpio_num),
+            .mode = GPIO_MODE_INPUT,
+            .intr_type = config->levels.interrupt ? GPIO_INTR_POSEDGE : GPIO_INTR_NEGEDGE};
+        if ((res = gpio_config(&cfg)) != ESP_OK)
+        {
+            free(th);
+            log_e("Configuring GPIO for INT failed");
+            return res;
+        }
+
+        if (config->interrupt_callback != NULL)
+        {
+            if ((res = esp_lcd_touch_register_interrupt_callback(th, config->interrupt_callback)) != ESP_OK)
+            {
+                gpio_reset_pin(th->config.int_gpio_num);
+                free(th);
+                log_e("Registering interrupt callback failed");
+                return res;
+            }
+        }
     }
 
     log_d("handle:0x%08x", th);

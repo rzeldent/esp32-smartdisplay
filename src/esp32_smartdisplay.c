@@ -94,11 +94,11 @@ void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_
   log_v("adaptive_brightness_cb:0x%08x, interval:%u", cb, interval);
 
   // Delete current timer if any
-  if (update_brightness_timer)
+  if (update_brightness_timer != NULL)
     lv_timer_del(update_brightness_timer);
 
   // Use callback for intensity or 50% default
-  if (cb && interval > 0)
+  if (cb != NULL && interval > 0)
     update_brightness_timer = lv_timer_create(adaptive_brightness, interval, cb);
   else
     smartdisplay_lcd_set_backlight(0.5f);
@@ -107,7 +107,7 @@ void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_
 #ifdef BOARD_HAS_RGB_LED
 void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 {
-  log_d("R:%d, G:%d, B:%d", r, b, b);
+  log_d("R:%d, G:%d, B:%d", r, g, b);
 
   digitalWrite(RGB_LED_R, !r);
   digitalWrite(RGB_LED_G, !g);
@@ -193,9 +193,11 @@ void smartdisplay_init()
 #endif
   // Setup TFT display
   display = lvgl_lcd_init();
+
+#ifndef DISPLAY_SOFTWARE_ROTATION
   // Register callback for hardware rotation
-  if (!display->sw_rotate)
-    lv_display_add_event_cb(display, lvgl_display_resolution_changed_callback, LV_EVENT_RESOLUTION_CHANGED, NULL);
+  lv_display_add_event_cb(display, lvgl_display_resolution_changed_callback, LV_EVENT_RESOLUTION_CHANGED, NULL);
+#endif
 
   //  Clear screen
   lv_obj_clean(lv_scr_act());
@@ -214,10 +216,11 @@ void smartdisplay_init()
 #endif
 }
 
+#ifndef DISPLAY_SOFTWARE_ROTATION
 // Called when driver resolution is updated (including rotation)
 // Top of the display is top left when connector is at the bottom
 // The rotation values are relative to how you would rotate the physical display in the clockwise direction.
-// Thus, LV_DISPLAY_ROTATION_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
+// So, LV_DISPLAY_ROTATION_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
 void lvgl_display_resolution_changed_callback(lv_event_t *event)
 {
   const esp_lcd_panel_handle_t panel_handle = display->user_data;
@@ -241,3 +244,5 @@ void lvgl_display_resolution_changed_callback(lv_event_t *event)
     break;
   }
 }
+
+#endif

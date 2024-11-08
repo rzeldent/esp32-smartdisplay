@@ -86,6 +86,12 @@ esp_err_t cst816s_reset(esp_lcd_touch_handle_t th)
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
+    if (th->config.rst_gpio_num == GPIO_NUM_NC)
+    {
+        log_w("No RST pin defined");
+        return ESP_OK;
+    }
+
     esp_err_t res;
     // Set RST active
     if ((res = gpio_set_level(th->config.rst_gpio_num, th->config.levels.reset)) != ESP_OK)
@@ -259,14 +265,29 @@ esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, cons
     memcpy(&th->config, config, sizeof(esp_lcd_touch_config_t));
     portMUX_INITIALIZE(&th->data.lock);
 
+    // Reset controller
+    if ((res = cst816s_reset(th)) != ESP_OK)
+    {
+        log_e("GT911 reset failed");
+        cst816s_del(th);
+        return res;
+    }
+
+    // Read type and resolution
+    if ((res = cst816s_read_info(th)) != ESP_OK)
+    {
+        log_e("GT911 read info failed");
+        cst816s_del(th);
+        return res;
+    }
+
     if (config->int_gpio_num != GPIO_NUM_NC)
     {
         esp_rom_gpio_pad_select_gpio(config->int_gpio_num);
         const gpio_config_t cfg = {
             .pin_bit_mask = BIT64(config->int_gpio_num),
             .mode = GPIO_MODE_INPUT,
-            // If the user has provided a callback routine for the interrupt enable the interrupt mode on the negative edge.
-            .intr_type = config->interrupt_callback ? GPIO_INTR_NEGEDGE : GPIO_INTR_DISABLE};
+            .intr_type = config->levels.interrupt ? GPIO_INTR_POSEDGE : GPIO_INTR_NEGEDGE};
         if ((res = gpio_config(&cfg)) != ESP_OK)
         {
             free(th);
@@ -278,9 +299,11 @@ esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, cons
         {
             if ((res = esp_lcd_touch_register_interrupt_callback(th, config->interrupt_callback)) != ESP_OK)
             {
-                gpio_reset_pin(th->config.int_gpio_num);
+                if (config->int_gpio_num != GPIO_NUM_NC)
+                    gpio_reset_pin(th->config.int_gpio_num);
+
                 free(th);
-                log_e("Registering INT callback failed");
+                log_e("Registering interrupt callback failed");
                 return res;
             }
         }
@@ -305,22 +328,6 @@ esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, cons
                 log_e("Configuring or setting GPIO for RST failed");
                 return res;
             }
-        }
-
-        // Reset controller
-        if ((res = cst816s_reset(th)) != ESP_OK)
-        {
-            log_e("GT911 reset failed");
-            cst816s_del(th);
-            return res;
-        }
-
-        // Read type and resolution
-        if ((res = cst816s_read_info(th)) != ESP_OK)
-        {
-            log_e("GT911 read info failed");
-            cst816s_del(th);
-            return res;
         }
     }
 
