@@ -596,6 +596,7 @@ The following libraries are used from the [Espressif component registry](https:/
 ## Version history
 
 - November 2024
+  - Version 2.1.0
   - LVGL 9.2.2
   - Software rotation flag
   - Fix for non connected RST in touch drivers
