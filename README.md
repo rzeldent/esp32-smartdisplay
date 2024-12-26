@@ -117,7 +117,7 @@ This will automatically download the library, the LVGL library (as a dependency)
 
 LVGL needs a configuration file; `lv_conf.h`. This file contains information about the fonts, color depths, default background, styles, etc...
 The default LVGL template can be found in the LVGL library at the location: `lvgl/lv_conf_template.h`.
-This file must be copied to the include directory and renamed to `lvgl_conf.h`. Also the `#if 0` must be removed to enable the file to be included.
+This file must be copied to the include directory and renamed to `lv_conf.h`. Also the `#if 0` must be removed to enable the file to be included.
 
 This file can immediately be used and is valid. Some modifications might be required fore additional features.
 
@@ -203,20 +203,21 @@ More information about the LVGL configuration can be found in the excellent [LVG
 
 ### Step 6: Copy the build flags below in your project
 
-Especially the definition of the LV_CONF_PATH is critical, this must point to an **absolute path** where the `lv_conf.h` file is located. More about this in the [section below](#more-on-lv_confh).
+Especially the definition of the LV_CONF_PATH is critical, this must point to an **absolute path** where the `lv_conf.h` file is located.
+More about this in the [section below](#more-on-lv_confh). See below how this can be done with the use of the platformIO defines:
 
 ```ini
 build_flags =
     -Ofast
     -Wall
-    #-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE
-    #-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_DEBUG
-    #-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_INFO
-    # LVGL settings. Point to your lv_conf.h file
-    -D LV_CONF_PATH="${PROJECT_DIR}/example/lv_conf.h"
+    '-D BOARD_NAME="${this.board}"'
+    '-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_INFO'
+    #'-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_DEBUG'
+    #'-D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_VERBOSE'
+    '-D LV_CONF_PATH=${platformio.include_dir}/lv_conf.h'
 ```
 
-The line in the settings logs to the serial console but can be omitted for production builds:
+The line in the settings logs the INFO level to the serial console but can be omitted for production builds:
 
 ```ini
 -D CORE_DEBUG_LEVEL=ARDUHAL_LOG_LEVEL_NONE
@@ -229,6 +230,9 @@ The -Wall flag can also be removed but outputs all the warnings.
 To enable to display in your project call the void `smartdisplay_init()` function at startup and optionally set the orientation:
 
 ```cpp
+#include <Arduino.h>
+#include <esp32_smartdisplay.h>
+
 void setup()
 {
   smartdisplay_init();
@@ -247,6 +251,7 @@ auto lv_last_tick = millis();
 
 void loop()
 {
+    auto const now = millis();
     // Update the ticker
     lv_tick_inc(now - lv_last_tick);
     lv_last_tick = now;
