@@ -40,11 +40,11 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Create SPI bus
     const spi_bus_config_t spi_bus_config = {
-        .mosi_io_num = ST7796_SPI_BUS_MOSI_IO_NUM,
-        .miso_io_num = ST7796_SPI_BUS_MISO_IO_NUM,
-        .sclk_io_num = ST7796_SPI_BUS_SCLK_IO_NUM,
-        .quadwp_io_num = ST7796_SPI_BUS_QUADWP_IO_NUM,
-        .quadhd_io_num = ST7796_SPI_BUS_QUADHD_IO_NUM,
+        .mosi_io_num = ST7796_SPI_BUS_MOSI,
+        .miso_io_num = ST7796_SPI_BUS_MISO,
+        .sclk_io_num = ST7796_SPI_BUS_SCLK,
+        .quadwp_io_num = ST7796_SPI_BUS_QUADWP,
+        .quadhd_io_num = ST7796_SPI_BUS_QUADHD,
         .max_transfer_sz = ST7796_SPI_BUS_MAX_TRANSFER_SZ,
         .flags = ST7796_SPI_BUS_FLAGS,
         .intr_flags = ST7796_SPI_BUS_INTR_FLAGS};
@@ -53,8 +53,8 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Attach the LCD controller to the SPI bus
     const esp_lcd_panel_io_spi_config_t io_spi_config = {
-        .cs_gpio_num = ST7796_SPI_CONFIG_CS_GPIO_NUM,
-        .dc_gpio_num = ST7796_SPI_CONFIG_DC_GPIO_NUM,
+        .cs_gpio_num = ST7796_SPI_CONFIG_CS,
+        .dc_gpio_num = ST7796_SPI_CONFIG_DC,
         .spi_mode = ST7796_SPI_CONFIG_SPI_MODE,
         .pclk_hz = ST7796_SPI_CONFIG_PCLK_HZ,
         .on_color_trans_done = st7796_color_trans_done,
@@ -73,7 +73,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Create st7796 panel handle
     const esp_lcd_panel_dev_config_t panel_dev_config = {
-        .reset_gpio_num = ST7796_DEV_CONFIG_RESET_GPIO_NUM,
+        .reset_gpio_num = ST7796_DEV_CONFIG_RESET,
         .color_space = ST7796_DEV_CONFIG_COLOR_SPACE,
         .bits_per_pixel = ST7796_DEV_CONFIG_BITS_PER_PIXEL,
         .flags = {

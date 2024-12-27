@@ -63,7 +63,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Create direct_io panel handle
     esp_lcd_panel_io_i80_config_t io_i80_config = {
-        .cs_gpio_num = ST7789_IO_I80_CONFIG_CS_GPIO_NUM,
+        .cs_gpio_num = ST7789_IO_I80_CONFIG_CS,
         .pclk_hz = ST7789_IO_I80_CONFIG_PCLK_HZ,
         .on_color_trans_done = st7789_color_trans_done,
         .user_ctx = display,
@@ -82,7 +82,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Create ST7789 panel handle
     const esp_lcd_panel_dev_config_t panel_dev_config = {
-        .reset_gpio_num = ST7789_DEV_CONFIG_RESET_GPIO_NUM,
+        .reset_gpio_num = ST7789_DEV_CONFIG_RESET,
         .color_space = ST7789_DEV_CONFIG_COLOR_SPACE,
         .bits_per_pixel = ST7789_DEV_CONFIG_BITS_PER_PIXEL,
         .flags = {
