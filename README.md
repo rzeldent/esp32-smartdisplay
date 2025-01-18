@@ -51,7 +51,7 @@ This library depends on:
 - [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton)
 
 > [!NOTE]
-> This library uses the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers are provided by Espressid and have already been copied and included to this library.
+> This library uses the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers are provided by Espressif and have already been copied and included to this library.
 
 ## How to use
 
@@ -85,6 +85,13 @@ Make sure you have PlatformIO installed and functional. Follow the documentation
 The board definitions required for this library are defined in the boards library [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton). This library must reside in the `<project>/boards` directory so PlatformIo will automatically recognize these boards.
 
 **It is recommended to use `git submodule` to include these board definitions automatically.**
+
+In case the repository was opened without the submodules, the submodules need to be initialized and updated. To do this type at the command prompt:
+
+```bash
+git submodule init
+git submodule update
+```
 
 > [!TIP]
 > If you already have a project, clone it with the `git clone --recurse-submodules`. If creating a new project, use `git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards` to add them to your project as a submodule.
