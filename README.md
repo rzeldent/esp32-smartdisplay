@@ -3,6 +3,30 @@
 [![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/rzeldent/library/esp32_smartdisplay.svg)](https://registry.platformio.org/libraries/rzeldent/esp32_smartdisplay)
 
+## Table of Contents
+
+1. [Supported Boards](#supported-boards)
+2. [Why this Library](#why-this-library)
+3. [Dependencies](#dependencies)
+4. [How to Use](#how-to-use)
+    1. [Step 1: Download PlatformIO](#step-1-download-or-open-platformio)
+    2. [Step 2: Boards Definitions](#step-2-boards-definitions)
+    3. [Step 3: Create a New Project](#step-3-create-a-new-project)
+    4. [Step 4: Add this Library to Your Project](#step-4-add-this-library-to-your-project)
+    5. [Step 5: Create a Settings File for LVGL](#step-5-create-a-settings-file-for-lvgl)
+    6. [Step 6: Copy the Build Flags](#step-6-copy-the-build-flags-below-in-your-project)
+    7. [Step 7: Initialize the Display](#step-7-initialize-the-display-and-touch-in-your-project)
+    8. [Step 8: Create Your LVGL File](#step-8-optional-create-your-lvgl-file-or-use-squareline-studio-to-make-a-design)
+    9. [Step 9: Compile, Upload, and Enjoy](#step-9-compile-upload-and-enjoy)
+5. [Porting from LVGL 8.3.9](#porting-from-lvgl-839)
+6. [More on lv_conf.h](#more-on-lv_conf-h)
+7. [LVGL Initialization Functions](#lvgl-initialization-functions)
+8. [Rotation of the Display and Touch](#rotation-of-the-display-and-touch)
+9. [Appendix](#appendix)
+    1. [Template to Support All Boards](#template-to-support-all-boards)
+    2. [External Dependencies](#external-dependencies)
+    3. [Version History](#version-history)
+
 ## Supported boards
 
 These Sunton boards have an LCD display and most of them have a touch interface.
