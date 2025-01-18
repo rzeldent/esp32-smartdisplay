@@ -5,27 +5,37 @@
 
 ## Table of Contents
 
-1. [Supported Boards](#supported-boards)
-2. [Why this Library](#why-this-library)
-3. [Dependencies](#dependencies)
-4. [How to Use](#how-to-use)
-    1. [Step 1: Download PlatformIO](#step-1-download-or-open-platformio)
-    2. [Step 2: Boards Definitions](#step-2-boards-definitions)
-    3. [Step 3: Create a New Project](#step-3-create-a-new-project)
-    4. [Step 4: Add this Library to Your Project](#step-4-add-this-library-to-your-project)
-    5. [Step 5: Create a Settings File for LVGL](#step-5-create-a-settings-file-for-lvgl)
-    6. [Step 6: Copy the Build Flags](#step-6-copy-the-build-flags-below-in-your-project)
-    7. [Step 7: Initialize the Display](#step-7-initialize-the-display-and-touch-in-your-project)
-    8. [Step 8: Create Your LVGL File](#step-8-optional-create-your-lvgl-file-or-use-squareline-studio-to-make-a-design)
-    9. [Step 9: Compile, Upload, and Enjoy](#step-9-compile-upload-and-enjoy)
-5. [Porting from LVGL 8.3.9](#porting-from-lvgl-839)
-6. [More on lv_conf.h](#more-on-lv_conf-h)
-7. [LVGL Initialization Functions](#lvgl-initialization-functions)
-8. [Rotation of the Display and Touch](#rotation-of-the-display-and-touch)
-9. [Appendix](#appendix)
-    1. [Template to Support All Boards](#template-to-support-all-boards)
-    2. [External Dependencies](#external-dependencies)
-    3. [Version History](#version-history)
+- [LVGL drivers for Chinese Sunton Smart display boards, aka CYD (Cheap Yellow Display)](#lvgl-drivers-for-chinese-sunton-smart-display-boards-aka-cyd-cheap-yellow-display)
+  - [Table of Contents](#table-of-contents)
+  - [Supported boards](#supported-boards)
+  - [Why this library](#why-this-library)
+  - [Dependencies](#dependencies)
+  - [How to use](#how-to-use)
+    - [Step 1: Download (or open) PlatformIO](#step-1-download-or-open-platformio)
+    - [Step 2: Boards definitions](#step-2-boards-definitions)
+    - [Step 3: Create a new project](#step-3-create-a-new-project)
+    - [Step 4: Add this library to your project](#step-4-add-this-library-to-your-project)
+    - [Step 5: Create a settings file for LVGL](#step-5-create-a-settings-file-for-lvgl)
+    - [Step 6: Copy the build flags below in your project](#step-6-copy-the-build-flags-below-in-your-project)
+    - [Step 7: Initialize the display (and touch) in your project](#step-7-initialize-the-display-and-touch-in-your-project)
+  - [Step 8 (Optional): Create your LVGL file or use SquareLine Studio to make a design](#step-8-optional-create-your-lvgl-file-or-use-squareline-studio-to-make-a-design)
+  - [Step 9: Compile, upload and enjoy](#step-9-compile-upload-and-enjoy)
+  - [Porting from LVGL 8.3.9](#porting-from-lvgl-839)
+    - [lv\_conf.h](#lv_confh)
+    - [Ticker](#ticker)
+  - [More on lv\_conf.h](#more-on-lv_confh)
+  - [LVGL initialization Functions](#lvgl-initialization-functions)
+    - [void smartdisplay\_init()](#void-smartdisplay_init)
+    - [void smartdisplay\_lcd\_set\_backlight(float duty)](#void-smartdisplay_lcd_set_backlightfloat-duty)
+    - [void smartdisplay\_lcd\_set\_brightness\_cb(smartdisplay\_lcd\_adaptive\_brightness\_cb\_t cb, uint interval)](#void-smartdisplay_lcd_set_brightness_cbsmartdisplay_lcd_adaptive_brightness_cb_t-cb-uint-interval)
+    - [void smartdisplay\_led\_set\_rgb(bool r, bool g, bool b)](#void-smartdisplay_led_set_rgbbool-r-bool-g-bool-b)
+    - [touch\_calibration\_data\_t touch\_calibration\_data](#touch_calibration_data_t-touch_calibration_data)
+    - [touch\_calibration\_data\_t smartdisplay\_compute\_touch\_calibration(const lv\_point\_t screen\[3\], const lv\_point\_t touch\[3\])](#touch_calibration_data_t-smartdisplay_compute_touch_calibrationconst-lv_point_t-screen3-const-lv_point_t-touch3)
+  - [Rotation of the display and touch](#rotation-of-the-display-and-touch)
+  - [Appendix: Template to support ALL the boards](#appendix-template-to-support-all-the-boards)
+  - [Appendix: External dependencies](#appendix-external-dependencies)
+  - [Version history](#version-history)
+
 
 ## Supported boards
 
@@ -383,7 +393,7 @@ This function can be called to periodically call a user defined function to set 
 The callback function must have the following format:
 
 ```cpp
-float smartdisplay_lcd_adaptive_brightness_function)()
+float smartdisplay_lcd_adaptive_brightness_function()
 {
   ...
   return <float[0,1]>
