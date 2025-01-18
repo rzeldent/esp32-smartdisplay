@@ -36,7 +36,6 @@
   - [Appendix: External dependencies](#appendix-external-dependencies)
   - [Version history](#version-history)
 
-
 ## Supported boards
 
 These Sunton boards have an LCD display and most of them have a touch interface.
@@ -118,7 +117,7 @@ Make sure you have PlatformIO installed and functional. Follow the documentation
 
 The board definitions required for this library are defined in the boards library [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton). This library must reside in the `<project>/boards` directory so PlatformIo will automatically recognize these boards.
 
-**It is recommended to use `git submodule` to include these board definitions automatically.**
+**It is recommended to use `git clone --recurse-submodules` to include these board definitions automatically.**
 
 In case the repository was opened without the submodules, the submodules need to be initialized and updated. To do this type at the command prompt:
 
