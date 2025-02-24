@@ -191,6 +191,9 @@ void smartdisplay_init()
   ledcSetup(PWM_CHANNEL_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
   ledcAttachPin(GPIO_BCKL, PWM_CHANNEL_BCKL);
 #endif
+
+  // turn off backlight so it doesn't flicker
+  smartdisplay_lcd_set_backlight(0.0f);
   // Setup TFT display
   display = lvgl_lcd_init();
 
@@ -201,8 +204,11 @@ void smartdisplay_init()
 
   //  Clear screen
   lv_obj_clean(lv_scr_act());
-  // Turn backlight on (50%)
-  smartdisplay_lcd_set_backlight(0.5f);
+
+  //set screen to black
+  lv_obj_t *screen = lv_scr_act();
+  lv_obj_set_style_bg_color(screen, lv_color_black(), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_refr_now(NULL); // Force refresh immediately
 
 // If there is a touch controller defined
 #ifdef BOARD_HAS_TOUCH
