@@ -182,6 +182,9 @@ void smartdisplay_init()
 #endif
 
   lv_init();
+#ifdef BCKL_DELAY_MS
+  vTaskDelay(pdMS_TO_TICKS(BCKL_DELAY_MS));
+#endif
   // Setup backlight
   pinMode(GPIO_BCKL, OUTPUT);
   digitalWrite(GPIO_BCKL, LOW);
