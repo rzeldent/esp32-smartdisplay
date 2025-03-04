@@ -1,6 +1,11 @@
 ### Notice of fork
 This will include some small supporting changes to the OAS-Man project. https://github.com/gopro2027/ArduinoAirSuspensionController 
 
+Features:
+- No flicker on boot
+
+---
+
 # LVGL drivers for Chinese Sunton Smart display boards, aka CYD (Cheap Yellow Display)
 
 [![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
