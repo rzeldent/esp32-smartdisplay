@@ -56,7 +56,7 @@ void smartdisplay_lcd_set_backlight(float duty)
   if (duty < 0.0f)
     duty = 0.0f;
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcWrite(GPIO_BCKL, duty * PWM_MAX_BCKL);
+  ledcWrite(DISPLAY_BCKL, duty * PWM_MAX_BCKL);
 #else
   ledcWrite(PWM_CHANNEL_BCKL, duty * PWM_MAX_BCKL);
 #endif
@@ -183,13 +183,13 @@ void smartdisplay_init()
 
   lv_init();
   // Setup backlight
-  pinMode(GPIO_BCKL, OUTPUT);
-  digitalWrite(GPIO_BCKL, LOW);
+  pinMode(DISPLAY_BCKL, OUTPUT);
+  digitalWrite(DISPLAY_BCKL, LOW);
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcAttach(GPIO_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
+  ledcAttach(DISPLAY_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
 #else
   ledcSetup(PWM_CHANNEL_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
-  ledcAttachPin(GPIO_BCKL, PWM_CHANNEL_BCKL);
+  ledcAttachPin(DISPLAY_BCKL, PWM_CHANNEL_BCKL);
 #endif
   // Setup TFT display
   display = lvgl_lcd_init();

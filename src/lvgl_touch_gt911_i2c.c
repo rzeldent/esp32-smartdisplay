@@ -36,8 +36,8 @@ lv_indev_t* lvgl_touch_init()
     // Create I2C bus
     const i2c_config_t i2c_config = {
         .mode = I2C_MODE_MASTER,
-        .sda_io_num = GT911_I2C_CONFIG_SDA_IO_NUM,
-        .scl_io_num = GT911_I2C_CONFIG_SCL_IO_NUM,
+        .sda_io_num = GT911_I2C_CONFIG_SDA,
+        .scl_io_num = GT911_I2C_CONFIG_SCL,
         .sda_pullup_en = GT911_I2C_CONFIG_SDA_PULLUP_EN,
         .scl_pullup_en = GT911_I2C_CONFIG_SCL_PULLUP_EN,
         .master = {
@@ -66,8 +66,8 @@ lv_indev_t* lvgl_touch_init()
     const esp_lcd_touch_config_t touch_config = {
         .x_max = GT911_TOUCH_CONFIG_X_MAX,
         .y_max = GT911_TOUCH_CONFIG_Y_MAX,
-        .rst_gpio_num = GT911_TOUCH_CONFIG_RST_GPIO_NUM,
-        .int_gpio_num = GT911_TOUCH_CONFIG_INT_GPIO_NUM,
+        .rst_gpio_num = GT911_TOUCH_CONFIG_RST,
+        .int_gpio_num = GT911_TOUCH_CONFIG_INT,
         .levels = {
             .reset = GT911_TOUCH_CONFIG_LEVELS_RESET,
             .interrupt = GT911_TOUCH_CONFIG_LEVELS_INTERRUPT},

@@ -39,11 +39,11 @@ lv_display_t *lvgl_lcd_init()
 
     // Create SPI bus
     const spi_bus_config_t spi_bus_config = {
-        .mosi_io_num = ILI9341_SPI_BUS_MOSI_IO_NUM,
-        .miso_io_num = ILI9341_SPI_BUS_MISO_IO_NUM,
-        .sclk_io_num = ILI9341_SPI_BUS_SCLK_IO_NUM,
-        .quadwp_io_num = ILI9341_SPI_BUS_QUADWP_IO_NUM,
-        .quadhd_io_num = ILI9341_SPI_BUS_QUADHD_IO_NUM,
+        .mosi_io_num = ILI9341_SPI_BUS_MOSI,
+        .miso_io_num = ILI9341_SPI_BUS_MISO,
+        .sclk_io_num = ILI9341_SPI_BUS_SCLK,
+        .quadwp_io_num = ILI9341_SPI_BUS_QUADWP,
+        .quadhd_io_num = ILI9341_SPI_BUS_QUADHD,
         .max_transfer_sz = ILI9341_SPI_BUS_MAX_TRANSFER_SZ,
         .flags = ILI9341_SPI_BUS_FLAGS,
         .intr_flags = ILI9341_SPI_BUS_INTR_FLAGS};
@@ -52,8 +52,8 @@ lv_display_t *lvgl_lcd_init()
 
     // Attach the LCD controller to the SPI bus
     const esp_lcd_panel_io_spi_config_t io_spi_config = {
-        .cs_gpio_num = ILI9341_SPI_CONFIG_CS_GPIO_NUM,
-        .dc_gpio_num = ILI9341_SPI_CONFIG_DC_GPIO_NUM,
+        .cs_gpio_num = ILI9341_SPI_CONFIG_CS,
+        .dc_gpio_num = ILI9341_SPI_CONFIG_DC,
         .spi_mode = ILI9341_SPI_CONFIG_SPI_MODE,
         .pclk_hz = ILI9341_SPI_CONFIG_PCLK_HZ,
         .trans_queue_depth = ILI9341_SPI_CONFIG_TRANS_QUEUE_DEPTH,
@@ -72,7 +72,7 @@ lv_display_t *lvgl_lcd_init()
 
     // Create ili9341 panel handle
     const esp_lcd_panel_dev_config_t panel_dev_config = {
-        .reset_gpio_num = ILI9341_DEV_CONFIG_RESET_GPIO_NUM,
+        .reset_gpio_num = ILI9341_DEV_CONFIG_RESET,
         .color_space = ILI9341_DEV_CONFIG_COLOR_SPACE,
         .bits_per_pixel = ILI9341_DEV_CONFIG_BITS_PER_PIXEL,
         .flags = {
