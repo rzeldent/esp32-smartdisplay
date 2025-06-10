@@ -640,6 +640,10 @@ The following libraries are used from the [Espressif component registry](https:/
 
 ## Version history
 
+- June 2025
+  - Version 2.1.1
+  - Updated documentation
+  - Renamed IO pins
 - November 2024
   - Version 2.1.0
   - LVGL 9.2.2
