@@ -36,8 +36,8 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
     void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
     lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
-    pinMode(ST7789_RD_GPIO, OUTPUT);
-    digitalWrite(ST7789_RD_GPIO, HIGH);
+    pinMode(ST7789_RD, OUTPUT);
+    digitalWrite(ST7789_RD, HIGH);
 
     const esp_lcd_i80_bus_config_t i80_bus_config = {
         .clk_src = ST7789_I80_BUS_CONFIG_CLK_SRC,
