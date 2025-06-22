@@ -314,7 +314,7 @@ esp_err_t esp_lcd_new_panel_st7701(const esp_lcd_panel_io_handle_t io, const esp
     ph->base.mirror = st7701_mirror;
     ph->base.swap_xy = st7701_swap_xy;
     ph->base.set_gap = st7701_set_gap;
-    ph->base.disp_off = st7701_disp_off;
+    ph->base.disp_on_off = st7701_disp_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;

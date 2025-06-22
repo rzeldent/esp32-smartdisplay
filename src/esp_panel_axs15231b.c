@@ -399,7 +399,7 @@ esp_err_t esp_lcd_new_panel_axs15231b(const esp_lcd_panel_io_handle_t panel_io_h
     ph->base.mirror = axs15231b_mirror;
     ph->base.swap_xy = axs15231b_swap_xy;
     ph->base.set_gap = axs15231b_set_gap;
-    ph->base.disp_off = axs15231b_disp_off;
+    ph->base.disp_on_off = axs15231b_disp_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;

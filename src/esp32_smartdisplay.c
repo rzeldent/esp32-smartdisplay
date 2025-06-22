@@ -89,7 +89,7 @@ void adaptive_brightness(lv_timer_t *timer)
   smartdisplay_lcd_set_backlight(callback());
 }
 
-void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval)
+void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, unsigned int interval)
 {
   log_v("adaptive_brightness_cb:0x%08x, interval:%u", cb, interval);
 

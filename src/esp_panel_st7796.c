@@ -352,7 +352,7 @@ esp_err_t esp_lcd_new_panel_st7796(const esp_lcd_panel_io_handle_t io, const esp
     ph->base.mirror = st7796_mirror;
     ph->base.swap_xy = st7796_swap_xy;
     ph->base.set_gap = st7796_set_gap;
-    ph->base.disp_off = st7796_disp_off;
+    ph->base.disp_on_off = st7796_disp_off;
 
     log_d("handle: 0x%08x", ph);
     *handle = (esp_lcd_panel_handle_t)ph;

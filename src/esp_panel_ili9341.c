@@ -371,7 +371,7 @@ esp_err_t esp_lcd_new_panel_ili9341(const esp_lcd_panel_io_handle_t panel_io_han
     ph->base.mirror = ili9341_mirror;
     ph->base.swap_xy = ili9341_swap_xy;
     ph->base.set_gap = ili9341_set_gap;
-    ph->base.disp_off = ili9341_disp_off;
+    ph->base.disp_on_off = ili9341_disp_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;

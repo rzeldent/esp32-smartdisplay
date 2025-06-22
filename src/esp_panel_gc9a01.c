@@ -380,7 +380,7 @@ esp_err_t esp_lcd_new_panel_gc9a01(const esp_lcd_panel_io_handle_t panel_io_hand
     ph->base.mirror = gc9a01_mirror;
     ph->base.swap_xy = gc9a01_swap_xy;
     ph->base.set_gap = gc9a01_set_gap;
-    ph->base.disp_off = gc9a01_disp_off;
+    ph->base.disp_on_off = gc9a01_disp_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;
