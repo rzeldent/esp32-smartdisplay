@@ -5,10 +5,44 @@
 #include <esp_lcd_panel_ops.h>
 #include <esp32_smartdisplay_dma.h>
 
+// Structure to pass both display and buffer to rotation callback
+typedef struct {
+    lv_display_t *display;
+    void *rotation_buffer;
+} rotation_callback_data_t;
+
+// DMA completion callback for rotated displays
+void rotation_dma_callback(bool success, void *user_data)
+{
+    rotation_callback_data_t *data = (rotation_callback_data_t *)user_data;
+    if (!success)
+        log_e("DMA transfer failed for rotated display");
+    
+    // Free the rotation buffer now that DMA is complete
+    free(data->rotation_buffer);
+    
+    // Signal LVGL that flush is complete
+    lv_display_flush_ready(data->display);
+    
+    // Free the callback data structure
+    free(data);
+}
+
+// DMA completion callback for LVGL flush
+void lvgl_dma_flush_callback(bool success, void *user_data)
+{
+    lv_display_t *display = (lv_display_t *)user_data;
+    if (!success)
+        log_e("DMA transfer failed for LVGL flush");
+    
+    lv_display_flush_ready(display);
+}
+
 bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx)
 {
-    lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
+    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
+    // This callback is only used for direct transfers (non-DMA fallback)
+    // We return false to indicate we're not handling the flush completion here
     return false;
 }
 
@@ -20,7 +54,18 @@ void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *p
     lv_display_rotation_t rotation = lv_display_get_rotation(display);
     if (rotation == LV_DISPLAY_ROTATION_0)
     {
-        ESP_ERROR_CHECK(smartdisplay_dma_draw_bitmap(area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map, NULL, NULL, false));
+        // Try DMA first, fall back to direct transfer if it fails
+        esp_err_t ret = smartdisplay_dma_draw_bitmap(area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map, lvgl_dma_flush_callback, display, false);
+        if (ret == ESP_OK)
+        {
+            // DMA transfer initiated successfully, callback will handle flush_ready
+            return;
+        }
+        
+        // DMA failed, use direct transfer
+        log_w("DMA transfer failed, using direct transfer");
+        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+        lv_display_flush_ready(display);
         return;
     }
 
@@ -41,14 +86,74 @@ void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *p
     {
     case LV_DISPLAY_ROTATION_90:
         lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
+        
+        // Try DMA first for rotated data
+        if (smartdisplay_dma_should_use_dma(buf_size))
+        {
+            rotation_callback_data_t *callback_data = heap_caps_malloc(sizeof(rotation_callback_data_t), MALLOC_CAP_DEFAULT);
+            if (callback_data != NULL)
+            {
+                callback_data->display = display;
+                callback_data->rotation_buffer = rotation_buffer;
+                
+                esp_err_t ret = smartdisplay_dma_draw_bitmap(area->y1, display->ver_res - area->x1 - w, area->y1 + h, display->ver_res - area->x1, rotation_buffer, rotation_dma_callback, callback_data, false);
+                if (ret == ESP_OK)
+                {
+                    // DMA transfer initiated, callback will free the buffer and handle completion
+                    return;
+                }
+                free(callback_data);
+            }
+            log_w("DMA transfer failed for 90° rotation, using direct transfer");
+        }
         ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->y1, display->ver_res - area->x1 - w, area->y1 + h, display->ver_res - area->x1, rotation_buffer));
         break;
     case LV_DISPLAY_ROTATION_180:
         lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, w_stride, rotation, cf);
+        
+        // Try DMA first for rotated data
+        if (smartdisplay_dma_should_use_dma(buf_size))
+        {
+            rotation_callback_data_t *callback_data = heap_caps_malloc(sizeof(rotation_callback_data_t), MALLOC_CAP_DEFAULT);
+            if (callback_data != NULL)
+            {
+                callback_data->display = display;
+                callback_data->rotation_buffer = rotation_buffer;
+                
+                esp_err_t ret = smartdisplay_dma_draw_bitmap(display->hor_res - area->x1 - w, display->ver_res - area->y1 - h, display->hor_res - area->x1, display->ver_res - area->y1, rotation_buffer, rotation_dma_callback, callback_data, false);
+                if (ret == ESP_OK)
+                {
+                    // DMA transfer initiated, callback will free the buffer and handle completion
+                    return;
+                }
+                free(callback_data);
+            }
+            log_w("DMA transfer failed for 180° rotation, using direct transfer");
+        }
         ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->x1 - w, display->ver_res - area->y1 - h, display->hor_res - area->x1, display->ver_res - area->y1, rotation_buffer));
         break;
     case LV_DISPLAY_ROTATION_270:
         lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
+        
+        // Try DMA first for rotated data
+        if (smartdisplay_dma_should_use_dma(buf_size))
+        {
+            rotation_callback_data_t *callback_data = heap_caps_malloc(sizeof(rotation_callback_data_t), MALLOC_CAP_DEFAULT);
+            if (callback_data != NULL)
+            {
+                callback_data->display = display;
+                callback_data->rotation_buffer = rotation_buffer;
+                
+                esp_err_t ret = smartdisplay_dma_draw_bitmap(display->hor_res - area->y2 - 1, area->x2 - w + 1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer, rotation_dma_callback, callback_data, false);
+                if (ret == ESP_OK)
+                {
+                    // DMA transfer initiated, callback will free the buffer and handle completion
+                    return;
+                }
+                free(callback_data);
+            }
+            log_w("DMA transfer failed for 270° rotation, using direct transfer");
+        }
         ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->y2 - 1, area->x2 - w + 1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer));
         break;
     default:
@@ -56,7 +161,9 @@ void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *p
         break;
     }
 
+    // If we reach here, DMA was not used or failed, so we need to free the buffer and signal flush ready
     free(rotation_buffer);
+    lv_display_flush_ready(display);
 };
 
 lv_display_t *lvgl_lcd_init()
@@ -108,6 +215,18 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&rgb_panel_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    
+    // Initialize DMA for optimized transfers
+    esp_err_t dma_init_result = smartdisplay_dma_init(panel_handle);
+    if (dma_init_result == ESP_OK)
+    {
+        log_i("DMA initialized successfully for ST7262 display");
+    }
+    else
+    {
+        log_w("DMA initialization failed (error: 0x%x), will use direct transfers", dma_init_result);
+    }
+    
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
