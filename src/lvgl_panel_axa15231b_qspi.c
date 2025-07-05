@@ -5,17 +5,7 @@
 #include <driver/spi_master.h>
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_ops.h>
-#include <esp32_smartdisplay_dma.h>
-
-// DMA completion callback for LVGL flush
-void lvgl_dma_flush_callback(bool success, void *user_data)
-{
-    lv_display_t *display = (lv_display_t *)user_data;
-    if (!success)
-        log_e("DMA transfer failed for LVGL flush");
-    
-    lv_display_flush_ready(display);
-}
+#include <esp32_smartdisplay_dma_helpers.h>
 
 bool axs15231b_color_trans_done(esp_lcd_panel_io_handle_t panel_io_handle, esp_lcd_panel_io_event_data_t *panel_io_event_data, void *user_ctx)
 {
@@ -30,30 +20,11 @@ bool axs15231b_color_trans_done(esp_lcd_panel_io_handle_t panel_io_handle, esp_l
 
 void axs15231b_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
-    // Hardware rotation is supported
+    // Hardware rotation is supported - use optimized helper function
     log_v("display:0x%08x, area:%0x%08x, color_map:0x%08x", display, area, px_map);
 
     esp_lcd_panel_handle_t panel_handle = display->user_data;
-    uint32_t pixels = lv_area_get_size(area);
-    uint16_t *p = (uint16_t *)px_map;
-    while (pixels--)
-    {
-        *p = (uint16_t)((*p >> 8) | (*p << 8));
-        p++;
-    }
-
-    // Try DMA first, fall back to direct transfer if it fails
-    esp_err_t ret = smartdisplay_dma_draw_bitmap(area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map, lvgl_dma_flush_callback, display, false);
-    if (ret == ESP_OK)
-    {
-        // DMA transfer initiated successfully, callback will handle flush_ready
-        return;
-    }
-    
-    // DMA failed, use direct transfer
-    log_w("DMA transfer failed, using direct transfer");
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
-    // Note: lv_display_flush_ready() will be called by axs15231b_color_trans_done callback
+    smartdisplay_dma_flush_with_byteswap(display, area, px_map, panel_handle, "AXS15231B QSPI");
 }
 
 lv_display_t *lvgl_lcd_init()
@@ -132,11 +103,7 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
     
     // Initialize DMA for optimized transfers
-    esp_err_t dma_init_result = smartdisplay_dma_init(panel_handle);
-    if (dma_init_result == ESP_OK)
-        log_i("DMA initialized successfully for AXS15231B QSPI display");
-    else
-        log_w("DMA initialization failed (error: 0x%x), will use direct transfers", dma_init_result);
+    smartdisplay_dma_init_with_logging(panel_handle, "AXS15231B QSPI");
     
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors

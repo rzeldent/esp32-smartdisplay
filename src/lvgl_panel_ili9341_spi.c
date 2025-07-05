@@ -5,17 +5,7 @@
 #include <driver/spi_master.h>
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_ops.h>
-#include <esp32_smartdisplay_dma.h>
-
-// DMA completion callback for LVGL flush
-void ili9341_dma_flush_callback(bool success, void *user_data)
-{
-    lv_display_t *display = (lv_display_t *)user_data;
-    if (!success)
-        log_e("DMA transfer failed for ILI9341 SPI flush");
-    
-    lv_display_flush_ready(display);
-}
+#include <esp32_smartdisplay_dma_helpers.h>
 
 bool ili9341_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
@@ -27,30 +17,9 @@ bool ili9341_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_
 
 void ili9341_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
-    // Hardware rotation is supported
+    // Hardware rotation is supported - use optimized helper function
     esp_lcd_panel_handle_t panel_handle = display->user_data;
-    uint32_t pixels = lv_area_get_size(area);
-    uint16_t *p = (uint16_t *)px_map;
-    
-    // Byte swap for SPI
-    while (pixels--)
-    {
-        *p = (uint16_t)((*p >> 8) | (*p << 8));
-        p++;
-    }
-
-    // Try DMA first, fall back to direct transfer if it fails
-    esp_err_t ret = smartdisplay_dma_draw_bitmap(area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map, ili9341_dma_flush_callback, display, false);
-    if (ret == ESP_OK)
-    {
-        // DMA transfer initiated successfully, callback will handle flush_ready
-        return;
-    }
-    
-    // DMA failed, use direct transfer
-    log_w("DMA transfer failed for ILI9341 SPI, using direct transfer");
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
-    lv_display_flush_ready(display);
+    smartdisplay_dma_flush_with_byteswap(display, area, px_map, panel_handle, "ILI9341 SPI");
 };
 
 lv_display_t *lvgl_lcd_init()
@@ -107,6 +76,10 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_new_panel_ili9341(io_handle, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    
+    // Initialize DMA for optimized transfers
+    smartdisplay_dma_init_with_logging(panel_handle, "ILI9341 SPI");
+    
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
