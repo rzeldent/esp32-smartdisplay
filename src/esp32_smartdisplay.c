@@ -51,10 +51,12 @@ void smartdisplay_lcd_set_backlight(float duty)
 {
   log_v("duty:%2f", duty);
 
-  if (duty > 1.0f)
-    duty = 1.0f;
-  if (duty < 0.0f)
-    duty = 0.0f;
+  if (duty < 0.0f || duty > 1.0f || isnan(duty))
+  {
+    log_e("Invalid duty value: %f", duty);
+    return;
+  }
+
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
   ledcWrite(DISPLAY_BCKL, duty * PWM_MAX_BCKL);
 #else
