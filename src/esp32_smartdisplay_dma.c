@@ -4,11 +4,6 @@
 #include <esp_lcd_panel_io.h>
 #include <string.h>
 
-// Define MIN macro
-#ifndef MIN
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#endif
-
 // Global DMA manager instance
 static smartdisplay_dma_manager_t *g_dma_manager = NULL;
 
@@ -197,7 +192,6 @@ esp_err_t smartdisplay_dma_draw_bitmap(int x_start, int y_start, int x_end, int 
 
     // Queue transfer
     const BaseType_t queue_result = high_priority ? xQueueSendToFront(g_dma_manager->transfer_queue, &transfer, 0) : xQueueSend(g_dma_manager->transfer_queue, &transfer, 0);
-
     if (queue_result != pdPASS)
     {
         log_w("Transfer queue full, falling back to direct transfer");
@@ -364,11 +358,11 @@ static esp_err_t smartdisplay_dma_transfer_chunk(const smartdisplay_dma_transfer
     while (remaining > 0 && current_y < transfer->y_end)
     {
         // Calculate chunk size (limit to DMA buffer size)
-        size_t chunk_rows = MIN(remaining / bytes_per_row, g_dma_manager->dma_buffer_size / bytes_per_row);
+        size_t chunk_rows = _min(remaining / bytes_per_row, g_dma_manager->dma_buffer_size / bytes_per_row);
         if (chunk_rows == 0)
             chunk_rows = 1; // At least one row
 
-        const size_t chunk_size = MIN(chunk_rows * bytes_per_row, remaining);
+        const size_t chunk_size = _min(chunk_rows * bytes_per_row, remaining);
         // Copy data to DMA buffer
         void *dma_data;
         const esp_err_t copy_result = smartdisplay_dma_copy_to_buffer(src_ptr, chunk_size, &dma_data);
