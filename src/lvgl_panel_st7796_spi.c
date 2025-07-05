@@ -21,7 +21,7 @@ void st7796_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_m
     // Hardware rotation is supported - use optimized helper function
     esp_lcd_panel_handle_t panel_handle = display->user_data;
     smartdisplay_dma_flush_with_byteswap(display, area, px_map, panel_handle, "ST7796 SPI");
-};
+}
 
 lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 {
