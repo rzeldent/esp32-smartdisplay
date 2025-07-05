@@ -3,6 +3,7 @@
 #include <esp32_smartdisplay.h>
 #include <esp_lcd_panel_rgb.h>
 #include <esp_lcd_panel_ops.h>
+#include <esp32_smartdisplay_dma.h>
 
 bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx)
 {
@@ -19,7 +20,7 @@ void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *p
     lv_display_rotation_t rotation = lv_display_get_rotation(display);
     if (rotation == LV_DISPLAY_ROTATION_0)
     {
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+        ESP_ERROR_CHECK(smartdisplay_dma_draw_bitmap(area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map, NULL, NULL, false));
         return;
     }
 

@@ -199,6 +199,18 @@ void smartdisplay_init()
   // Setup TFT display
   display = lvgl_lcd_init();
 
+  // Initialize DMA manager for optimized bitmap transfers
+  esp_err_t dma_init_result = smartdisplay_dma_init((esp_lcd_panel_handle_t)display->user_data);
+  if (dma_init_result != ESP_OK)
+  {
+    log_w("Failed to initialize DMA manager: %s", esp_err_to_name(dma_init_result));
+    log_i("Continuing with standard bitmap transfers");
+  }
+  else
+  {
+    log_i("DMA manager initialized for optimized transfers");
+  }
+
 #ifndef DISPLAY_SOFTWARE_ROTATION
   // Register callback for hardware rotation
   lv_display_add_event_cb(display, lvgl_display_resolution_changed_callback, LV_EVENT_RESOLUTION_CHANGED, NULL);
