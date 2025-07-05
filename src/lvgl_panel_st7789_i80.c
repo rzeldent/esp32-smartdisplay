@@ -11,7 +11,7 @@ bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_i
     // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
     // This callback is only used for direct transfers (non-DMA fallback)
     lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
+    // lv_display_flush_ready(display) is handled by DMA callbacks when DMA is enabled.
     return false;
 }
 
