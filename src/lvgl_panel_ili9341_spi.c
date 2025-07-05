@@ -5,11 +5,23 @@
 #include <driver/spi_master.h>
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_ops.h>
+#include <esp32_smartdisplay_dma.h>
+
+// DMA completion callback for LVGL flush
+void ili9341_dma_flush_callback(bool success, void *user_data)
+{
+    lv_display_t *display = (lv_display_t *)user_data;
+    if (!success)
+        log_e("DMA transfer failed for ILI9341 SPI flush");
+    
+    lv_display_flush_ready(display);
+}
 
 bool ili9341_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
-    lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
+    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
+    // This callback is only used for direct transfers (non-DMA fallback)
+    // We return false to indicate we're not handling the flush completion here
     return false;
 }
 
@@ -19,13 +31,26 @@ void ili9341_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_
     esp_lcd_panel_handle_t panel_handle = display->user_data;
     uint32_t pixels = lv_area_get_size(area);
     uint16_t *p = (uint16_t *)px_map;
+    
+    // Byte swap for SPI
     while (pixels--)
     {
         *p = (uint16_t)((*p >> 8) | (*p << 8));
         p++;
     }
 
+    // Try DMA first, fall back to direct transfer if it fails
+    esp_err_t ret = smartdisplay_dma_draw_bitmap(area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map, ili9341_dma_flush_callback, display, false);
+    if (ret == ESP_OK)
+    {
+        // DMA transfer initiated successfully, callback will handle flush_ready
+        return;
+    }
+    
+    // DMA failed, use direct transfer
+    log_w("DMA transfer failed for ILI9341 SPI, using direct transfer");
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+    lv_display_flush_ready(display);
 };
 
 lv_display_t *lvgl_lcd_init()

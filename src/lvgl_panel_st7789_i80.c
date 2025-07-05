@@ -4,9 +4,22 @@
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_vendor.h>
 #include <esp_lcd_panel_ops.h>
+#include <esp32_smartdisplay_dma.h>
+
+// DMA completion callback for LVGL flush
+void lvgl_dma_flush_callback(bool success, void *user_data)
+{
+    lv_display_t *display = (lv_display_t *)user_data;
+    if (!success)
+        log_e("DMA transfer failed for LVGL flush");
+    
+    lv_display_flush_ready(display);
+}
 
 bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
+    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
+    // This callback is only used for direct transfers (non-DMA fallback)
     lv_display_t *display = user_ctx;
     lv_display_flush_ready(display);
     return false;
@@ -24,7 +37,18 @@ void st7789_lv_flush(lv_display_t *drv, const lv_area_t *area, uint8_t *px_map)
         p++;
     }
 
+    // Try DMA first, fall back to direct transfer if it fails
+    esp_err_t ret = smartdisplay_dma_draw_bitmap(area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map, lvgl_dma_flush_callback, drv, false);
+    if (ret == ESP_OK)
+    {
+        // DMA transfer initiated successfully, callback will handle flush_ready
+        return;
+    }
+    
+    // DMA failed, use direct transfer
+    log_w("DMA transfer failed, using direct transfer");
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+    // Note: lv_display_flush_ready() will be called by st7789_color_trans_done callback
 };
 
 lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
@@ -93,6 +117,14 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    
+    // Initialize DMA for optimized transfers
+    esp_err_t dma_init_result = smartdisplay_dma_init(panel_handle);
+    if (dma_init_result == ESP_OK)
+        log_i("DMA initialized successfully for ST7789 I80 display");
+    else
+        log_w("DMA initialization failed (error: 0x%x), will use direct transfers", dma_init_result);
+    
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));

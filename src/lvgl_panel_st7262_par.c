@@ -219,13 +219,9 @@ lv_display_t *lvgl_lcd_init()
     // Initialize DMA for optimized transfers
     esp_err_t dma_init_result = smartdisplay_dma_init(panel_handle);
     if (dma_init_result == ESP_OK)
-    {
         log_i("DMA initialized successfully for ST7262 display");
-    }
     else
-    {
         log_w("DMA initialization failed (error: 0x%x), will use direct transfers", dma_init_result);
-    }
     
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
