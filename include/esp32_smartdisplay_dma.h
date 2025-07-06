@@ -14,23 +14,6 @@ extern "C"
 {
 #endif
 
-// DMA transfer configuration (default values, can be overridden via build flags)
-#ifndef SMARTDISPLAY_DMA_BUFFER_SIZE
-#define SMARTDISPLAY_DMA_BUFFER_SIZE (32 * 1024) // 32KB DMA buffer
-#endif
-
-#ifndef SMARTDISPLAY_DMA_QUEUE_SIZE
-#define SMARTDISPLAY_DMA_QUEUE_SIZE 8 // Number of pending transfers
-#endif
-
-#ifndef SMARTDISPLAY_DMA_CHUNK_THRESHOLD
-#define SMARTDISPLAY_DMA_CHUNK_THRESHOLD (4 * 1024) // Use DMA for transfers > 4KB
-#endif
-
-#ifndef SMARTDISPLAY_DMA_TIMEOUT_MS
-#define SMARTDISPLAY_DMA_TIMEOUT_MS 1000 // DMA operation timeout
-#endif
-
     // DMA transfer states
     typedef enum
     {
