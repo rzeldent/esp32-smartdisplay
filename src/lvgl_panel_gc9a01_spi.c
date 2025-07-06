@@ -5,31 +5,25 @@
 #include <driver/spi_master.h>
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_ops.h>
+#include <esp32_smartdisplay_dma_helpers.h>
 
 bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t panel_io_handle, esp_lcd_panel_io_event_data_t *panel_io_event_data, void *user_ctx)
 {
     log_v("panel_io_handle:0x%08x, panel_io_event_data:%0x%08x, user_ctx:0x%08x", panel_io_handle, panel_io_event_data, user_ctx);
 
+    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
+    // This callback is only used for direct transfers (non-DMA fallback)
     lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
     return false;
 }
 
 void gc9a01_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
-    // Hardware rotation is supported
+    // Hardware rotation is supported - use optimized helper function
     log_v("display:0x%08x, area:%0x%08x, color_map:0x%08x", display, area, px_map);
 
     esp_lcd_panel_handle_t panel_handle = display->user_data;
-    uint32_t pixels = lv_area_get_size(area);
-    uint16_t *p = (uint16_t *)px_map;
-    while (pixels--)
-    {
-        *p = (uint16_t)((*p >> 8) | (*p << 8));
-        p++;
-    }
-
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+    smartdisplay_dma_flush_with_byteswap(display, area, px_map, panel_handle, "GC9A01 SPI");
 };
 
 lv_display_t *lvgl_lcd_init()
@@ -86,6 +80,10 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_new_panel_gc9a01(io_handle, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    
+    // Initialize DMA for optimized transfers
+    smartdisplay_dma_init_with_logging(panel_handle, "GC9A01 SPI");
+    
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));

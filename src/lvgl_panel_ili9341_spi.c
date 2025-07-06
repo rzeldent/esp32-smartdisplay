@@ -5,27 +5,21 @@
 #include <driver/spi_master.h>
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_ops.h>
+#include <esp32_smartdisplay_dma_helpers.h>
 
 bool ili9341_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
-    lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
+    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
+    // This callback is only used for direct transfers (non-DMA fallback)
+    // We return false to indicate we're not handling the flush completion here
     return false;
 }
 
 void ili9341_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
-    // Hardware rotation is supported
+    // Hardware rotation is supported - use optimized helper function
     esp_lcd_panel_handle_t panel_handle = display->user_data;
-    uint32_t pixels = lv_area_get_size(area);
-    uint16_t *p = (uint16_t *)px_map;
-    while (pixels--)
-    {
-        *p = (uint16_t)((*p >> 8) | (*p << 8));
-        p++;
-    }
-
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+    smartdisplay_dma_flush_with_byteswap(display, area, px_map, panel_handle, "ILI9341 SPI");
 };
 
 lv_display_t *lvgl_lcd_init()
@@ -82,6 +76,10 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_new_panel_ili9341(io_handle, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    
+    // Initialize DMA for optimized transfers
+    smartdisplay_dma_init_with_logging(panel_handle, "ILI9341 SPI");
+    
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));

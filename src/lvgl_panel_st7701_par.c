@@ -5,59 +5,21 @@
 #include <esp_lcd_panel_io_additions.h>
 #include <esp_lcd_panel_rgb.h>
 #include <esp_lcd_panel_ops.h>
+#include <esp32_smartdisplay_dma_helpers.h>
 
 bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx)
 {
-    lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
+    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
+    // This callback is only used for direct transfers (non-DMA fallback)
+    // We return false to indicate we're not handling the flush completion here
     return false;
 }
 
 void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
-    // Hardware rotation is not supported
+    // Hardware rotation is not supported - use optimized helper function with software rotation
     const esp_lcd_panel_handle_t panel_handle = display->user_data;
-
-    lv_display_rotation_t rotation = lv_display_get_rotation(display);
-    if (rotation == LV_DISPLAY_ROTATION_0)
-    {
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
-        return;
-    }
-
-    // Rotated
-    int32_t w = lv_area_get_width(area);
-    int32_t h = lv_area_get_height(area);
-    lv_color_format_t cf = lv_display_get_color_format(display);
-    uint32_t px_size = lv_color_format_get_size(cf);
-    size_t buf_size = w * h * px_size;
-    log_v("alloc rotation buffer to: %u bytes", buf_size);
-    void *rotation_buffer = heap_caps_malloc(buf_size, LVGL_BUFFER_MALLOC_FLAGS);
-    assert(rotation_buffer != NULL);
-
-    uint32_t w_stride = lv_draw_buf_width_to_stride(w, cf);
-    uint32_t h_stride = lv_draw_buf_width_to_stride(h, cf);
-
-    switch (rotation)
-    {
-    case LV_DISPLAY_ROTATION_90:
-        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->y1, display->ver_res - area->x1 - w, area->y1 + h, display->ver_res - area->x1, rotation_buffer));
-        break;
-    case LV_DISPLAY_ROTATION_180:
-        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, w_stride, rotation, cf);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->x1 - w, display->ver_res - area->y1 - h, display->hor_res - area->x1, display->ver_res - area->y1, rotation_buffer));
-        break;
-    case LV_DISPLAY_ROTATION_270:
-        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->y2 - 1, area->x2 - w + 1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer));
-        break;
-    default:
-        assert(false);
-        break;
-    }
-
-    free(rotation_buffer);
+    smartdisplay_dma_flush_with_rotation(display, area, px_map, panel_handle, "ST7701 Parallel");
 };
 
 lv_display_t *lvgl_lcd_init()
@@ -132,6 +94,10 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7701(io_handle, &rgb_panel_config, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    
+    // Initialize DMA for optimized transfers
+    smartdisplay_dma_init_with_logging(panel_handle, "ST7701 Parallel");
+    
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
