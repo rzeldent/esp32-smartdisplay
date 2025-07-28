@@ -221,7 +221,7 @@ static esp_err_t smartdisplay_dma_transfer_chunk(const smartdisplay_dma_transfer
         const esp_err_t transfer_result = esp_lcd_panel_draw_bitmap(g_dma_manager->panel_handle, transfer->x_start, current_y, transfer->x_end, chunk_y_end, dma_data);
         if (transfer_result != ESP_OK)
         {
-            log_e("DMA transfer failed: %s", esp_err_to_name(transfer_result));
+            log_e("LCD panel transfer failed: %s", esp_err_to_name(transfer_result));
             return transfer_result;
         }
 
