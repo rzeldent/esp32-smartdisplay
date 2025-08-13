@@ -268,7 +268,7 @@ esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, cons
     // Reset controller
     if ((res = cst816s_reset(th)) != ESP_OK)
     {
-        log_e("GT911 reset failed");
+        log_e("CST826S reset failed");
         cst816s_del(th);
         return res;
     }
@@ -276,7 +276,7 @@ esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, cons
     // Read type and resolution
     if ((res = cst816s_read_info(th)) != ESP_OK)
     {
-        log_e("GT911 read info failed");
+        log_e("CST816S read info failed");
         cst816s_del(th);
         return res;
     }

@@ -11,6 +11,39 @@ Features:
 [![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/rzeldent/library/esp32_smartdisplay.svg)](https://registry.platformio.org/libraries/rzeldent/esp32_smartdisplay)
 
+## Table of Contents
+
+- [LVGL drivers for Chinese Sunton Smart display boards, aka CYD (Cheap Yellow Display)](#lvgl-drivers-for-chinese-sunton-smart-display-boards-aka-cyd-cheap-yellow-display)
+  - [Table of Contents](#table-of-contents)
+  - [Supported boards](#supported-boards)
+  - [Why this library](#why-this-library)
+  - [Dependencies](#dependencies)
+  - [How to use](#how-to-use)
+    - [Step 1: Download (or open) PlatformIO](#step-1-download-or-open-platformio)
+    - [Step 2: Boards definitions](#step-2-boards-definitions)
+    - [Step 3: Create a new project](#step-3-create-a-new-project)
+    - [Step 4: Add this library to your project](#step-4-add-this-library-to-your-project)
+    - [Step 5: Create a settings file for LVGL](#step-5-create-a-settings-file-for-lvgl)
+    - [Step 6: Copy the build flags below in your project](#step-6-copy-the-build-flags-below-in-your-project)
+    - [Step 7: Initialize the display (and touch) in your project](#step-7-initialize-the-display-and-touch-in-your-project)
+  - [Step 8 (Optional): Create your LVGL file or use SquareLine Studio to make a design](#step-8-optional-create-your-lvgl-file-or-use-squareline-studio-to-make-a-design)
+  - [Step 9: Compile, upload and enjoy](#step-9-compile-upload-and-enjoy)
+  - [Porting from LVGL 8.3.9](#porting-from-lvgl-839)
+    - [lv\_conf.h](#lv_confh)
+    - [Ticker](#ticker)
+  - [More on lv\_conf.h](#more-on-lv_confh)
+  - [LVGL initialization Functions](#lvgl-initialization-functions)
+    - [void smartdisplay\_init()](#void-smartdisplay_init)
+    - [void smartdisplay\_lcd\_set\_backlight(float duty)](#void-smartdisplay_lcd_set_backlightfloat-duty)
+    - [void smartdisplay\_lcd\_set\_brightness\_cb(smartdisplay\_lcd\_adaptive\_brightness\_cb\_t cb, uint interval)](#void-smartdisplay_lcd_set_brightness_cbsmartdisplay_lcd_adaptive_brightness_cb_t-cb-uint-interval)
+    - [void smartdisplay\_led\_set\_rgb(bool r, bool g, bool b)](#void-smartdisplay_led_set_rgbbool-r-bool-g-bool-b)
+    - [touch\_calibration\_data\_t touch\_calibration\_data](#touch_calibration_data_t-touch_calibration_data)
+    - [touch\_calibration\_data\_t smartdisplay\_compute\_touch\_calibration(const lv\_point\_t screen\[3\], const lv\_point\_t touch\[3\])](#touch_calibration_data_t-smartdisplay_compute_touch_calibrationconst-lv_point_t-screen3-const-lv_point_t-touch3)
+  - [Rotation of the display and touch](#rotation-of-the-display-and-touch)
+  - [Appendix: Template to support ALL the boards](#appendix-template-to-support-all-the-boards)
+  - [Appendix: External dependencies](#appendix-external-dependencies)
+  - [Version history](#version-history)
+
 ## Supported boards
 
 These Sunton boards have an LCD display and most of them have a touch interface.
@@ -59,7 +92,7 @@ This library depends on:
 - [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton)
 
 > [!NOTE]
-> This library uses the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers are provided by Espressid and have already been copied and included to this library.
+> This library uses the newly introduced esp_lcd_panel interfaces. This should provide some support in the future for updates and new boards. These drivers are provided by Espressif and have already been copied and included to this library.
 
 ## How to use
 
@@ -92,7 +125,14 @@ Make sure you have PlatformIO installed and functional. Follow the documentation
 
 The board definitions required for this library are defined in the boards library [platformio-espressif32-sunton](https://github.com/rzeldent/platformio-espressif32-sunton). This library must reside in the `<project>/boards` directory so PlatformIo will automatically recognize these boards.
 
-**It is recommended to use `git submodule` to include these board definitions automatically.**
+**It is recommended to use `git clone --recurse-submodules` to include these board definitions automatically.**
+
+In case the repository was opened without the submodules, the submodules need to be initialized and updated. To do this type at the command prompt:
+
+```bash
+git submodule init
+git submodule update
+```
 
 > [!TIP]
 > If you already have a project, clone it with the `git clone --recurse-submodules`. If creating a new project, use `git submodule add https://github.com/rzeldent/platformio-espressif32-sunton.git boards` to add them to your project as a submodule.
@@ -360,7 +400,7 @@ This function can be called to periodically call a user defined function to set 
 The callback function must have the following format:
 
 ```cpp
-float smartdisplay_lcd_adaptive_brightness_function)()
+float smartdisplay_lcd_adaptive_brightness_function()
 {
   ...
   return <float[0,1]>
@@ -608,6 +648,10 @@ The following libraries are used from the [Espressif component registry](https:/
 
 ## Version history
 
+- June 2025
+  - Version 2.1.1
+  - Updated documentation
+  - Renamed IO pins
 - November 2024
   - Version 2.1.0
   - LVGL 9.2.2

@@ -51,12 +51,14 @@ void smartdisplay_lcd_set_backlight(float duty)
 {
   log_v("duty:%2f", duty);
 
-  if (duty > 1.0f)
-    duty = 1.0f;
-  if (duty < 0.0f)
-    duty = 0.0f;
+  if (duty < 0.0f || duty > 1.0f || isnan(duty))
+  {
+    log_e("Invalid duty value: %f", duty);
+    return;
+  }
+
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcWrite(GPIO_BCKL, duty * PWM_MAX_BCKL);
+  ledcWrite(DISPLAY_BCKL, duty * PWM_MAX_BCKL);
 #else
   ledcWrite(PWM_CHANNEL_BCKL, duty * PWM_MAX_BCKL);
 #endif
@@ -89,7 +91,7 @@ void adaptive_brightness(lv_timer_t *timer)
   smartdisplay_lcd_set_backlight(callback());
 }
 
-void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint interval)
+void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint32_t interval)
 {
   log_v("adaptive_brightness_cb:0x%08x, interval:%u", cb, interval);
 
@@ -182,14 +184,17 @@ void smartdisplay_init()
 #endif
 
   lv_init();
+#ifdef BCKL_DELAY_MS
+  vTaskDelay(pdMS_TO_TICKS(BCKL_DELAY_MS));
+#endif
   // Setup backlight
-  pinMode(GPIO_BCKL, OUTPUT);
-  digitalWrite(GPIO_BCKL, LOW);
+  pinMode(DISPLAY_BCKL, OUTPUT);
+  digitalWrite(DISPLAY_BCKL, LOW);
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
-  ledcAttach(GPIO_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
+  ledcAttach(DISPLAY_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
 #else
   ledcSetup(PWM_CHANNEL_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
-  ledcAttachPin(GPIO_BCKL, PWM_CHANNEL_BCKL);
+  ledcAttachPin(DISPLAY_BCKL, PWM_CHANNEL_BCKL);
 #endif
 
   // turn off backlight so it doesn't flicker

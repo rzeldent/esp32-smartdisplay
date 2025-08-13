@@ -3,59 +3,21 @@
 #include <esp32_smartdisplay.h>
 #include <esp_lcd_panel_rgb.h>
 #include <esp_lcd_panel_ops.h>
+#include <esp32_smartdisplay_dma_helpers.h>
 
 bool direct_io_frame_trans_done(esp_lcd_panel_handle_t panel, esp_lcd_rgb_panel_event_data_t *edata, void *user_ctx)
 {
-    lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
+    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
+    // This callback is only used for direct transfers (non-DMA fallback)
+    // We return false to indicate we're not handling the flush completion here
     return false;
 }
 
 void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
-    // Hardware rotation is not supported
+    // Hardware rotation is not supported - use optimized helper function with software rotation
     const esp_lcd_panel_handle_t panel_handle = display->user_data;
-
-    lv_display_rotation_t rotation = lv_display_get_rotation(display);
-    if (rotation == LV_DISPLAY_ROTATION_0)
-    {
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
-        return;
-    }
-
-    // Rotated
-    int32_t w = lv_area_get_width(area);
-    int32_t h = lv_area_get_height(area);
-    lv_color_format_t cf = lv_display_get_color_format(display);
-    uint32_t px_size = lv_color_format_get_size(cf);
-    size_t buf_size = w * h * px_size;
-    log_v("alloc rotation buffer to: %u bytes", buf_size);
-    void *rotation_buffer = heap_caps_malloc(buf_size, LVGL_BUFFER_MALLOC_FLAGS);
-    assert(rotation_buffer != NULL);
-
-    uint32_t w_stride = lv_draw_buf_width_to_stride(w, cf);
-    uint32_t h_stride = lv_draw_buf_width_to_stride(h, cf);
-
-    switch (rotation)
-    {
-    case LV_DISPLAY_ROTATION_90:
-        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->y1, display->ver_res - area->x1 - w, area->y1 + h, display->ver_res - area->x1, rotation_buffer));
-        break;
-    case LV_DISPLAY_ROTATION_180:
-        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, w_stride, rotation, cf);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->x1 - w, display->ver_res - area->y1 - h, display->hor_res - area->x1, display->ver_res - area->y1, rotation_buffer));
-        break;
-    case LV_DISPLAY_ROTATION_270:
-        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->y2 - 1, area->x2 - w + 1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer));
-        break;
-    default:
-        assert(false);
-        break;
-    }
-
-    free(rotation_buffer);
+    smartdisplay_dma_flush_with_rotation(display, area, px_map, panel_handle, "ST7262 Parallel");
 };
 
 lv_display_t *lvgl_lcd_init()
@@ -91,13 +53,13 @@ lv_display_t *lvgl_lcd_init()
         .data_width = ST7262_PANEL_CONFIG_DATA_WIDTH,
         .sram_trans_align = ST7262_PANEL_CONFIG_SRAM_TRANS_ALIGN,
         .psram_trans_align = ST7262_PANEL_CONFIG_PSRAM_TRANS_ALIGN,
-        .hsync_gpio_num = ST7262_PANEL_CONFIG_HSYNC_GPIO_NUM,
-        .vsync_gpio_num = ST7262_PANEL_CONFIG_VSYNC_GPIO_NUM,
-        .de_gpio_num = ST7262_PANEL_CONFIG_DE_GPIO_NUM,
-        .pclk_gpio_num = ST7262_PANEL_CONFIG_PCLK_GPIO_NUM,
+        .hsync_gpio_num = ST7262_PANEL_CONFIG_HSYNC,
+        .vsync_gpio_num = ST7262_PANEL_CONFIG_VSYNC,
+        .de_gpio_num = ST7262_PANEL_CONFIG_DE,
+        .pclk_gpio_num = ST7262_PANEL_CONFIG_PCLK,
         // LV_COLOR_16_SWAP is handled by mapping of the data
-        .data_gpio_nums = {ST7262_PANEL_CONFIG_DATA_GPIO_R0, ST7262_PANEL_CONFIG_DATA_GPIO_R1, ST7262_PANEL_CONFIG_DATA_GPIO_R2, ST7262_PANEL_CONFIG_DATA_GPIO_R3, ST7262_PANEL_CONFIG_DATA_GPIO_R4, ST7262_PANEL_CONFIG_DATA_GPIO_G0, ST7262_PANEL_CONFIG_DATA_GPIO_G1, ST7262_PANEL_CONFIG_DATA_GPIO_G2, ST7262_PANEL_CONFIG_DATA_GPIO_G3, ST7262_PANEL_CONFIG_DATA_GPIO_G4, ST7262_PANEL_CONFIG_DATA_GPIO_G5, ST7262_PANEL_CONFIG_DATA_GPIO_B0, ST7262_PANEL_CONFIG_DATA_GPIO_B1, ST7262_PANEL_CONFIG_DATA_GPIO_B2, ST7262_PANEL_CONFIG_DATA_GPIO_B3, ST7262_PANEL_CONFIG_DATA_GPIO_B4},
-        .disp_gpio_num = ST7262_PANEL_CONFIG_DISP_GPIO_NUM,
+        .data_gpio_nums = {ST7262_PANEL_CONFIG_DATA_R0, ST7262_PANEL_CONFIG_DATA_R1, ST7262_PANEL_CONFIG_DATA_R2, ST7262_PANEL_CONFIG_DATA_R3, ST7262_PANEL_CONFIG_DATA_R4, ST7262_PANEL_CONFIG_DATA_G0, ST7262_PANEL_CONFIG_DATA_G1, ST7262_PANEL_CONFIG_DATA_G2, ST7262_PANEL_CONFIG_DATA_G3, ST7262_PANEL_CONFIG_DATA_G4, ST7262_PANEL_CONFIG_DATA_G5, ST7262_PANEL_CONFIG_DATA_B0, ST7262_PANEL_CONFIG_DATA_B1, ST7262_PANEL_CONFIG_DATA_B2, ST7262_PANEL_CONFIG_DATA_B3, ST7262_PANEL_CONFIG_DATA_B4},
+        .disp_gpio_num = ST7262_PANEL_CONFIG_DISP,
         .on_frame_trans_done = direct_io_frame_trans_done,
         .user_ctx = display,
         .flags = {.disp_active_low = ST7262_PANEL_CONFIG_FLAGS_DISP_ACTIVE_LOW, .relax_on_idle = ST7262_PANEL_CONFIG_FLAGS_RELAX_ON_IDLE, .fb_in_psram = ST7262_PANEL_CONFIG_FLAGS_FB_IN_PSRAM}};
@@ -107,6 +69,10 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&rgb_panel_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    
+    // Initialize DMA for optimized transfers
+    smartdisplay_dma_init_with_logging(panel_handle, "ST7262 Parallel");
+    
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));

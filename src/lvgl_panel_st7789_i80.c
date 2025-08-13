@@ -4,27 +4,22 @@
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_vendor.h>
 #include <esp_lcd_panel_ops.h>
+#include <esp32_smartdisplay_dma_helpers.h>
 
 bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
+    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
+    // This callback is only used for direct transfers (non-DMA fallback)
     lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
+    // lv_display_flush_ready(display) is handled by DMA callbacks when DMA is enabled.
     return false;
 }
 
 void st7789_lv_flush(lv_display_t *drv, const lv_area_t *area, uint8_t *px_map)
 {
-    // Hardware rotation is supported
+    // Hardware rotation is supported - use optimized helper function
     const esp_lcd_panel_handle_t panel_handle = drv->user_data;
-    uint32_t pixels = lv_area_get_size(area);
-    uint16_t *p = (uint16_t *)px_map;
-    while (pixels--)
-    {
-        *p = (uint16_t)((*p >> 8) | (*p << 8));
-        p++;
-    }
-
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+    smartdisplay_dma_flush_with_byteswap(drv, area, px_map, panel_handle, "ST7789 I80");
 };
 
 lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
@@ -36,8 +31,8 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
     void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
     lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
-    pinMode(ST7789_RD_GPIO, OUTPUT);
-    digitalWrite(ST7789_RD_GPIO, HIGH);
+    pinMode(ST7789_RD, OUTPUT);
+    digitalWrite(ST7789_RD, HIGH);
 
     const esp_lcd_i80_bus_config_t i80_bus_config = {
         .clk_src = ST7789_I80_BUS_CONFIG_CLK_SRC,
@@ -63,7 +58,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Create direct_io panel handle
     esp_lcd_panel_io_i80_config_t io_i80_config = {
-        .cs_gpio_num = ST7789_IO_I80_CONFIG_CS_GPIO_NUM,
+        .cs_gpio_num = ST7789_IO_I80_CONFIG_CS,
         .pclk_hz = ST7789_IO_I80_CONFIG_PCLK_HZ,
         .on_color_trans_done = st7789_color_trans_done,
         .user_ctx = display,
@@ -82,7 +77,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
 
     // Create ST7789 panel handle
     const esp_lcd_panel_dev_config_t panel_dev_config = {
-        .reset_gpio_num = ST7789_DEV_CONFIG_RESET_GPIO_NUM,
+        .reset_gpio_num = ST7789_DEV_CONFIG_RESET,
         .color_space = ST7789_DEV_CONFIG_COLOR_SPACE,
         .bits_per_pixel = ST7789_DEV_CONFIG_BITS_PER_PIXEL,
         .flags = {
@@ -93,6 +88,10 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle, &panel_dev_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    
+    // Initialize DMA for optimized transfers
+    smartdisplay_dma_init_with_logging(panel_handle, "ST7789 I80");
+    
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
