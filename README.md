@@ -639,7 +639,12 @@ The following libraries are used from the [Espressif component registry](https:/
 | [ESP LCD Touch](https://components.espressif.com/api/download/?object_type=component&object_id=bb4a4d94-2827-4695-84d1-1b53383b8001)              | v1.1.1  |
 
 ## Version history
-
+- September 2025
+  - Removed DMA. This caused problems on some boards
+  - LVGL set to 9.3.0
+  - Release 2.1.2
+- August 2025
+  - Added DMA
 - June 2025
   - Version 2.1.1
   - Updated documentation
