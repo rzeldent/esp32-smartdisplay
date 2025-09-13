@@ -19,7 +19,10 @@ void st7789_lv_flush(lv_display_t *drv, const lv_area_t *area, uint8_t *px_map)
     uint32_t pixels = lv_area_get_size(area);
     uint16_t *p = (uint16_t *)px_map;
     while (pixels--)
-        *p++ = __builtin_bswap16(*p);
+    {
+        *p = __builtin_bswap16(*p);
+        p++;
+    }
 
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
 };
