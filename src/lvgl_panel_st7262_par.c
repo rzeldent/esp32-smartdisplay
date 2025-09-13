@@ -48,7 +48,7 @@ void direct_io_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *p
         break;
     case LV_DISPLAY_ROTATION_270:
         lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->y2 - 1, area->x2 - w + 1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer));
+        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->y2 - 1, area->x1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer));
         break;
     default:
         assert(false);
