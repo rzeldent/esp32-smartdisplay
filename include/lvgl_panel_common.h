@@ -95,7 +95,7 @@ static inline void lv_flush_software(lv_display_t *display, const lv_area_t *are
     free(rotation_buffer);
 };
 
-static inline void lvgl_setup_display(esp_lcd_panel_handle_t panel_handle)
+static inline void lvgl_setup_panel(esp_lcd_panel_handle_t panel_handle)
 {
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
 #ifdef DISPLAY_IPS
