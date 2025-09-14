@@ -5,41 +5,12 @@
 #include <driver/spi_master.h>
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_ops.h>
-
-bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t panel_io_handle, esp_lcd_panel_io_event_data_t *panel_io_event_data, void *user_ctx)
-{
-    log_v("panel_io_handle:0x%08x, panel_io_event_data:%0x%08x, user_ctx:0x%08x", panel_io_handle, panel_io_event_data, user_ctx);
-
-    lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
-    return false;
-}
-
-void gc9a01_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
-{
-    // Hardware rotation is supported
-    log_v("display:0x%08x, area:%0x%08x, color_map:0x%08x", display, area, px_map);
-
-    esp_lcd_panel_handle_t panel_handle = display->user_data;
-    uint32_t pixels = lv_area_get_size(area);
-    uint16_t *p = (uint16_t *)px_map;
-    while (pixels--)
-    {
-        *p = __builtin_bswap16(*p);
-        p++;
-    }
-
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
-};
+#include <lvgl_panel_common.h>
 
 lv_display_t *lvgl_lcd_init()
 {
-    lv_display_t *display = lv_display_create(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    lv_display_t *display = lvgl_create_display();
     log_v("display:0x%08x", display);
-    //  Create drawBuffer
-    uint32_t drawBufferSize = sizeof(lv_color_t) * LVGL_BUFFER_PIXELS;
-    void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
-    lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
     // Create SPI bus
     const spi_bus_config_t spi_bus_config = {
@@ -62,7 +33,7 @@ lv_display_t *lvgl_lcd_init()
         .pclk_hz = GC9A01_SPI_CONFIG_PCLK_HZ,
         .trans_queue_depth = GC9A01_SPI_CONFIG_TRANS_QUEUE_DEPTH,
         .user_ctx = display,
-        .on_color_trans_done = gc9a01_color_trans_done,
+        .on_color_trans_done = lvgl_panel_color_trans_done,
         .lcd_cmd_bits = GC9A01_SPI_CONFIG_LCD_CMD_BITS,
         .lcd_param_bits = GC9A01_SPI_CONFIG_LCD_PARAM_BITS,
         .flags = {
@@ -103,8 +74,7 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
 
     display->user_data = panel_handle;
-    display->flush_cb = gc9a01_lv_flush;
-
+    display->flush_cb = lv_flush_hardware;
     return display;
 }
 
