@@ -94,3 +94,23 @@ static inline void lv_flush_software(lv_display_t *display, const lv_area_t *are
 
     free(rotation_buffer);
 };
+
+static inline void lvgl_setup_display(esp_lcd_panel_handle_t panel_handle)
+{
+    ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+#ifdef DISPLAY_IPS
+    // If LCD is IPS invert the colors
+    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
+#endif
+#if (DISPLAY_SWAP_XY)
+    ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, DISPLAY_SWAP_XY));
+#endif
+#if (DISPLAY_MIRROR_X || DISPLAY_MIRROR_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y));
+#endif
+#if (DISPLAY_GAP_X || DISPLAY_GAP_Y)
+    ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, DISPLAY_GAP_X, DISPLAY_GAP_Y));
+#endif
+    // Turn display on
+    ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
+};
