@@ -9,9 +9,20 @@
 
 bool ili9341_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
-    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
-    // This callback is only used for direct transfers (non-DMA fallback)
-    // We return false to indicate we're not handling the flush completion here
+#ifdef BOARD_FLUSH_READY_IN_CALLBACK
+    // The direct-transfer fallback in esp32_smartdisplay_dma_helpers.c does NOT
+    // call lv_display_flush_ready() (it would fire before the async SPI DMA
+    // finished, letting LVGL reuse the framebuffer mid-transfer → tearing).
+    // This callback runs from the panel IO "transfer done" event — i.e. when
+    // the SPI peripheral has actually finished — so signalling flush_ready here
+    // is safe. Only relevant on boards that fall back to direct transfers
+    // (e.g. no-PSRAM, where the DMA buffer can't be allocated).
+    lv_display_t *display = (lv_display_t *)user_ctx;
+    if (display)
+        lv_display_flush_ready(display);
+#endif
+    // DMA path signals completion via smartdisplay_dma_lvgl_flush_callback;
+    // return false so the IO layer doesn't treat this as the flush owner there.
     return false;
 }
 

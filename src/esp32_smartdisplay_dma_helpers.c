@@ -1,10 +1,37 @@
 #include <esp32_smartdisplay_dma_helpers.h>
 #include <esp32_smartdisplay.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 // Minimum transfer size to justify DMA overhead (configurable)
 #ifndef SMARTDISPLAY_DMA_MIN_TRANSFER_SIZE
 #define SMARTDISPLAY_DMA_MIN_TRANSFER_SIZE 1024 // 1KB minimum
 #endif
+
+// Draw a bitmap, retrying on transient failure instead of aborting.
+//
+// The direct-transfer paths below previously wrapped esp_lcd_panel_draw_bitmap()
+// in ESP_ERROR_CHECK(), which calls abort() (panic + reboot) on any non-OK
+// return. On boards without PSRAM the SPI transaction allocation can fail
+// transiently with ESP_ERR_NO_MEM under heap pressure even when total free heap
+// is healthy — rebooting the device mid-render. Retry a few times with a short
+// back-off (a transient failure recovers within one frame budget); on a
+// persistent failure, log and continue rather than crash.
+static esp_err_t draw_bitmap_retry(esp_lcd_panel_handle_t panel,
+                                   int x_start, int y_start, int x_end, int y_end,
+                                   const void *color_data)
+{
+    esp_err_t err = ESP_OK;
+    for (int retry = 0; retry < 3; retry++)
+    {
+        err = esp_lcd_panel_draw_bitmap(panel, x_start, y_start, x_end, y_end, color_data);
+        if (err == ESP_OK)
+            return err;
+        vTaskDelay(pdMS_TO_TICKS(2));
+    }
+    log_e("esp_lcd_panel_draw_bitmap failed after 3 retries: 0x%x", err);
+    return err;
+}
 
 void smartdisplay_dma_lvgl_flush_callback(bool success, void *user_data)
 {
@@ -36,8 +63,10 @@ esp_err_t smartdisplay_dma_flush_with_byteswap(lv_display_t *display, const lv_a
     if (!smartdisplay_dma_should_use_for_size(transfer_size))
     {
         // Transfer too small for DMA, use direct transfer
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+        draw_bitmap_retry(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map);
+#ifndef BOARD_FLUSH_READY_IN_CALLBACK
         lv_display_flush_ready(display);
+#endif
         return ESP_OK;
     }
 
@@ -51,8 +80,15 @@ esp_err_t smartdisplay_dma_flush_with_byteswap(lv_display_t *display, const lv_a
 
     // DMA failed, use direct transfer
     log_w("DMA transfer failed for %s, using direct transfer", panel_name);
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+    draw_bitmap_retry(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map);
+    // BOARD_FLUSH_READY_IN_CALLBACK: esp_lcd_panel_draw_bitmap() queues the SPI
+    // transaction asynchronously and returns before DMA completes. Calling
+    // lv_display_flush_ready() here lets LVGL reuse the framebuffer while the
+    // SPI peripheral is still reading it → tearing. When the flag is set, the
+    // panel's on_color_trans_done callback signals flush_ready instead.
+#ifndef BOARD_FLUSH_READY_IN_CALLBACK
     lv_display_flush_ready(display);
+#endif
     return ESP_OK;
 }
 
@@ -94,7 +130,7 @@ esp_err_t smartdisplay_dma_flush_with_rotation(lv_display_t *display, const lv_a
         if (!smartdisplay_dma_should_use_for_size(transfer_size))
         {
             // Transfer too small for DMA, use direct transfer
-            ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+            draw_bitmap_retry(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map);
             lv_display_flush_ready(display);
             return ESP_OK;
         }
@@ -109,7 +145,7 @@ esp_err_t smartdisplay_dma_flush_with_rotation(lv_display_t *display, const lv_a
 
         // DMA failed, use direct transfer
         log_w("DMA transfer failed for %s, using direct transfer", panel_name);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+        draw_bitmap_retry(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map);
         lv_display_flush_ready(display);
         return ESP_OK;
     }
@@ -156,7 +192,7 @@ esp_err_t smartdisplay_dma_flush_with_rotation(lv_display_t *display, const lv_a
             }
             log_w("DMA transfer failed for 90° rotation on %s, using direct transfer", panel_name);
         }
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->y1, display->ver_res - area->x1 - w, area->y1 + h, display->ver_res - area->x1, rotation_buffer));
+        draw_bitmap_retry(panel_handle, area->y1, display->ver_res - area->x1 - w, area->y1 + h, display->ver_res - area->x1, rotation_buffer);
         break;
 
     case LV_DISPLAY_ROTATION_180:
@@ -181,7 +217,7 @@ esp_err_t smartdisplay_dma_flush_with_rotation(lv_display_t *display, const lv_a
             }
             log_w("DMA transfer failed for 180° rotation on %s, using direct transfer", panel_name);
         }
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->x1 - w, display->ver_res - area->y1 - h, display->hor_res - area->x1, display->ver_res - area->y1, rotation_buffer));
+        draw_bitmap_retry(panel_handle, display->hor_res - area->x1 - w, display->ver_res - area->y1 - h, display->hor_res - area->x1, display->ver_res - area->y1, rotation_buffer);
         break;
 
     case LV_DISPLAY_ROTATION_270:
@@ -206,7 +242,7 @@ esp_err_t smartdisplay_dma_flush_with_rotation(lv_display_t *display, const lv_a
             }
             log_w("DMA transfer failed for 270° rotation on %s, using direct transfer", panel_name);
         }
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->y2 - 1, area->x2 - w + 1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer));
+        draw_bitmap_retry(panel_handle, display->hor_res - area->y2 - 1, area->x2 - w + 1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer);
         break;
 
     default:
