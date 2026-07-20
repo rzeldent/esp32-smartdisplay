@@ -37,9 +37,12 @@ extern "C"
      * @brief Initialize DMA for a panel with standardized logging
      * @param panel_handle ESP LCD panel handle
      * @param panel_name Panel name for logging
+     * @param async_color_trans Whether panel_handle's draw_bitmap() completes
+     *        asynchronously and its panel IO's on_color_trans_done callback
+     *        calls smartdisplay_dma_notify_chunk_done() - see smartdisplay_dma_init()
      * @return ESP_OK on success, error code otherwise
      */
-    esp_err_t smartdisplay_dma_init_with_logging(esp_lcd_panel_handle_t panel_handle, const char *panel_name);
+    esp_err_t smartdisplay_dma_init_with_logging(esp_lcd_panel_handle_t panel_handle, const char *panel_name, bool async_color_trans);
 
     /**
      * @brief Structure to pass both display and buffer to rotation callback

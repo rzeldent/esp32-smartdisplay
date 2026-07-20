@@ -42,11 +42,13 @@ extern "C"
     {
         QueueHandle_t transfer_queue;        // Queue for pending transfers
         SemaphoreHandle_t state_mutex;       // Mutex for state protection
+        SemaphoreHandle_t chunk_done_sem;    // Signalled by the panel IO's on_color_trans_done callback once a queued chunk has actually finished transferring
         TaskHandle_t worker_task;            // DMA worker task handle
         smartdisplay_dma_state_t state;      // Current DMA state
         void *dma_buffer;                    // DMA-capable buffer
         size_t dma_buffer_size;              // DMA buffer size
         esp_lcd_panel_handle_t panel_handle; // LCD panel handle
+        bool async_color_trans;              // True if the panel IO completes color transfers asynchronously and signals chunk_done_sem via smartdisplay_dma_notify_chunk_done()
         uint32_t active_transfers;           // Number of active transfers
         uint32_t completed_transfers;        // Total completed transfers
         uint32_t failed_transfers;           // Total failed transfers
@@ -56,9 +58,19 @@ extern "C"
      * @brief Initialize DMA manager for display transfers
      *
      * @param panel_handle LCD panel handle
+     * @param async_color_trans Set to true when the panel IO used by panel_handle
+     *        completes esp_lcd_panel_draw_bitmap() asynchronously (e.g. SPI/I80
+     *        panels driven through esp_lcd_panel_io, which queue the transaction
+     *        and return before the wire transfer finishes) AND its
+     *        on_color_trans_done callback calls smartdisplay_dma_notify_chunk_done().
+     *        Set to false for panels whose draw_bitmap() already blocks until the
+     *        data has physically been written (e.g. RGB parallel panels, or SPI
+     *        panels driven with spi_device_polling_transmit()) - for those, no
+     *        chunk_done_sem signal will ever arrive, so the DMA worker must not
+     *        wait for one.
      * @return esp_err_t ESP_OK on success
      */
-    esp_err_t smartdisplay_dma_init(esp_lcd_panel_handle_t panel_handle);
+    esp_err_t smartdisplay_dma_init(esp_lcd_panel_handle_t panel_handle, bool async_color_trans);
 
     /**
      * @brief Deinitialize DMA manager
@@ -116,6 +128,22 @@ extern "C"
      * @param px_map Pixel data
      */
     void smartdisplay_dma_lvgl_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map);
+
+    /**
+     * @brief Notify the DMA manager that a queued panel IO color transfer has
+     *        actually completed on the wire.
+     *
+     * Call this from a panel's on_color_trans_done callback (which runs in ISR
+     * context). It gives the semaphore that smartdisplay_dma_transfer_chunk()
+     * waits on before reusing the DMA buffer for the next chunk or letting the
+     * caller treat the transfer as finished, so lv_display_flush_ready() is
+     * only ever called once the SPI/I80 transfer that produced the current
+     * framebuffer contents has really finished (not just been queued).
+     *
+     * @return true if a higher-priority task was woken and the ISR should
+     *         request a context switch before it returns
+     */
+    bool smartdisplay_dma_notify_chunk_done(void);
 
 #ifdef __cplusplus
 }

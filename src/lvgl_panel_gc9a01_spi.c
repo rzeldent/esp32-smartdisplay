@@ -11,9 +11,13 @@ bool gc9a01_color_trans_done(esp_lcd_panel_io_handle_t panel_io_handle, esp_lcd_
 {
     log_v("panel_io_handle:0x%08x, panel_io_event_data:%0x%08x, user_ctx:0x%08x", panel_io_handle, panel_io_event_data, user_ctx);
 
-    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
-    // This callback is only used for direct transfers (non-DMA fallback)
-    return false;
+    // This fires once the SPI peripheral has actually finished sending the
+    // color data queued by esp_lcd_panel_draw_bitmap(). The DMA worker task
+    // (esp32_smartdisplay_dma.c) is blocked waiting for this signal before it
+    // reuses the DMA buffer or reports the transfer as done - without it,
+    // lv_display_flush_ready() would fire while the SPI transaction was still
+    // in flight.
+    return smartdisplay_dma_notify_chunk_done();
 }
 
 void gc9a01_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
@@ -81,7 +85,7 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
     
     // Initialize DMA for optimized transfers
-    smartdisplay_dma_init_with_logging(panel_handle, "GC9A01 SPI");
+    smartdisplay_dma_init_with_logging(panel_handle, "GC9A01 SPI", true);
     
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors

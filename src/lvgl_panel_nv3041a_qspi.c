@@ -76,7 +76,10 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
 
     // Initialize DMA for optimized transfers
-    smartdisplay_dma_init_with_logging(panel_handle, "NV3041A QSPI");
+    // nv3041a_draw_bitmap() uses spi_device_polling_transmit(), which blocks
+    // until the transfer is physically done, so there is no async completion
+    // to wait for.
+    smartdisplay_dma_init_with_logging(panel_handle, "NV3041A QSPI", false);
 
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors

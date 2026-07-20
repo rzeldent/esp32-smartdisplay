@@ -21,9 +21,12 @@ bool ili9341_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_
     if (display)
         lv_display_flush_ready(display);
 #endif
-    // DMA path signals completion via smartdisplay_dma_lvgl_flush_callback;
-    // return false so the IO layer doesn't treat this as the flush owner there.
-    return false;
+    // DMA path: signal the DMA worker task (esp32_smartdisplay_dma.c) that the
+    // chunk it just queued has actually finished transferring, so it's safe to
+    // reuse the DMA buffer / report the transfer as done - it calls
+    // lv_display_flush_ready() itself via smartdisplay_dma_lvgl_flush_callback
+    // once the whole transfer is complete.
+    return smartdisplay_dma_notify_chunk_done();
 }
 
 void ili9341_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
@@ -89,7 +92,7 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
     
     // Initialize DMA for optimized transfers
-    smartdisplay_dma_init_with_logging(panel_handle, "ILI9341 SPI");
+    smartdisplay_dma_init_with_logging(panel_handle, "ILI9341 SPI", true);
     
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors

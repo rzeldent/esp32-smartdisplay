@@ -11,11 +11,15 @@ bool axs15231b_color_trans_done(esp_lcd_panel_io_handle_t panel_io_handle, esp_l
 {
     log_v("panel_io_handle:0x%08x, panel_io_event_data:%0x%08x, user_ctx:0x%08x", panel_io_handle, panel_io_event_data, user_ctx);
 
-    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
-    // This callback is only used for direct transfers (non-DMA fallback)
-    lv_display_t *display = user_ctx;
-    lv_display_flush_ready(display);
-    return false;
+    // This fires once the SPI peripheral has actually finished sending the
+    // color data queued by esp_lcd_panel_draw_bitmap(). It used to call
+    // lv_display_flush_ready() directly here unconditionally, but that ran on
+    // every chunk of a multi-chunk DMA transfer (not just the last one) and
+    // raced with the DMA worker task's own flush_ready call - letting LVGL
+    // reuse the framebuffer while later chunks were still in flight. Instead,
+    // signal the DMA worker task (esp32_smartdisplay_dma.c), which is what
+    // actually calls lv_display_flush_ready() once the whole transfer is done.
+    return smartdisplay_dma_notify_chunk_done();
 }
 
 void axs15231b_lv_flush(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
@@ -103,7 +107,7 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
     
     // Initialize DMA for optimized transfers
-    smartdisplay_dma_init_with_logging(panel_handle, "AXS15231B QSPI");
+    smartdisplay_dma_init_with_logging(panel_handle, "AXS15231B QSPI", true);
     
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors

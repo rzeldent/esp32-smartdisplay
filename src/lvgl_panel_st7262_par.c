@@ -71,7 +71,9 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
     
     // Initialize DMA for optimized transfers
-    smartdisplay_dma_init_with_logging(panel_handle, "ST7262 Parallel");
+    // RGB parallel panel: esp_lcd_panel_draw_bitmap() blocks until the frame
+    // buffer copy is actually done, so there is no async completion to wait for.
+    smartdisplay_dma_init_with_logging(panel_handle, "ST7262 Parallel", false);
     
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
