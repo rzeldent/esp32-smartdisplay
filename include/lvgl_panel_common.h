@@ -34,18 +34,45 @@ static inline bool lvgl_panel_color_trans_done(esp_lcd_panel_io_handle_t panel_i
 }
 
 // Hardware rotation is supported
+// Uses a static staging buffer to avoid modifying the LVGL draw buffer
+// while SPI transfer is in progress (causing display corruption)
 static inline void lv_flush_hardware(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
     esp_lcd_panel_handle_t panel_handle = display->user_data;
-    uint16_t *p = (uint16_t *)px_map;
+    
+    // Calculate buffer size needed
     uint32_t pixels = lv_area_get_size(area);
-    while (pixels--)
-    {
-        *p = __builtin_bswap16(*p);
-        p++;
+    size_t buf_size = pixels * sizeof(uint16_t);
+    
+    // Use a persistent static buffer to avoid repeated allocations
+    // This buffer is allocated once and reused for each frame
+    static uint8_t *staging_buf = NULL;
+    static size_t staging_buf_size = 0;
+    
+    // Allocate or reallocate if size changed
+    if (staging_buf == NULL || buf_size > staging_buf_size) {
+        if (staging_buf != NULL) {
+            free(staging_buf);
+        }
+        staging_buf = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+        if (staging_buf == NULL) {
+            log_e("Failed to allocate staging buffer for flush (size: %u)", buf_size);
+            return;
+        }
+        staging_buf_size = buf_size;
+        log_d("Allocated staging buffer: %u bytes", buf_size);
+    }
+    
+    // Copy and byte-swap to staging buffer instead of modifying LVGL's buffer
+    // This prevents the corruption that occurs when LVGL reuses the buffer
+    // while SPI is still reading it
+    uint16_t *src = (uint16_t *)px_map;
+    uint16_t *dst = (uint16_t *)staging_buf;
+    for (uint32_t i = 0; i < pixels; i++) {
+        *dst++ = __builtin_bswap16(*src++);
     }
 
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, staging_buf));
 };
 
 // Hardware rotation is not supported
