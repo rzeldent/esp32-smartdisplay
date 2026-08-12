@@ -92,9 +92,9 @@ esp_err_t smartdisplay_dma_flush_with_byteswap(lv_display_t *display, const lv_a
     return ESP_OK;
 }
 
-esp_err_t smartdisplay_dma_init_with_logging(esp_lcd_panel_handle_t panel_handle, const char *panel_name)
+esp_err_t smartdisplay_dma_init_with_logging(esp_lcd_panel_handle_t panel_handle, const char *panel_name, bool async_color_trans)
 {
-    esp_err_t dma_init_result = smartdisplay_dma_init(panel_handle);
+    esp_err_t dma_init_result = smartdisplay_dma_init(panel_handle, async_color_trans);
     if (dma_init_result == ESP_OK)
         log_i("DMA initialized successfully for %s display", panel_name);
     else

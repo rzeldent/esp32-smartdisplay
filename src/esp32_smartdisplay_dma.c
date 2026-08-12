@@ -11,9 +11,41 @@ static smartdisplay_dma_manager_t *g_dma_manager = NULL;
 #define _min(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
+// How long a single chunk's transfer is allowed to take before we give up
+// waiting for its completion signal and report an error, instead of hanging
+// the worker task forever.
+#ifndef SMARTDISPLAY_DMA_CHUNK_TIMEOUT_MS
+#define SMARTDISPLAY_DMA_CHUNK_TIMEOUT_MS 500
+#endif
+
 bool smartdisplay_dma_should_use_dma(size_t data_len)
 {
     return g_dma_manager != NULL && data_len >= SMARTDISPLAY_DMA_CHUNK_THRESHOLD;
+}
+
+// Issue a single esp_lcd_panel_draw_bitmap() call and, for panels whose panel
+// IO completes color transfers asynchronously (async_color_trans == true),
+// block until the panel's on_color_trans_done callback confirms the data has
+// actually gone out over SPI/I80 (see smartdisplay_dma_notify_chunk_done()).
+// draw_bitmap() itself only queues the transaction and returns immediately on
+// those panels, so without this wait the caller could reuse/overwrite the
+// buffer - or LVGL could reuse the framebuffer - before the transfer is done.
+// Panels whose draw_bitmap() already blocks until the data is physically
+// written (RGB parallel panels, polling-mode SPI) have async_color_trans set
+// to false and never signal chunk_done_sem, so they just return as-is.
+static esp_err_t smartdisplay_dma_draw_bitmap_and_wait(int x_start, int y_start, int x_end, int y_end, const void *color_data)
+{
+    const esp_err_t ret = esp_lcd_panel_draw_bitmap(g_dma_manager->panel_handle, x_start, y_start, x_end, y_end, color_data);
+    if (ret != ESP_OK || !g_dma_manager->async_color_trans)
+        return ret;
+
+    if (xSemaphoreTake(g_dma_manager->chunk_done_sem, pdMS_TO_TICKS(SMARTDISPLAY_DMA_CHUNK_TIMEOUT_MS)) != pdTRUE)
+    {
+        log_e("Timed out waiting for panel transfer to complete");
+        return ESP_ERR_TIMEOUT;
+    }
+
+    return ESP_OK;
 }
 
 esp_err_t smartdisplay_dma_draw_bitmap(int x_start, int y_start, int x_end, int y_end, const void *color_data, smartdisplay_dma_callback_t callback, void *user_data, bool high_priority)
@@ -38,7 +70,7 @@ esp_err_t smartdisplay_dma_draw_bitmap(int x_start, int y_start, int x_end, int 
     // For small transfers, use direct transfer
     if (!smartdisplay_dma_should_use_dma(data_len))
     {
-        const esp_err_t ret = esp_lcd_panel_draw_bitmap(g_dma_manager->panel_handle, x_start, y_start, x_end, y_end, color_data);
+        const esp_err_t ret = smartdisplay_dma_draw_bitmap_and_wait(x_start, y_start, x_end, y_end, color_data);
         if (callback != NULL)
             callback(ret == ESP_OK, user_data);
 
@@ -62,7 +94,7 @@ esp_err_t smartdisplay_dma_draw_bitmap(int x_start, int y_start, int x_end, int 
     if (queue_result != pdPASS)
     {
         log_w("Transfer queue full, falling back to direct transfer");
-        esp_err_t ret = esp_lcd_panel_draw_bitmap(g_dma_manager->panel_handle, x_start, y_start, x_end, y_end, color_data);
+        esp_err_t ret = smartdisplay_dma_draw_bitmap_and_wait(x_start, y_start, x_end, y_end, color_data);
         if (callback != NULL)
             callback(ret == ESP_OK, user_data);
 
@@ -216,12 +248,15 @@ static esp_err_t smartdisplay_dma_transfer_chunk(const smartdisplay_dma_transfer
             return copy_result;
         }
 
-        // Perform DMA transfer
+        // Perform DMA transfer, waiting for it to actually finish before we
+        // let the next iteration overwrite dma_buffer (see
+        // smartdisplay_dma_draw_bitmap_and_wait() for why this wait matters)
         const int chunk_y_end = current_y + chunk_rows;
-        const esp_err_t transfer_result = esp_lcd_panel_draw_bitmap(g_dma_manager->panel_handle, transfer->x_start, current_y, transfer->x_end, chunk_y_end, dma_data);
+        const esp_err_t transfer_result = smartdisplay_dma_draw_bitmap_and_wait(transfer->x_start, current_y, transfer->x_end, chunk_y_end, dma_data);
         if (transfer_result != ESP_OK)
         {
-            log_e("LCD panel transfer failed: %s", esp_err_to_name(transfer_result));
+            if (transfer_result != ESP_ERR_TIMEOUT)
+                log_e("LCD panel transfer failed: %s", esp_err_to_name(transfer_result));
             return transfer_result;
         }
 
@@ -282,7 +317,17 @@ static void smartdisplay_dma_worker_task(void *pvParameters)
     }
 }
 
-esp_err_t smartdisplay_dma_init(esp_lcd_panel_handle_t panel_handle)
+bool smartdisplay_dma_notify_chunk_done(void)
+{
+    if (g_dma_manager == NULL || g_dma_manager->chunk_done_sem == NULL)
+        return false;
+
+    BaseType_t high_task_awoken = pdFALSE;
+    xSemaphoreGiveFromISR(g_dma_manager->chunk_done_sem, &high_task_awoken);
+    return high_task_awoken == pdTRUE;
+}
+
+esp_err_t smartdisplay_dma_init(esp_lcd_panel_handle_t panel_handle, bool async_color_trans)
 {
     if (g_dma_manager != NULL)
     {
@@ -334,15 +379,30 @@ esp_err_t smartdisplay_dma_init(esp_lcd_panel_handle_t panel_handle)
         return ESP_ERR_NO_MEM;
     }
 
+    // Create chunk-completion semaphore (only needed for panels that actually
+    // signal async completion via smartdisplay_dma_notify_chunk_done())
+    if (async_color_trans)
+    {
+        g_dma_manager->chunk_done_sem = xSemaphoreCreateBinary();
+        if (g_dma_manager->chunk_done_sem == NULL)
+        {
+            log_e("Failed to create chunk completion semaphore");
+            smartdisplay_dma_deinit();
+            return ESP_ERR_NO_MEM;
+        }
+    }
+
     // Initialize state
     *g_dma_manager = (smartdisplay_dma_manager_t){
         .panel_handle = panel_handle,
+        .async_color_trans = async_color_trans,
         .state = SMARTDISPLAY_DMA_STATE_IDLE,
         .active_transfers = 0,
         .completed_transfers = 0,
         .failed_transfers = 0,
         .transfer_queue = g_dma_manager->transfer_queue,
         .state_mutex = g_dma_manager->state_mutex,
+        .chunk_done_sem = g_dma_manager->chunk_done_sem,
         .dma_buffer = g_dma_manager->dma_buffer,
         .dma_buffer_size = g_dma_manager->dma_buffer_size};
 
@@ -395,6 +455,13 @@ esp_err_t smartdisplay_dma_deinit()
     {
         vSemaphoreDelete(g_dma_manager->state_mutex);
         g_dma_manager->state_mutex = NULL;
+    }
+
+    // Delete chunk completion semaphore
+    if (g_dma_manager->chunk_done_sem != NULL)
+    {
+        vSemaphoreDelete(g_dma_manager->chunk_done_sem);
+        g_dma_manager->chunk_done_sem = NULL;
     }
 
     // Free DMA buffer

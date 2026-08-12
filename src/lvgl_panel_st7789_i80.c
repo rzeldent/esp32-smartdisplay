@@ -8,11 +8,13 @@
 
 bool st7789_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
-    // Note: When using DMA, lv_display_flush_ready() is called by DMA callbacks
-    // This callback is only used for direct transfers (non-DMA fallback)
-    lv_display_t *display = user_ctx;
-    // lv_display_flush_ready(display) is handled by DMA callbacks when DMA is enabled.
-    return false;
+    // This fires once the I80 bus has actually finished sending the color data
+    // queued by esp_lcd_panel_draw_bitmap(). The DMA worker task
+    // (esp32_smartdisplay_dma.c) is blocked waiting for this signal before it
+    // reuses the DMA buffer or reports the transfer as done - without it,
+    // lv_display_flush_ready() would fire while the I80 transaction was still
+    // in flight.
+    return smartdisplay_dma_notify_chunk_done();
 }
 
 void st7789_lv_flush(lv_display_t *drv, const lv_area_t *area, uint8_t *px_map)
@@ -90,7 +92,7 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
     
     // Initialize DMA for optimized transfers
-    smartdisplay_dma_init_with_logging(panel_handle, "ST7789 I80");
+    smartdisplay_dma_init_with_logging(panel_handle, "ST7789 I80", true);
     
 #ifdef DISPLAY_IPS
     // If LCD is IPS invert the colors
