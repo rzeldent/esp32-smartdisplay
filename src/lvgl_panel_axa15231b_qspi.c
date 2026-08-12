@@ -23,7 +23,7 @@ lv_display_t *lvgl_lcd_init()
         .flags = AXS15231B_SPI_BUS_FLAGS,
         .intr_flags = AXS15231B_SPI_BUS_INTR_FLAGS};
     log_d("spi_bus_config: sclk_io_num:%d, data0_io_num:%d, data1_io_num:%d, data2_io_num:%d, data3_io_num:%d, max_transfer_sz:%d, flags:0x%08x, intr_flags:0x%04x", spi_bus_config.sclk_io_num, spi_bus_config.data0_io_num, spi_bus_config.data1_io_num, spi_bus_config.data2_io_num, spi_bus_config.data3_io_num, spi_bus_config.max_transfer_sz, spi_bus_config.flags, spi_bus_config.intr_flags);
-    ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(AXS15231B_SPI_HOST, &spi_bus_config, AXS15231B_SPI_DMA_CHANNEL));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(AXS15231B_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
 
     // Attach the LCD controller to the SPI bus
     const esp_lcd_panel_io_spi_config_t io_spi_config = {
