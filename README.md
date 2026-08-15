@@ -61,6 +61,17 @@ Currently this library supports the following boards:
 
 This library integrates seamlessly in [PlatformIO](https://platformio.org/) and supports these boards by providing display and touch and provides a jump start!
 
+
+## Quick Start (5 minutes)
+
+1. Clone with submodules: `git clone --recurse-submodules <repo>`
+2. Add to `platformio.ini`: `lib_deps = rzeldent/esp32_smartdisplay`
+3. Call `smartdisplay_init()` in `setup()`
+4. Update tick in `loop()` (see Step 7)
+5. Upload and enjoy!
+
+For detailed setup, see [How to use](#how-to-use).
+
 ## Why this library
 
 With the boards, there is a link supplied and there are a lot of examples present and this looks fine.... If you know your way around....
