@@ -12,8 +12,15 @@ void cst816s_lvgl_touch_cb(lv_indev_t *indev, lv_indev_data_t *data)
     uint16_t y[1];
     uint8_t touch_cnt = 0;
 
-    // Read touch controller data
-    ESP_ERROR_CHECK(esp_lcd_touch_read_data(touch_handle));
+    // Read touch controller data. A transient bus error (e.g. a NAK or timeout)
+    // must not reset the whole device, so never abort here: just report released.
+    esp_err_t err = esp_lcd_touch_read_data(touch_handle);
+    if (err != ESP_OK)
+    {
+        log_w("Failed to read touch data: %s", esp_err_to_name(err));
+        data->state = LV_INDEV_STATE_RELEASED;
+        return;
+    }
     // Get coordinates
     bool pressed = esp_lcd_touch_get_coordinates(touch_handle, x, y, NULL, &touch_cnt, 1);
     if (pressed && touch_cnt > 0)

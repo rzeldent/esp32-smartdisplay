@@ -39,40 +39,61 @@ static inline bool lvgl_panel_color_trans_done(esp_lcd_panel_io_handle_t panel_i
 static inline void lv_flush_hardware(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
     esp_lcd_panel_handle_t panel_handle = display->user_data;
-    
+    lv_color_format_t cf = lv_display_get_color_format(display);
+    uint32_t px_size = lv_color_format_get_size(cf);
     // Calculate buffer size needed
     uint32_t pixels = lv_area_get_size(area);
-    size_t buf_size = pixels * sizeof(uint16_t);
-    
+    size_t buf_size = pixels * px_size;
     // Use a persistent static buffer to avoid repeated allocations
     // This buffer is allocated once and reused for each frame
     static uint8_t *staging_buf = NULL;
     static size_t staging_buf_size = 0;
-    
+
     // Allocate or reallocate if size changed
     if (staging_buf == NULL || buf_size > staging_buf_size) {
         if (staging_buf != NULL) {
             free(staging_buf);
+            staging_buf = NULL;
+            staging_buf_size = 0;
         }
-        staging_buf = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+        // Prefer DMA-capable internal RAM; fall back to PSRAM so a large flush
+        // area cannot hard-fail on memory-constrained boards.
+        staging_buf = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+        if (staging_buf == NULL) {
+            staging_buf = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+        }
         if (staging_buf == NULL) {
             log_e("Failed to allocate staging buffer for flush (size: %u)", buf_size);
+            // LVGL blocks until flush_ready() is called; always signal it so the
+            // display pipeline keeps running even when memory is exhausted.
+            lv_display_flush_ready(display);
             return;
         }
         staging_buf_size = buf_size;
         log_d("Allocated staging buffer: %u bytes", buf_size);
     }
-    
-    // Copy and byte-swap to staging buffer instead of modifying LVGL's buffer
+
+    // Copy to staging buffer instead of modifying LVGL's buffer.
     // This prevents the corruption that occurs when LVGL reuses the buffer
-    // while SPI is still reading it
-    uint16_t *src = (uint16_t *)px_map;
-    uint16_t *dst = (uint16_t *)staging_buf;
-    for (uint32_t i = 0; i < pixels; i++) {
-        *dst++ = __builtin_bswap16(*src++);
+    // while SPI is still reading it.
+    if (cf == LV_COLOR_FORMAT_RGB565) {
+        // ESP32 is little-endian; the panel drivers expect RGB565 bytes in big-endian (MSB-first) order, so byte-swap.
+        const uint16_t *src = (const uint16_t *)px_map;
+        uint16_t *dst = (uint16_t *)staging_buf;
+        for (uint32_t i = 0; i < pixels; i++) {
+            *dst++ = __builtin_bswap16(*src++);
+        }
+    } else {
+        memcpy(staging_buf, px_map, buf_size);
     }
 
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, staging_buf));
+    // A failed or queue-full transfer must not reset or hang the device:
+    // log it and let LVGL continue with the next frame.
+    esp_err_t err = esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, staging_buf);
+    if (err != ESP_OK) {
+        log_e("esp_lcd_panel_draw_bitmap failed: %s", esp_err_to_name(err));
+        lv_display_flush_ready(display);
+    }
 };
 
 // Hardware rotation is not supported
