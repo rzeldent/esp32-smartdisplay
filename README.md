@@ -2,6 +2,13 @@
 
 [![Platform IO CI](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml/badge.svg)](https://github.com/rzeldent/esp32-smartdisplay/actions/workflows/main.yml)
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/rzeldent/library/esp32_smartdisplay.svg)](https://registry.platformio.org/libraries/rzeldent/esp32_smartdisplay)
+[![Release](https://img.shields.io/github/v/release/rzeldent/esp32-smartdisplay?include_prereleases&label=release)](https://github.com/rzeldent/esp32-smartdisplay/releases)
+[![Last commit](https://img.shields.io/github/last-commit/rzeldent/esp32-smartdisplay)](https://github.com/rzeldent/esp32-smartdisplay/commits/main)
+[![Contributors](https://img.shields.io/github/contributors/rzeldent/esp32-smartdisplay)](https://github.com/rzeldent/esp32-smartdisplay/graphs/contributors)
+[![Repo size](https://img.shields.io/github/repo-size/rzeldent/esp32-smartdisplay)](https://github.com/rzeldent/esp32-smartdisplay)
+[![Language: C++](https://img.shields.io/github/languages/top/rzeldent/esp32-smartdisplay)](https://github.com/rzeldent/esp32-smartdisplay)
+[![Built with PlatformIO](https://img.shields.io/badge/Built%20with-PlatformIO-ff5a00?logo=platformio&logoColor=white)](https://platformio.org/)
+[![Target: ESP32 + LVGL](https://img.shields.io/badge/Target-ESP32%20%2B%20LVGL-4c9f38)](https://github.com/rzeldent/esp32-smartdisplay)
 
 ## Table of Contents
 
@@ -60,6 +67,17 @@ Currently this library supports the following boards:
 - ESP32-8048S070 N/C/R
 
 This library integrates seamlessly in [PlatformIO](https://platformio.org/) and supports these boards by providing display and touch and provides a jump start!
+
+
+## Quick Start (5 minutes)
+
+1. Clone with submodules: `git clone --recurse-submodules <repo>`
+2. Add to `platformio.ini`: `lib_deps = rzeldent/esp32_smartdisplay`
+3. Call `smartdisplay_init()` in `setup()`
+4. Update tick in `loop()` (see Step 7)
+5. Upload and enjoy!
+
+For detailed setup, see [How to use](#how-to-use).
 
 ## Why this library
 

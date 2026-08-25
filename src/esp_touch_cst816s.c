@@ -82,7 +82,7 @@ typedef struct __attribute__((packed))
 
 esp_err_t cst816s_reset(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -118,7 +118,7 @@ esp_err_t cst816s_reset(esp_lcd_touch_handle_t th)
 
 esp_err_t cst816s_read_info(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -139,7 +139,7 @@ esp_err_t cst816s_read_info(esp_lcd_touch_handle_t th)
 
 esp_err_t cst816s_enter_sleep(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -153,7 +153,7 @@ esp_err_t cst816s_enter_sleep(esp_lcd_touch_handle_t th)
 
 esp_err_t cst816s_read_data(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -182,7 +182,7 @@ esp_err_t cst816s_read_data(esp_lcd_touch_handle_t th)
 
 bool cst816s_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
 {
-    log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
+    log_v("th: %p, x: %p, y: %p, strength: %p, point_num: %p, max_point_num: %d", th, x, y, strength, point_num, max_point_num);
     if (th == NULL || x == NULL || y == NULL || point_num == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -204,7 +204,7 @@ bool cst816s_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_
 
 esp_err_t cst816s_del(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -230,7 +230,7 @@ esp_err_t cst816s_del(esp_lcd_touch_handle_t th)
 
 esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, const esp_lcd_touch_config_t *config, esp_lcd_touch_handle_t *handle)
 {
-    log_v("io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
+    log_v("io: %p, config: %p, handle: %p", io, config, handle);
     if (io == NULL || config == NULL || handle == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -331,7 +331,7 @@ esp_err_t esp_lcd_touch_new_i2c_cst816s(const esp_lcd_panel_io_handle_t io, cons
         }
     }
 
-    log_d("handle:0x%08x", th);
+    log_d("handle: %p", th);
     *handle = th;
 
     return ESP_OK;
