@@ -29,7 +29,7 @@ esp_err_t xpt2046_read_register(esp_lcd_touch_handle_t th, uint8_t reg, uint16_t
 
 esp_err_t xpt2046_enter_sleep(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -46,7 +46,7 @@ esp_err_t xpt2046_enter_sleep(esp_lcd_touch_handle_t th)
 
 esp_err_t xpt2046_exit_sleep(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -63,7 +63,7 @@ esp_err_t xpt2046_exit_sleep(esp_lcd_touch_handle_t th)
 
 esp_err_t xpt2046_read_data(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -126,7 +126,7 @@ esp_err_t xpt2046_read_data(esp_lcd_touch_handle_t th)
 
 bool xpt2046_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
 {
-    log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
+    log_v("th: %p, x: %p, y: %p, strength: %p, point_num: %p, max_point_num: %d", th, x, y, strength, point_num, max_point_num);
     if (th == NULL || x == NULL || y == NULL || point_num == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -139,7 +139,7 @@ bool xpt2046_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_
         if (strength != NULL)
             strength[i] = th->data.coords[i].strength;
 
-        log_d("Touch data: x:%d, y:%d, area:%d", x[i], y[i], strength != NULL ? strength[i] : 0);
+        log_d("Touch data: x: %d, y: %d, area: %d", x[i], y[i], strength != NULL ? strength[i] : 0);
     }
 
     th->data.points = 0;
@@ -150,7 +150,7 @@ bool xpt2046_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_
 
 esp_err_t xpt2046_del(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -171,7 +171,7 @@ esp_err_t xpt2046_del(esp_lcd_touch_handle_t th)
 
 esp_err_t esp_lcd_touch_new_spi_xpt2046(const esp_lcd_panel_io_handle_t io, const esp_lcd_touch_config_t *config, esp_lcd_touch_handle_t *handle)
 {
-    log_v("io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
+    log_v("io: %p, config: %p, handle: %p", io, config, handle);
     if (io == NULL || config == NULL || handle == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -227,7 +227,7 @@ esp_err_t esp_lcd_touch_new_spi_xpt2046(const esp_lcd_panel_io_handle_t io, cons
     if (config->rst_gpio_num != GPIO_NUM_NC)
         log_w("RST pin defined but is not available on the XPT2046");
 
-    log_d("handle:0x%08x", th);
+    log_d("handle: %p", th);
     *handle = th;
 
     return ESP_OK;
@@ -235,7 +235,7 @@ esp_err_t esp_lcd_touch_new_spi_xpt2046(const esp_lcd_panel_io_handle_t io, cons
 
 esp_err_t esp_lcd_touch_xpt2046_read_battery_level(const esp_lcd_touch_handle_t th, float *output)
 {
-    log_v("th:0x%08x, output:0x%08x", th, output);
+    log_v("th: %p, output: %p", th, output);
 
     assert(th != NULL);
     assert(output != NULL);

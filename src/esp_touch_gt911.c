@@ -78,7 +78,7 @@ gt911_point gt911_resolution;
 
 esp_err_t gt911_reset(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -115,7 +115,7 @@ esp_err_t gt911_reset(esp_lcd_touch_handle_t th)
 // This function is called if the coordinates do not match the returned coordinates. This is the case for display having another form factor, e.g. 472x320
 void gt911_process_coordinates(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
 {
-    log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
+    log_v("th: %p, x: %p, y: %p, strength: %p, point_num: %p, max_point_num: %d", th, x, y, strength, point_num, max_point_num);
 
     portENTER_CRITICAL(&th->data.lock);
     uint8_t points_available = *point_num > max_point_num ? max_point_num : *point_num;
@@ -124,7 +124,7 @@ void gt911_process_coordinates(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t 
         // Correct the points for the info obtained from the GT911 and configured resolution
         x[i] = (x[i] * th->config.x_max) / gt911_resolution.x;
         y[i] = (y[i] * th->config.y_max) / gt911_resolution.y;
-        log_d("Processed coordinates: (%d,%d), area:%d", x[i], y[i], strength[i]);
+        log_d("Processed coordinates: (%d,%d), area: %d", x[i], y[i], strength[i]);
     }
 
     portEXIT_CRITICAL(&th->data.lock);
@@ -132,7 +132,7 @@ void gt911_process_coordinates(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t 
 
 esp_err_t gt911_read_info(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -168,7 +168,7 @@ esp_err_t gt911_read_info(esp_lcd_touch_handle_t th)
 
 esp_err_t gt911_enter_sleep(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -182,7 +182,7 @@ esp_err_t gt911_enter_sleep(esp_lcd_touch_handle_t th)
 
 esp_err_t gt911_exit_sleep(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -216,7 +216,7 @@ esp_err_t gt911_exit_sleep(esp_lcd_touch_handle_t th)
 
 esp_err_t gt911_read_data(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -269,7 +269,7 @@ esp_err_t gt911_read_data(esp_lcd_touch_handle_t th)
                 portENTER_CRITICAL(&th->data.lock);
                 for (uint8_t i = 0; i < points; i++)
                 {
-                    log_d("Point: #%d, event:%d, point:(%d,%d), area:%d", i, buffer.data.touch_points[i].event, buffer.data.touch_points[i].point.x, buffer.data.touch_points[i].point.y, buffer.data.touch_points[i].area);
+                    log_d("Point: #%d, event: %d, point:(%d,%d), area: %d", i, buffer.data.touch_points[i].event, buffer.data.touch_points[i].point.x, buffer.data.touch_points[i].point.y, buffer.data.touch_points[i].area);
                     th->data.coords[i].x = buffer.data.touch_points[i].point.x;
                     th->data.coords[i].y = buffer.data.touch_points[i].point.y;
                     th->data.coords[i].strength = buffer.data.touch_points[i].area;
@@ -293,7 +293,7 @@ esp_err_t gt911_read_data(esp_lcd_touch_handle_t th)
 
 bool gt911_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
 {
-    log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
+    log_v("th: %p, x: %p, y: %p, strength: %p, point_num: %p, max_point_num: %d", th, x, y, strength, point_num, max_point_num);
     if (th == NULL || x == NULL || y == NULL || point_num == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -306,7 +306,7 @@ bool gt911_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t 
         if (strength != NULL)
             strength[i] = th->data.coords[i].strength;
 
-        log_d("Touch data: x:%d, y:%d, strength:%d", x[i], y[i], th->data.coords[i].strength);
+        log_d("Touch data: x: %d, y: %d, strength: %d", x[i], y[i], th->data.coords[i].strength);
     }
 
     th->data.points = 0;
@@ -318,7 +318,7 @@ bool gt911_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t 
 #if (CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS > 0)
 esp_err_t gt911_get_button_state(esp_lcd_touch_handle_t th, uint8_t n, uint8_t *state)
 {
-    log_v("th:0x%08x, n:%d, state:0x%08x", th, n, state);
+    log_v("th: %p, n: %d, state: %p", th, n, state);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -338,7 +338,7 @@ esp_err_t gt911_get_button_state(esp_lcd_touch_handle_t th, uint8_t n, uint8_t *
 
 esp_err_t gt911_del(esp_lcd_touch_handle_t th)
 {
-    log_v("th:0x%08x", th);
+    log_v("th: %p", th);
     if (th == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -367,7 +367,7 @@ esp_err_t gt911_del(esp_lcd_touch_handle_t th)
 
 esp_err_t esp_lcd_touch_new_i2c_gt911(const esp_lcd_panel_io_handle_t io, const esp_lcd_touch_config_t *config, esp_lcd_touch_handle_t *handle)
 {
-    log_v("io:0x%08x, config:0x%08x, handle:0x%08x", io, config, handle);
+    log_v("io: %p, config: %p, handle: %p", io, config, handle);
     if (io == NULL || config == NULL || handle == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -460,7 +460,7 @@ esp_err_t esp_lcd_touch_new_i2c_gt911(const esp_lcd_panel_io_handle_t io, const 
         }
     }
 
-    log_d("handle:0x%08x", th);
+    log_d("handle: %p", th);
     *handle = th;
 
     return ESP_OK;
