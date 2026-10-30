@@ -3,7 +3,6 @@
 #include <esp32_smartdisplay.h>
 #include <esp_touch_xpt2046.h>
 #include <driver/spi_master.h>
-#include <esp_private/spi_common_internal.h>
 
 void xpt2046_lvgl_touch_cb(lv_indev_t *indev, lv_indev_data_t *data)
 {
@@ -40,17 +39,17 @@ lv_indev_t *lvgl_touch_init()
     lv_indev_t *indev = lv_indev_create();
     log_v("indev: %p", indev);
 
-    // Create SPI bus only if not already initialized (S035R shares the SPI bus)
-    if(spi_bus_get_attr(XPT2046_SPI_HOST) == NULL) {
-        const spi_bus_config_t spi_bus_config = {
-            .mosi_io_num = XPT2046_SPI_BUS_MOSI,
-            .miso_io_num = XPT2046_SPI_BUS_MISO,
-            .sclk_io_num = XPT2046_SPI_BUS_SCLK,
-            .quadwp_io_num = XPT2046_SPI_BUS_QUADWP,
-            .quadhd_io_num = XPT2046_SPI_BUS_QUADHD};
-        log_d("spi_bus_config: mosi_io_num: %d, miso_io_num: %d, sclk_io_num: %d, quadwp_io_num: %d, quadhd_io_num: %d, max_transfer_sz: %d, flags: %p, intr_flags:0x%04x", spi_bus_config.mosi_io_num, spi_bus_config.miso_io_num, spi_bus_config.sclk_io_num, spi_bus_config.quadwp_io_num, spi_bus_config.quadhd_io_num, spi_bus_config.max_transfer_sz, spi_bus_config.flags, spi_bus_config.intr_flags);
-        ESP_ERROR_CHECK_WITHOUT_ABORT(spi_bus_initialize(XPT2046_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
-    }
+    // Initialize the bus unless it is already initialized
+    const spi_bus_config_t spi_bus_config = {
+        .mosi_io_num = XPT2046_SPI_BUS_MOSI,
+        .miso_io_num = XPT2046_SPI_BUS_MISO,
+        .sclk_io_num = XPT2046_SPI_BUS_SCLK,
+        .quadwp_io_num = XPT2046_SPI_BUS_QUADWP,
+        .quadhd_io_num = XPT2046_SPI_BUS_QUADHD};
+    log_d("spi_bus_config: mosi_io_num: %d, miso_io_num: %d, sclk_io_num: %d, quadwp_io_num: %d, quadhd_io_num: %d, max_transfer_sz: %d, flags: %p, intr_flags:0x%04x", spi_bus_config.mosi_io_num, spi_bus_config.miso_io_num, spi_bus_config.sclk_io_num, spi_bus_config.quadwp_io_num, spi_bus_config.quadhd_io_num, spi_bus_config.max_transfer_sz, spi_bus_config.flags, spi_bus_config.intr_flags);
+    esp_err_t bus_err = spi_bus_initialize(XPT2046_SPI_HOST, &spi_bus_config, SPI_DMA_CH_AUTO);
+    if (bus_err != ESP_OK && bus_err != ESP_ERR_INVALID_STATE)
+        ESP_ERROR_CHECK_WITHOUT_ABORT(bus_err);
 
     // Attach the touch controller to the SPI bus
     const esp_lcd_panel_io_spi_config_t io_spi_config = {
