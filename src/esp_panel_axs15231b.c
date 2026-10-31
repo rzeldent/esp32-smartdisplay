@@ -9,10 +9,11 @@
 #include <esp_lcd_types.h>
 #include <esp_lcd_panel_interface.h>
 #include <esp_lcd_panel_io.h>
+#include <esp_lcd_panel_ops.h>
 
 typedef struct
 {
-    esp_lcd_panel_t base;
+    esp_lcd_panel_t lcd_panel;
     esp_lcd_panel_io_handle_t panel_io_handle;
     esp_lcd_panel_dev_config_t panel_dev_config;
     // Data
@@ -306,24 +307,6 @@ esp_err_t axs15231b_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
     return ESP_OK;
 }
 
-esp_err_t axs15231b_disp_off(esp_lcd_panel_t *panel, bool off)
-{
-    log_v("panel: %p, off: %d", panel, off);
-    if (panel == NULL)
-        return ESP_ERR_INVALID_ARG;
-
-    const axs15231b_panel_t *ph = (axs15231b_panel_t *)panel;
-
-    esp_err_t res;
-    if ((res = esp_lcd_panel_io_tx_param(ph->panel_io_handle, off ? LCD_CMD_DISPOFF : LCD_CMD_DISPON, NULL, 0)) != ESP_OK)
-    {
-        log_e("Sending LCD_CMD_DISPOFF/LCD_CMD_DISPON failed");
-        return res;
-    }
-
-    return ESP_OK;
-}
-
 esp_err_t axs15231b_del(esp_lcd_panel_t *panel)
 {
     log_v("panel: %p", panel);
@@ -391,15 +374,15 @@ esp_err_t esp_lcd_new_panel_axs15231b(const esp_lcd_panel_io_handle_t panel_io_h
     memcpy(&ph->panel_dev_config, panel_dev_config, sizeof(esp_lcd_panel_dev_config_t));
     ph->madctl = madctl;
 
-    ph->base.del = axs15231b_del;
-    ph->base.reset = axs15231b_reset;
-    ph->base.init = axs15231b_init;
-    ph->base.draw_bitmap = axs15231b_draw_bitmap;
-    ph->base.invert_color = axs15231b_invert_color;
-    ph->base.mirror = axs15231b_mirror;
-    ph->base.swap_xy = axs15231b_swap_xy;
-    ph->base.set_gap = axs15231b_set_gap;
-    ph->base.disp_off = axs15231b_disp_off;
+    ph->lcd_panel.del = axs15231b_del;
+    ph->lcd_panel.reset = axs15231b_reset;
+    ph->lcd_panel.init = axs15231b_init;
+    ph->lcd_panel.draw_bitmap = axs15231b_draw_bitmap;
+    ph->lcd_panel.invert_color = axs15231b_invert_color;
+    ph->lcd_panel.mirror = axs15231b_mirror;
+    ph->lcd_panel.swap_xy = axs15231b_swap_xy;
+    ph->lcd_panel.set_gap = axs15231b_set_gap;
+    ph->lcd_panel.disp_on_off = esp_lcd_panel_disp_on_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;

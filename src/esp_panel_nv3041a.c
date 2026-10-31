@@ -9,6 +9,7 @@
 #include <esp_lcd_panel_commands.h>
 #include <esp_lcd_types.h>
 #include <esp_lcd_panel_interface.h>
+#include <esp_lcd_panel_ops.h>
 
 // NV3041A QSPI opcodes
 // 0x02 = single-line register write  (cmd:8-bit, addr:24-bit, data:N bytes, all 1-bit SPI)
@@ -448,24 +449,6 @@ esp_err_t nv3041a_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
     return ESP_OK;
 }
 
-esp_err_t nv3041a_disp_off(esp_lcd_panel_t *panel, bool off)
-{
-    log_v("panel:0x%08x, off:%d", panel, off);
-    if (panel == NULL)
-        return ESP_ERR_INVALID_ARG;
-
-    const nv3041a_panel_t *ph = (nv3041a_panel_t *)panel;
-
-    esp_err_t res;
-    if ((res = nv3041a_send_cmd(ph->spi_dev, ph->cs_gpio, off ? LCD_CMD_DISPOFF : LCD_CMD_DISPON, NULL, 0)) != ESP_OK)
-    {
-        log_e("Sending DISPOFF/DISPON failed");
-        return res;
-    }
-
-    return ESP_OK;
-}
-
 esp_err_t nv3041a_del(esp_lcd_panel_t *panel)
 {
     log_v("panel:0x%08x", panel);
@@ -568,7 +551,7 @@ esp_err_t esp_lcd_new_panel_nv3041a(spi_device_handle_t spi_dev, gpio_num_t cs_g
     ph->base.mirror      = nv3041a_mirror;
     ph->base.swap_xy     = nv3041a_swap_xy;
     ph->base.set_gap     = nv3041a_set_gap;
-    ph->base.disp_off    = nv3041a_disp_off;
+    ph->base.disp_on_off = esp_lcd_panel_disp_on_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;

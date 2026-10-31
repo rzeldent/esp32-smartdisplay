@@ -9,6 +9,7 @@
 #include <esp_lcd_types.h>
 #include <esp_lcd_panel_interface.h>
 #include <esp_lcd_panel_io.h>
+#include <esp_lcd_panel_ops.h>
 
 typedef struct
 {
@@ -278,24 +279,6 @@ esp_err_t ili9341_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
     return ESP_OK;
 }
 
-esp_err_t ili9341_disp_off(esp_lcd_panel_t *panel, bool off)
-{
-    log_v("panel: %p, off: %d", panel, off);
-    if (panel == NULL)
-        return ESP_ERR_INVALID_ARG;
-
-    const ili9341_panel_t *ph = (ili9341_panel_t *)panel;
-
-    esp_err_t res;
-    if ((res = esp_lcd_panel_io_tx_param(ph->panel_io_handle, off ? LCD_CMD_DISPOFF : LCD_CMD_DISPON, NULL, 0)) != ESP_OK)
-    {
-        log_e("Sending LCD_CMD_DISPOFF/LCD_CMD_DISPON failed");
-        return res;
-    }
-
-    return ESP_OK;
-}
-
 esp_err_t ili9341_del(esp_lcd_panel_t *panel)
 {
     log_v("panel: %p", panel);
@@ -371,7 +354,7 @@ esp_err_t esp_lcd_new_panel_ili9341(const esp_lcd_panel_io_handle_t panel_io_han
     ph->base.mirror = ili9341_mirror;
     ph->base.swap_xy = ili9341_swap_xy;
     ph->base.set_gap = ili9341_set_gap;
-    ph->base.disp_off = ili9341_disp_off;
+    ph->base.disp_on_off = esp_lcd_panel_disp_on_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;
