@@ -73,6 +73,9 @@ lv_display_t *lvgl_lcd_init()
     log_d("panel_dev_config: reset_gpio_num: %d, color_space: %d, bits_per_pixel: %d, flags:{reset_active_high: %d}, vendor_config: %p", panel_dev_config.reset_gpio_num, panel_dev_config.color_space, panel_dev_config.bits_per_pixel, panel_dev_config.flags.reset_active_high, panel_dev_config.vendor_config);
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7701(io_handle, &rgb_panel_config, &panel_dev_config, &panel_handle));
+
+    // Initialize DMA for this panel (async_color_trans = true for RGB panels with SPI control)
+    ESP_ERROR_CHECK(smartdisplay_dma_init_with_logging(panel_handle, "ST7701", true));
  
     lvgl_setup_panel(panel_handle);
     display->user_data = panel_handle;

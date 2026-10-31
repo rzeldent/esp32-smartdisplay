@@ -47,6 +47,9 @@ lv_display_t *lvgl_lcd_init()
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&rgb_panel_config, &panel_handle));
 
+    // Initialize DMA for this panel (async_color_trans = false for RGB panels which use built-in DMA)
+    ESP_ERROR_CHECK(smartdisplay_dma_init_with_logging(panel_handle, "ST7262", false));
+
     lvgl_setup_panel(panel_handle);
     display->user_data = panel_handle;
     display->flush_cb = lv_flush_software;

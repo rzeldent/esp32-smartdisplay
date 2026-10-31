@@ -56,6 +56,9 @@ lv_display_t *lvgl_lcd_init()
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_gc9a01(io_handle, &panel_dev_config, &panel_handle));
 
+    // Initialize DMA for this panel (async_color_trans = true for SPI panels)
+    ESP_ERROR_CHECK(smartdisplay_dma_init_with_logging(panel_handle, "GC9A01", true));
+
     lvgl_setup_panel(panel_handle);
     display->user_data = panel_handle;
     display->flush_cb = lv_flush_hardware;

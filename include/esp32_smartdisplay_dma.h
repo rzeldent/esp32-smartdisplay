@@ -55,6 +55,25 @@ extern "C"
     } smartdisplay_dma_manager_t;
 
     /**
+     * @brief Initialize DMA manager for display transfers with logging
+     *
+     * @param panel_handle LCD panel handle
+     * @param panel_name Panel name for logging (can be NULL)
+     * @param async_color_trans Set to true when the panel IO used by panel_handle
+     *        completes esp_lcd_panel_draw_bitmap() asynchronously (e.g. SPI/I80
+     *        panels driven through esp_lcd_panel_io, which queue the transaction
+     *        and return before the wire transfer finishes) AND its
+     *        on_color_trans_done callback calls smartdisplay_dma_notify_chunk_done().
+     *        Set to false for panels whose draw_bitmap() already blocks until the
+     *        data has physically been written (e.g. RGB parallel panels, or SPI
+     *        panels driven with spi_device_polling_transmit()) - for those, no
+     *        chunk_done_sem signal will ever arrive, so the DMA worker must not
+     *        wait for one.
+     * @return esp_err_t ESP_OK on success
+     */
+    esp_err_t smartdisplay_dma_init_with_logging(esp_lcd_panel_handle_t panel_handle, const char *panel_name, bool async_color_trans);
+
+    /**
      * @brief Initialize DMA manager for display transfers
      *
      * @param panel_handle LCD panel handle

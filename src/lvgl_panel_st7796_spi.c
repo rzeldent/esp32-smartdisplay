@@ -57,6 +57,9 @@ lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7796(io_handle, &panel_dev_config, &panel_handle));
 
+    // Initialize DMA for this panel (async_color_trans = true for SPI panels)
+    ESP_ERROR_CHECK(smartdisplay_dma_init_with_logging(panel_handle, "ST7796", true));
+
     lvgl_setup_panel(panel_handle);
     display->user_data = panel_handle;
     display->flush_cb = lv_flush_hardware;
