@@ -74,8 +74,8 @@ lv_display_t *lvgl_lcd_init()
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7701(io_handle, &rgb_panel_config, &panel_dev_config, &panel_handle));
 
-    // Initialize DMA for this panel (async_color_trans = true for RGB panels with SPI control)
-    ESP_ERROR_CHECK(smartdisplay_dma_init_with_logging(panel_handle, "ST7701", true));
+    // RGB bitmap writes complete synchronously; SPI is only used for control.
+    ESP_ERROR_CHECK(smartdisplay_dma_init_with_logging(panel_handle, "ST7701", false));
  
     lvgl_setup_panel(panel_handle);
     display->user_data = panel_handle;
