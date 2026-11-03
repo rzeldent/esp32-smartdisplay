@@ -296,6 +296,15 @@ esp_err_t ili9341_del(esp_lcd_panel_t *panel)
     return ESP_OK;
 }
 
+esp_err_t ili9341_disp_on_off(esp_lcd_panel_t *panel, bool on)
+{
+    if (panel == NULL)
+        return ESP_ERR_INVALID_ARG;
+
+    const ili9341_panel_t *ph = (ili9341_panel_t *)panel;
+    return esp_lcd_panel_io_tx_param(ph->panel_io_handle, on ? LCD_CMD_DISPON : LCD_CMD_DISPOFF, NULL, 0);
+}
+
 esp_err_t esp_lcd_new_panel_ili9341(const esp_lcd_panel_io_handle_t panel_io_handle, const esp_lcd_panel_dev_config_t *panel_dev_config, esp_lcd_panel_handle_t *panel_handle)
 {
     log_v("panel_io_handle: %p, panel_dev_config: %p, panel_handle: %p", panel_io_handle, panel_dev_config, panel_handle);
@@ -354,7 +363,7 @@ esp_err_t esp_lcd_new_panel_ili9341(const esp_lcd_panel_io_handle_t panel_io_han
     ph->base.mirror = ili9341_mirror;
     ph->base.swap_xy = ili9341_swap_xy;
     ph->base.set_gap = ili9341_set_gap;
-    ph->base.disp_on_off = esp_lcd_panel_disp_on_off;
+    ph->base.disp_on_off = ili9341_disp_on_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;

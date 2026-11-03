@@ -467,6 +467,15 @@ esp_err_t nv3041a_del(esp_lcd_panel_t *panel)
     return ESP_OK;
 }
 
+esp_err_t nv3041a_disp_on_off(esp_lcd_panel_t *panel, bool on)
+{
+    if (panel == NULL)
+        return ESP_ERR_INVALID_ARG;
+
+    const nv3041a_panel_t *ph = (nv3041a_panel_t *)panel;
+    return nv3041a_send_cmd(ph->spi_dev, ph->cs_gpio, on ? LCD_CMD_DISPON : LCD_CMD_DISPOFF, NULL, 0);
+}
+
 esp_err_t esp_lcd_new_panel_nv3041a(spi_device_handle_t spi_dev, gpio_num_t cs_gpio,
                                      const esp_lcd_panel_dev_config_t *panel_dev_config,
                                      esp_lcd_panel_handle_t *panel_handle)
@@ -551,7 +560,7 @@ esp_err_t esp_lcd_new_panel_nv3041a(spi_device_handle_t spi_dev, gpio_num_t cs_g
     ph->base.mirror      = nv3041a_mirror;
     ph->base.swap_xy     = nv3041a_swap_xy;
     ph->base.set_gap     = nv3041a_set_gap;
-    ph->base.disp_on_off = esp_lcd_panel_disp_on_off;
+    ph->base.disp_on_off = nv3041a_disp_on_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;

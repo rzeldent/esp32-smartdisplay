@@ -277,6 +277,15 @@ esp_err_t st7796_del(esp_lcd_panel_t *panel)
     return ESP_OK;
 }
 
+esp_err_t st7796_disp_on_off(esp_lcd_panel_t *panel, bool on)
+{
+    if (panel == NULL)
+        return ESP_ERR_INVALID_ARG;
+
+    const st7796_panel_t *ph = (st7796_panel_t *)panel;
+    return esp_lcd_panel_io_tx_param(ph->io, on ? LCD_CMD_DISPON : LCD_CMD_DISPOFF, NULL, 0);
+}
+
 esp_err_t esp_lcd_new_panel_st7796(const esp_lcd_panel_io_handle_t io, const esp_lcd_panel_dev_config_t *config, esp_lcd_panel_handle_t *handle)
 {
     log_v("io: %p, config: %p, handle: %p", io, config, handle);
@@ -335,7 +344,7 @@ esp_err_t esp_lcd_new_panel_st7796(const esp_lcd_panel_io_handle_t io, const esp
     ph->base.mirror = st7796_mirror;
     ph->base.swap_xy = st7796_swap_xy;
     ph->base.set_gap = st7796_set_gap;
-    ph->base.disp_on_off = esp_lcd_panel_disp_on_off;
+    ph->base.disp_on_off = st7796_disp_on_off;
 
     log_d("handle: 0x%08x", ph);
     *handle = (esp_lcd_panel_handle_t)ph;

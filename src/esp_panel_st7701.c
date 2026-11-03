@@ -235,6 +235,15 @@ esp_err_t st7701_del(esp_lcd_panel_t *panel)
     return ESP_OK;
 }
 
+esp_err_t st7701_disp_on_off(esp_lcd_panel_t *panel, bool on)
+{
+    if (panel == NULL)
+        return ESP_ERR_INVALID_ARG;
+
+    const st7701_panel_t *ph = (st7701_panel_t *)panel;
+    return esp_lcd_panel_disp_on_off(ph->lcd_panel, on);
+}
+
 esp_err_t esp_lcd_new_panel_st7701(const esp_lcd_panel_io_handle_t io, const esp_lcd_rgb_panel_config_t *rgb_panel_config, const esp_lcd_panel_dev_config_t *panel_dev_config, esp_lcd_panel_handle_t *panel_handle)
 {
     log_v("panel_io_handle: %p, rgb_panel_config: %p, panel_dev_config: %p, panel_handle: %p", io, rgb_panel_config, panel_dev_config, panel_handle);
@@ -306,7 +315,7 @@ esp_err_t esp_lcd_new_panel_st7701(const esp_lcd_panel_io_handle_t io, const esp
     ph->base.mirror = st7701_mirror;
     ph->base.swap_xy = st7701_swap_xy;
     ph->base.set_gap = st7701_set_gap;
-    ph->base.disp_on_off = esp_lcd_panel_disp_on_off;
+    ph->base.disp_on_off = st7701_disp_on_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;

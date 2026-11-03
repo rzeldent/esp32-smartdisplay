@@ -324,6 +324,15 @@ esp_err_t axs15231b_del(esp_lcd_panel_t *panel)
     return ESP_OK;
 }
 
+esp_err_t axs15231b_disp_on_off(esp_lcd_panel_t *panel, bool on)
+{
+    if (panel == NULL)
+        return ESP_ERR_INVALID_ARG;
+
+    const axs15231b_panel_t *ph = (axs15231b_panel_t *)panel;
+    return esp_lcd_panel_io_tx_param(ph->panel_io_handle, on ? LCD_CMD_DISPON : LCD_CMD_DISPOFF, NULL, 0);
+}
+
 esp_err_t esp_lcd_new_panel_axs15231b(const esp_lcd_panel_io_handle_t panel_io_handle, const esp_lcd_panel_dev_config_t *panel_dev_config, esp_lcd_panel_handle_t *panel_handle)
 {
     log_v("panel_io_handle: %p, panel_dev_config: %p, panel_handle: %p", panel_io_handle, panel_dev_config, panel_handle);
@@ -382,7 +391,7 @@ esp_err_t esp_lcd_new_panel_axs15231b(const esp_lcd_panel_io_handle_t panel_io_h
     ph->lcd_panel.mirror = axs15231b_mirror;
     ph->lcd_panel.swap_xy = axs15231b_swap_xy;
     ph->lcd_panel.set_gap = axs15231b_set_gap;
-    ph->lcd_panel.disp_on_off = esp_lcd_panel_disp_on_off;
+    ph->lcd_panel.disp_on_off = axs15231b_disp_on_off;
 
     log_d("panel_handle: 0x%08x", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;
