@@ -317,21 +317,27 @@ esp_err_t smartdisplay_dma_draw_bitmap(int x_start, int y_start, int x_end, int 
     memcpy(s_dma_manager->dma_buffer, color_data, transfer.data_len);
     transfer.src_data = s_dma_manager->dma_buffer;
 
-    // Send to queue
-    TickType_t timeout = high_priority ? 0 : portMAX_DELAY;
-    BaseType_t ret = xQueueSend(s_dma_manager->transfer_queue, &transfer, timeout);
-    if (ret != pdPASS)
-    {
-        log_e("Failed to queue DMA transfer");
-        return ESP_ERR_TIMEOUT;
-    }
-
-    // Update state
+    // Account for the transfer before the queue can wake the worker.
     if (xSemaphoreTake(s_dma_manager->state_mutex, portMAX_DELAY) == pdTRUE)
     {
         s_dma_manager->state = SMARTDISPLAY_DMA_STATE_BUSY;
         s_dma_manager->active_transfers++;
         xSemaphoreGive(s_dma_manager->state_mutex);
+    }
+
+    TickType_t timeout = high_priority ? 0 : portMAX_DELAY;
+    BaseType_t ret = xQueueSend(s_dma_manager->transfer_queue, &transfer, timeout);
+    if (ret != pdPASS)
+    {
+        if (xSemaphoreTake(s_dma_manager->state_mutex, portMAX_DELAY) == pdTRUE)
+        {
+            s_dma_manager->active_transfers--;
+            if (s_dma_manager->active_transfers == 0)
+                s_dma_manager->state = SMARTDISPLAY_DMA_STATE_IDLE;
+            xSemaphoreGive(s_dma_manager->state_mutex);
+        }
+        log_e("Failed to queue DMA transfer");
+        return ESP_ERR_TIMEOUT;
     }
 
     return ESP_OK;
