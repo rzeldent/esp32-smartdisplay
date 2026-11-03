@@ -120,6 +120,7 @@ static void dma_worker_task(void *arg)
         dma_handle_transfer(&transfer);
     }
 
+    xSemaphoreGive(s_dma_manager->worker_shutdown_sem);
     vTaskDelete(NULL);
 }
 
@@ -166,6 +167,14 @@ esp_err_t smartdisplay_dma_init(esp_lcd_panel_handle_t panel_handle, bool async_
     if (s_dma_manager->chunk_done_sem == NULL)
     {
         log_e("Failed to create chunk done semaphore");
+        goto cleanup;
+    }
+
+    // Create worker shutdown semaphore
+    s_dma_manager->worker_shutdown_sem = xSemaphoreCreateBinary();
+    if (s_dma_manager->worker_shutdown_sem == NULL)
+    {
+        log_e("Failed to create worker shutdown semaphore");
         goto cleanup;
     }
 
@@ -233,9 +242,13 @@ esp_err_t smartdisplay_dma_deinit()
     {
         smartdisplay_dma_transfer_t exit_transfer = {0};
         exit_transfer.src_data = (void *)1; // Special marker for exit
-        xQueueSend(s_dma_manager->transfer_queue, &exit_transfer, portMAX_DELAY);
-        vTaskDelete(s_dma_manager->worker_task);
-        s_dma_manager->worker_task = NULL;
+        if (xQueueSend(s_dma_manager->transfer_queue, &exit_transfer, portMAX_DELAY) != pdPASS)
+            return ESP_ERR_TIMEOUT;
+
+        // The exit marker follows all accepted transfers in the queue. Wait for
+        // the worker to process them and finish before freeing shared resources.
+        if (xSemaphoreTake(s_dma_manager->worker_shutdown_sem, portMAX_DELAY) != pdTRUE)
+            return ESP_ERR_TIMEOUT;
     }
 
     // Clean up queue
@@ -257,6 +270,13 @@ esp_err_t smartdisplay_dma_deinit()
     {
         vSemaphoreDelete(s_dma_manager->chunk_done_sem);
         s_dma_manager->chunk_done_sem = NULL;
+    }
+
+    // Clean up worker shutdown semaphore
+    if (s_dma_manager->worker_shutdown_sem != NULL)
+    {
+        vSemaphoreDelete(s_dma_manager->worker_shutdown_sem);
+        s_dma_manager->worker_shutdown_sem = NULL;
     }
 
     // Free DMA buffer

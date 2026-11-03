@@ -43,6 +43,7 @@ extern "C"
         QueueHandle_t transfer_queue;        // Queue for pending transfers
         SemaphoreHandle_t state_mutex;       // Mutex for state protection
         SemaphoreHandle_t chunk_done_sem;    // Signalled by the panel IO's on_color_trans_done callback once a queued chunk has actually finished transferring
+        SemaphoreHandle_t worker_shutdown_sem; // Signalled when the worker has finished queued transfers and is exiting
         TaskHandle_t worker_task;            // DMA worker task handle
         smartdisplay_dma_state_t state;      // Current DMA state
         void *dma_buffer;                    // DMA-capable buffer
