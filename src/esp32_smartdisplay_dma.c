@@ -50,6 +50,9 @@ static esp_err_t dma_transfer_chunk(smartdisplay_dma_transfer_t *transfer)
         if (xSemaphoreTake(s_dma_manager->chunk_done_sem, pdMS_TO_TICKS(SMARTDISPLAY_DMA_CHUNK_TIMEOUT_MS)) != pdTRUE)
         {
             log_e("Timeout waiting for chunk done");
+            // Keep the shared buffer reserved until the panel confirms it is
+            // no longer reading the data.
+            xSemaphoreTake(s_dma_manager->chunk_done_sem, portMAX_DELAY);
             return ESP_ERR_TIMEOUT;
         }
     }
@@ -70,6 +73,9 @@ static void dma_handle_transfer(smartdisplay_dma_transfer_t *transfer)
 
     // Perform the transfer in chunks if needed
     err = dma_transfer_chunk(transfer);
+
+    // The shared buffer can be reused once the panel transfer has completed.
+    xSemaphoreGive(s_dma_manager->buffer_available_sem);
 
     // Update statistics
     if (xSemaphoreTake(s_dma_manager->state_mutex, portMAX_DELAY) == pdTRUE)
@@ -178,6 +184,14 @@ esp_err_t smartdisplay_dma_init(esp_lcd_panel_handle_t panel_handle, bool async_
         goto cleanup;
     }
 
+    // Create semaphore to protect the shared DMA buffer
+    s_dma_manager->buffer_available_sem = xSemaphoreCreateBinary();
+    if (s_dma_manager->buffer_available_sem == NULL)
+    {
+        log_e("Failed to create buffer available semaphore");
+        goto cleanup;
+    }
+
     // Allocate DMA-capable buffer
     s_dma_manager->dma_buffer_size = SMARTDISPLAY_DMA_BUFFER_SIZE;
     s_dma_manager->dma_buffer = heap_caps_malloc(s_dma_manager->dma_buffer_size, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
@@ -186,6 +200,8 @@ esp_err_t smartdisplay_dma_init(esp_lcd_panel_handle_t panel_handle, bool async_
         log_e("Failed to allocate DMA buffer");
         goto cleanup;
     }
+
+    xSemaphoreGive(s_dma_manager->buffer_available_sem);
 
     s_dma_manager->panel_handle = panel_handle;
     s_dma_manager->async_color_trans = async_color_trans;
@@ -279,6 +295,13 @@ esp_err_t smartdisplay_dma_deinit()
         s_dma_manager->worker_shutdown_sem = NULL;
     }
 
+    // Clean up buffer semaphore
+    if (s_dma_manager->buffer_available_sem != NULL)
+    {
+        vSemaphoreDelete(s_dma_manager->buffer_available_sem);
+        s_dma_manager->buffer_available_sem = NULL;
+    }
+
     // Free DMA buffer
     if (s_dma_manager->dma_buffer != NULL)
     {
@@ -333,6 +356,14 @@ esp_err_t smartdisplay_dma_draw_bitmap(int x_start, int y_start, int x_end, int 
         return ESP_ERR_NOT_SUPPORTED;
     }
 
+    // Reserve the shared buffer until the worker finishes this transfer.
+    TickType_t buffer_timeout = high_priority ? 0 : portMAX_DELAY;
+    if (xSemaphoreTake(s_dma_manager->buffer_available_sem, buffer_timeout) != pdTRUE)
+    {
+        log_e("DMA buffer is still in use");
+        return ESP_ERR_TIMEOUT;
+    }
+
     // Copy data to DMA buffer
     memcpy(s_dma_manager->dma_buffer, color_data, transfer.data_len);
     transfer.src_data = s_dma_manager->dma_buffer;
@@ -357,6 +388,7 @@ esp_err_t smartdisplay_dma_draw_bitmap(int x_start, int y_start, int x_end, int 
             xSemaphoreGive(s_dma_manager->state_mutex);
         }
         log_e("Failed to queue DMA transfer");
+        xSemaphoreGive(s_dma_manager->buffer_available_sem);
         return ESP_ERR_TIMEOUT;
     }
 
