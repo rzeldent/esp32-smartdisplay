@@ -29,8 +29,9 @@ static inline bool lvgl_panel_frame_trans_done(esp_lcd_panel_handle_t panel, esp
 static inline bool lvgl_panel_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
     lv_display_t *display = (lv_display_t *)user_ctx;
+    bool higher_priority_task_woken = smartdisplay_dma_notify_chunk_done();
     lv_display_flush_ready(display);
-    return false;
+    return higher_priority_task_woken;
 }
 
 // Hardware rotation is supported
