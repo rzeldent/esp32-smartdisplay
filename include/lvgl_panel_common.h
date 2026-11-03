@@ -106,6 +106,7 @@ static inline void lv_flush_software(lv_display_t *display, const lv_area_t *are
     if (rotation == LV_DISPLAY_ROTATION_0)
     {
         ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+        lv_display_flush_ready(display);
         return;
     }
 
@@ -142,6 +143,7 @@ static inline void lv_flush_software(lv_display_t *display, const lv_area_t *are
     }
 
     free(rotation_buffer);
+    lv_display_flush_ready(display);
 };
 
 static inline void lvgl_setup_panel(esp_lcd_panel_handle_t panel_handle)
