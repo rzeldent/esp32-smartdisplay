@@ -61,8 +61,8 @@ lv_display_t *lvgl_lcd_init()
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_nv3041a(spi_dev, NV3041A_SPI_CONFIG_CS, &panel_dev_config, &panel_handle));
 
-    // Initialize DMA for this panel (async_color_trans = true for QSPI panels)
-    ESP_ERROR_CHECK(smartdisplay_dma_init_with_logging(panel_handle, "NV3041A", true));
+    // Pixel transfers use blocking spi_device_polling_transmit().
+    ESP_ERROR_CHECK(smartdisplay_dma_init_with_logging(panel_handle, "NV3041A", false));
 
     lvgl_setup_panel(panel_handle);
     display->user_data = panel_handle;
