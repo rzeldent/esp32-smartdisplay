@@ -163,5 +163,7 @@ static inline void lvgl_setup_panel(esp_lcd_panel_handle_t panel_handle)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, DISPLAY_GAP_X, DISPLAY_GAP_Y));
 #endif
     // Turn display on
-    ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
+    esp_err_t err = esp_lcd_panel_disp_on_off(panel_handle, true);
+    if (err != ESP_OK && err != ESP_ERR_NOT_SUPPORTED)
+        ESP_ERROR_CHECK(err);
 };
