@@ -62,7 +62,7 @@ The library automatically configures the appropriate underlying `esp_lcd` panel 
    - Used by `esp32-2432S022C/N`; driven through the `esp_lcd` I80 bus.
 
 3. **QSPI Displays (`AXS15231B`, `NV3041A`)**:
-   - Used by `JC3248W535N` (`AXS15231B`, no touch) and `JC4827W543C` (`NV3041A`, `GT911` touch).
+   - Used by `JC3248W535N` (`AXS15231B`, no touch; the current driver does not yet support QSPI) and `JC4827W543C` (`NV3041A`, `GT911` touch).
 
 4. **Parallel RGB Displays (`ST7262`, `ST7701`)**:
    - Uses ESP32-S3 RGB peripheral interface (`esp_lcd_dpi_panel`) for high-throughput frame updates directly from PSRAM framebuffers.
