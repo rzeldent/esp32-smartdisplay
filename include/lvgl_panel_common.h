@@ -29,8 +29,9 @@ static inline bool lvgl_panel_frame_trans_done(esp_lcd_panel_handle_t panel, esp
 static inline bool lvgl_panel_color_trans_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
     lv_display_t *display = (lv_display_t *)user_ctx;
+    bool higher_priority_task_woken = smartdisplay_dma_notify_chunk_done();
     lv_display_flush_ready(display);
-    return false;
+    return higher_priority_task_woken;
 }
 
 // Hardware rotation is supported
@@ -105,6 +106,7 @@ static inline void lv_flush_software(lv_display_t *display, const lv_area_t *are
     if (rotation == LV_DISPLAY_ROTATION_0)
     {
         ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
+        lv_display_flush_ready(display);
         return;
     }
 
@@ -141,6 +143,7 @@ static inline void lv_flush_software(lv_display_t *display, const lv_area_t *are
     }
 
     free(rotation_buffer);
+    lv_display_flush_ready(display);
 };
 
 static inline void lvgl_setup_panel(esp_lcd_panel_handle_t panel_handle)
@@ -160,5 +163,7 @@ static inline void lvgl_setup_panel(esp_lcd_panel_handle_t panel_handle)
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, DISPLAY_GAP_X, DISPLAY_GAP_Y));
 #endif
     // Turn display on
-    ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
+    esp_err_t err = esp_lcd_panel_disp_on_off(panel_handle, true);
+    if (err != ESP_OK && err != ESP_ERR_NOT_SUPPORTED)
+        ESP_ERROR_CHECK(err);
 };
